@@ -1,0 +1,59 @@
+{
+  "name": "@useroot/sandbox-sdk",
+  "version": "0.1.0",
+  "description": "Tiny, deterministic JS/TS SDK for the Root Pay sandbox APIs. Designed to be dropped into Vercel v0-generated demo apps so the AI never has to reason about HTTP, auth, polling, or response envelopes.",
+  "license": "MIT",
+  "author": "Root",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LLM.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p examples/tsconfig.json",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm clean && pnpm build",
+    "prepare": "npm run build",
+    "test-app": "pnpm build && node test-app/server.mjs"
+  },
+  "keywords": [
+    "root",
+    "rootpay",
+    "useroot",
+    "payments",
+    "payouts",
+    "payins",
+    "ach",
+    "rtp",
+    "sdk",
+    "sandbox",
+    "v0",
+    "vercel"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2"
+  }
+}

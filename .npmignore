@@ -1,0 +1,10 @@
+src
+examples
+tsconfig.json
+tsup.config.ts
+node_modules
+*.log
+.DS_Store
+.env
+.env.*
+.tsbuildinfo

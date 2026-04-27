@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Root sandbox SDK — test UI</title>
+    <style>
+      :root {
+        font-family: system-ui, sans-serif;
+        line-height: 1.45;
+        color: #111;
+        background: #f4f4f5;
+      }
+      body {
+        max-width: 52rem;
+        margin: 0 auto;
+        padding: 1.25rem;
+      }
+      h1 {
+        font-size: 1.25rem;
+        margin: 0 0 0.5rem;
+      }
+      p.meta {
+        margin: 0 0 1rem;
+        color: #52525b;
+        font-size: 0.9rem;
+      }
+      section {
+        background: #fff;
+        border: 1px solid #e4e4e7;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+      section h2 {
+        font-size: 0.95rem;
+        margin: 0 0 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #71717a;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+      label {
+        font-size: 0.85rem;
+        color: #3f3f46;
+      }
+      input,
+      select {
+        padding: 0.35rem 0.5rem;
+        border: 1px solid #d4d4d8;
+        border-radius: 6px;
+        font-size: 0.9rem;
+      }
+      button {
+        cursor: pointer;
+        border: none;
+        border-radius: 6px;
+        padding: 0.45rem 0.75rem;
+        font-size: 0.88rem;
+        background: #18181b;
+        color: #fafafa;
+      }
+      button:hover {
+        background: #27272a;
+      }
+      button.secondary {
+        background: #e4e4e7;
+        color: #18181b;
+      }
+      button.secondary:hover {
+        background: #d4d4d8;
+      }
+      pre {
+        margin: 1rem 0 0;
+        padding: 0.75rem;
+        background: #fafafa;
+        border: 1px solid #e4e4e7;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        overflow: auto;
+        max-height: 22rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .state {
+        font-size: 0.8rem;
+        color: #52525b;
+        margin-top: 0.5rem;
+      }
+      .bad {
+        color: #b91c1c;
+      }
+      .ok {
+        color: #15803d;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Root sandbox SDK — test UI</h1>
+    <p class="meta">
+      <strong>This page’s URL</strong> (e.g. <code>http://127.0.0.1:3847</code>) is only the
+      <em>local</em> test server in Node. Your browser talks to that server; the server then calls
+      Root using <code>ROOT_BASE_URL</code> from <code>test-app/.env</code> (e.g.
+      <code>https://api-dev01.useroot.com</code>). Also set <code>ROOT_API_KEY</code> (full
+      <code>test_&lt;uuid&gt;_&lt;secret&gt;</code> token). Run <code>pnpm test-app</code>.
+      <code>ROOT_SDK_DEBUG=1</code> logs each outbound Root request in the terminal.
+    </p>
+
+    <section>
+      <h2>Health</h2>
+      <div class="row">
+        <button type="button" id="btn-health">Check env</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Subaccounts</h2>
+      <div class="row">
+        <button type="button" id="btn-sub-default">Get or create default</button>
+        <button type="button" class="secondary" id="btn-sub-create">Create named</button>
+        <input type="text" id="sub-name" placeholder="Subaccount name" value="UI Test Subaccount" />
+        <button type="button" class="secondary" id="btn-sub-list">List</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Payee → bank → payout</h2>
+      <div class="row">
+        <label>Name <input type="text" id="payee-name" value="Quinn Ramirez" /></label>
+        <label>Email <input type="email" id="payee-email" placeholder="auto if empty" /></label>
+      </div>
+      <div class="row">
+        <button type="button" id="btn-payee-create">Create payee</button>
+        <button type="button" id="btn-payee-bank">Attach pay-to-bank</button>
+        <button type="button" class="secondary" id="btn-payee-list">List payees</button>
+      </div>
+      <div class="row">
+        <label
+          >Amount (¢)
+          <input type="number" id="payout-cents" value="1000" min="1" step="1" />
+        </label>
+        <label
+          >Rail
+          <select id="payout-rail">
+            <option value="instant_bank">instant_bank</option>
+            <option value="instant_card">instant_card</option>
+            <option value="same_day_ach">same_day_ach</option>
+            <option value="standard_ach">standard_ach</option>
+            <option value="wire">wire</option>
+          </select>
+        </label>
+        <button type="button" id="btn-payout-create">Create payout</button>
+        <button type="button" id="btn-payout-get">Get last payout</button>
+        <button type="button" id="btn-payout-poll">Poll until terminal</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Payer → bank → payin</h2>
+      <div class="row">
+        <label>Name <input type="text" id="payer-name" value="Acme Buyer" /></label>
+        <label>Email <input type="email" id="payer-email" placeholder="auto if empty" /></label>
+      </div>
+      <div class="row">
+        <button type="button" id="btn-payer-create">Create payer</button>
+        <button type="button" id="btn-payer-bank">Attach pay-by-bank</button>
+      </div>
+      <div class="row">
+        <label
+          >Amount (¢)
+          <input type="number" id="payin-cents" value="1000" min="1" step="1" />
+        </label>
+        <label
+          >Rail
+          <select id="payin-rail">
+            <option value="standard_ach">standard_ach</option>
+            <option value="same_day_ach">same_day_ach</option>
+          </select>
+        </label>
+        <button type="button" id="btn-payin-create">Create payin</button>
+        <button type="button" id="btn-payin-get">Get last payin</button>
+        <button type="button" id="btn-payin-poll">Poll until terminal</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Response</h2>
+      <div id="state-line" class="state"></div>
+      <pre id="out">Click a button…</pre>
+    </section>
+
+    <script>
+      const out = document.getElementById('out')
+      const stateLine = document.getElementById('state-line')
+
+      async function call(path, options = {}) {
+        const res = await fetch(path, {
+          method: options.method ?? 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          body: options.body ? JSON.stringify(options.body) : undefined,
+        })
+        const json = await res.json().catch(() => ({}))
+        if (json.state) {
+          stateLine.innerHTML =
+            '<span class="' +
+            (json.ok ? 'ok' : 'bad') +
+            '">state:</span> ' +
+            JSON.stringify(json.state)
+        }
+        out.textContent = JSON.stringify(json, null, 2)
+      }
+
+      function emailOrAuto(prefix) {
+        const v = document.getElementById(prefix + '-email').value.trim()
+        if (v) return v
+        return prefix + '+' + Date.now() + '@example.com'
+      }
+
+      document.getElementById('btn-health').onclick = () => call('/api/health')
+      document.getElementById('btn-sub-default').onclick = () =>
+        call('/api/subaccount/default', { method: 'POST', body: {} })
+      document.getElementById('btn-sub-create').onclick = () =>
+        call('/api/subaccount/create', {
+          method: 'POST',
+          body: { name: document.getElementById('sub-name').value || 'UI Subaccount' },
+        })
+      document.getElementById('btn-sub-list').onclick = () => call('/api/subaccounts')
+
+      document.getElementById('btn-payee-create').onclick = () =>
+        call('/api/payee/create', {
+          method: 'POST',
+          body: {
+            name: document.getElementById('payee-name').value || 'Demo Payee',
+            email: emailOrAuto('payee'),
+          },
+        })
+      document.getElementById('btn-payee-bank').onclick = () =>
+        call('/api/payee/bank', { method: 'POST', body: {} })
+      document.getElementById('btn-payee-list').onclick = () => call('/api/payees')
+
+      document.getElementById('btn-payout-create').onclick = () =>
+        call('/api/payout/create', {
+          method: 'POST',
+          body: {
+            amount_in_cents: Number(document.getElementById('payout-cents').value),
+            rail: document.getElementById('payout-rail').value,
+          },
+        })
+      document.getElementById('btn-payout-get').onclick = () => call('/api/payout/last')
+      document.getElementById('btn-payout-poll').onclick = () =>
+        call('/api/payout/poll', {
+          method: 'POST',
+          body: { rail: document.getElementById('payout-rail').value },
+        })
+
+      document.getElementById('btn-payer-create').onclick = () =>
+        call('/api/payer/create', {
+          method: 'POST',
+          body: {
+            name: document.getElementById('payer-name').value || 'Demo Payer',
+            email: emailOrAuto('payer'),
+          },
+        })
+      document.getElementById('btn-payer-bank').onclick = () =>
+        call('/api/payer/bank', { method: 'POST', body: {} })
+
+      document.getElementById('btn-payin-create').onclick = () =>
+        call('/api/payin/create', {
+          method: 'POST',
+          body: {
+            amount_in_cents: Number(document.getElementById('payin-cents').value),
+            rail: document.getElementById('payin-rail').value,
+          },
+        })
+      document.getElementById('btn-payin-get').onclick = () => call('/api/payin/last')
+      document.getElementById('btn-payin-poll').onclick = () =>
+        call('/api/payin/poll', {
+          method: 'POST',
+          body: { rail: document.getElementById('payin-rail').value },
+        })
+    </script>
+  </body>
+</html>
