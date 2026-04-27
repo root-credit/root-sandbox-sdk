@@ -1,7 +1,5 @@
 # `@useroot/sandbox-sdk` — V0 Integration Cheat-Sheet
 
-> Paste this file (or its contents) into the v0 system prompt / project context so the model wires Root payments correctly on the first try.
-
 You are generating a Next.js App Router demo app that talks to the Root sandbox.
 **You MUST use the `@useroot/sandbox-sdk` npm package for every Root API call.**
 Do **not** call `fetch` against `api.useroot.com` directly. Do **not** invent your own client.
