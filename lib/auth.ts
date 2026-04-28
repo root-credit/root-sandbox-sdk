@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import CryptoJS from "crypto-js";
 import { getRestaurantByEmail, setRestaurant } from "./redis";
-import { createRootPayer } from "./root-api";
+import { getOrCreateRootPayer } from "./root-api";
 
 const AUTH_SECRET = process.env.AUTH_SECRET || "dev-secret-key-change-in-production";
 
@@ -46,8 +46,8 @@ export async function registerRestaurant(restaurantData: {
     throw new Error("Restaurant with this email already exists");
   }
 
-  // Create payer (restaurant) in Root
-  const rootPayer = await createRootPayer({
+  // Resolve Root payer: create or reuse if sandbox already has this email (Redis cleared).
+  const rootPayer = await getOrCreateRootPayer({
     email: restaurantData.email,
     name: restaurantData.restaurantName,
     phone: restaurantData.phone,
@@ -71,21 +71,4 @@ export async function registerRestaurant(restaurantData: {
     restaurantId,
     rootCustomerId: rootPayer.id,
   };
-}
-
-/**
- * Login restaurant (email-only verification)
- * In production, this should use proper verification links or OTP
- */
-export async function loginRestaurant(email: string) {
-  if (!validateEmail(email)) {
-    throw new Error("Invalid email format");
-  }
-
-  const restaurant = await getRestaurantByEmail(email);
-  if (!restaurant) {
-    throw new Error("Restaurant not found");
-  }
-
-  return restaurant;
 }

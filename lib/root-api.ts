@@ -1,4 +1,4 @@
-import { Root, DEFAULT_BASE_URL } from "@root-credit/root-sdk";
+import { Root, DEFAULT_BASE_URL, RootApiError } from "@root-credit/root-sdk";
 
 if (!process.env.ROOT_API_KEY) {
   throw new Error("Missing ROOT_API_KEY environment variable");
@@ -30,8 +30,58 @@ export function payoutRailForWorker(worker: {
     : "instant_bank";
 }
 
+function isDuplicatePayerConflict(error: unknown): boolean {
+  if (error instanceof RootApiError && error.status === 409) {
+    return true;
+  }
+  if (error instanceof Error) {
+    return /\b409\b/.test(error.message) && /already exists|duplicate/i.test(error.message);
+  }
+  return false;
+}
+
 /**
- * Create a payer (restaurant) in Root
+ * Create a payer in Root, or if one already exists for this email (e.g. Redis was cleared),
+ * resolve and return the existing payer via list/findByEmail.
+ */
+export async function getOrCreateRootPayer(restaurantData: {
+  email: string;
+  name: string;
+  phone?: string;
+}) {
+  try {
+    const response = await rootAPI.payers.create({
+      email: restaurantData.email,
+      name: restaurantData.name,
+      metadata: {
+        type: "restaurant",
+        onboardingDate: new Date().toISOString(),
+      },
+    });
+    console.log("[v0] Created Root payer (restaurant):", response.id);
+    return response;
+  } catch (error) {
+    if (!isDuplicatePayerConflict(error)) {
+      console.error("[v0] Error creating Root payer:", error);
+      throw error;
+    }
+    console.warn(
+      "[v0] Root payer already exists for this email; reusing existing payer (typical after Redis clear)."
+    );
+    const existing = await rootAPI.payers.findByEmail(restaurantData.email);
+    if (existing) {
+      console.log("[v0] Linked existing Root payer:", existing.id);
+      return existing;
+    }
+    throw new Error(
+      "Root reports this payer email already exists but could not load the payer by email. Try again or contact support."
+    );
+  }
+}
+
+/**
+ * Create a payer (restaurant) in Root — fails if email already exists.
+ * Prefer {@link getOrCreateRootPayer} for signup flows that must survive Redis-only clears.
  */
 export async function createRootPayer(restaurantData: {
   email: string;

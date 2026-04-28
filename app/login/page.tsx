@@ -20,7 +20,11 @@ export default function LoginPage() {
           {/* Form Header */}
           <div className="mb-10">
             <h1 className="text-3xl font-bold text-foreground mb-2">Welcome back</h1>
-            <p className="text-gray-600 text-sm">Sign in to your Roosterwise account to continue</p>
+            <p className="text-gray-600 text-sm">
+              Sign in with the <strong>same email</strong> you used at signup. Each email maps to one
+              restaurant account (stored after Sign up). This demo uses one shared app password for every
+              restaurant — not your email password.
+            </p>
           </div>
 
           <LoginForm />

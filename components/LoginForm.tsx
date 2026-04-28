@@ -38,8 +38,14 @@ export function LoginForm() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Login failed');
+        const errorData = await response.json().catch(() => ({}));
+        let msg =
+          (errorData as { error?: string }).error || 'Login failed';
+        if (response.status === 404) {
+          msg +=
+            ' New users should create an account on Sign up using this email.';
+        }
+        throw new Error(msg);
       }
 
       const { sessionToken } = await response.json();
