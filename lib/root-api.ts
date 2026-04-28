@@ -1,10 +1,11 @@
-import { Root } from "@root-credit/root-sdk";
+import { Root, DEFAULT_BASE_URL } from "@root-credit/root-sdk";
 
 if (!process.env.ROOT_API_KEY) {
   throw new Error("Missing ROOT_API_KEY environment variable");
 }
 
-const ROOT_API_BASE = process.env.ROOT_BASE_URL || "https://sandbox.root.com";
+/** Same default host as the SDK; override with ROOT_BASE_URL for sandbox vs live. */
+const ROOT_API_BASE = process.env.ROOT_BASE_URL ?? DEFAULT_BASE_URL;
 
 export const rootAPI = new Root({
   apiKey: process.env.ROOT_API_KEY,

@@ -11,7 +11,7 @@ import { createTipPayout } from '@/lib/root-api';
 export async function POST(request: NextRequest) {
   try {
     const cookieHeader = request.headers.get('cookie') || '';
-    const sessionMatch = cookieHeader.match(/sessionId=([^;]+)/);
+    const sessionMatch = cookieHeader.match(/session=([^;]+)/);
     
     if (!sessionMatch) {
       return NextResponse.json(
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const cookieHeader = request.headers.get('cookie') || '';
-    const sessionMatch = cookieHeader.match(/sessionId=([^;]+)/);
+    const sessionMatch = cookieHeader.match(/session=([^;]+)/);
     
     if (!sessionMatch) {
       return NextResponse.json(

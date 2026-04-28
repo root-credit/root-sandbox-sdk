@@ -91,11 +91,11 @@ async function runTests() {
     });
     if (!signupRes) throw new Error('Signup failed');
     
-    const { restaurantId, sessionId } = signupRes.data;
+    const { restaurantId, sessionToken } = signupRes.data;
     console.log(`[v0] ✓ Signup successful. Restaurant ID: ${restaurantId}`);
     
     const headers = { 
-      Cookie: `sessionId=${sessionId}`,
+      Cookie: `session=${sessionToken}`,
     };
 
     // Test 2: Link Bank Account

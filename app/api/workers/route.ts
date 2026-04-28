@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { setWorker, getRestaurantWorkers, getRestaurant } from '@/lib/redis';
+import {
+  setWorker,
+  getRestaurantWorkers,
+  getRestaurant,
+  getSession,
+} from '@/lib/redis';
 import { createRootPayee, attachPayeeBankAccount, attachPayeeDebitCard } from '@/lib/root-api';
 
 export async function GET(request: NextRequest) {
@@ -15,9 +20,17 @@ export async function GET(request: NextRequest) {
     }
 
     const cookieHeader = request.headers.get('cookie') || '';
-    const sessionMatch = cookieHeader.match(/sessionId=([^;]+)/);
-    
+    const sessionMatch = cookieHeader.match(/session=([^;]+)/);
+
     if (!sessionMatch) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const session = await getSession(sessionMatch[1].trim());
+    if (!session || session.restaurantId !== restaurantId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -42,7 +55,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const cookieHeader = request.headers.get('cookie') || '';
-    const sessionMatch = cookieHeader.match(/sessionId=([^;]+)/);
+    const sessionMatch = cookieHeader.match(/session=([^;]+)/);
 
     if (!sessionMatch) {
       return NextResponse.json(
@@ -67,6 +80,21 @@ export async function POST(request: NextRequest) {
       expiryYear,
       cardholderName,
     } = body;
+
+    if (!restaurantId) {
+      return NextResponse.json(
+        { error: 'Missing restaurantId' },
+        { status: 400 }
+      );
+    }
+
+    const session = await getSession(sessionMatch[1].trim());
+    if (!session || session.restaurantId !== restaurantId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
 
     const restaurant = await getRestaurant(restaurantId);
     if (!restaurant) {

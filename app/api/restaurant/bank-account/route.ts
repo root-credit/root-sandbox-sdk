@@ -5,7 +5,7 @@ import { attachPayerBankAccount } from '@/lib/root-api';
 export async function POST(request: NextRequest) {
   try {
     const cookieHeader = request.headers.get('cookie') || '';
-    const sessionMatch = cookieHeader.match(/sessionId=([^;]+)/);
+    const sessionMatch = cookieHeader.match(/session=([^;]+)/);
 
     if (!sessionMatch) {
       return NextResponse.json(
