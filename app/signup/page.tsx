@@ -38,12 +38,12 @@ export default function SignupPage() {
             New account
           </p>
           <h2 className="font-display text-4xl xl:text-5xl tracking-tightest leading-[1.05] text-balance">
-            Open a console for <em className="not-italic text-gold-bright">your house.</em>
+            Set up a console for <em className="not-italic text-gold-bright">your platform.</em>
           </h2>
           <p className="mt-5 text-white/60 leading-relaxed">
-            Spin up an operator account in under two minutes. We&apos;ll provision your Root
+            Spin up a platform account in under two minutes. We&apos;ll provision your Root
             payer, your {branding.merchantSingular.toLowerCase()} subaccount, and a clean ledger —
-            wired to the team you add next.
+            wired to the dashers you add next.
           </p>
 
           <ul className="mt-10 space-y-3 text-sm text-white/70">

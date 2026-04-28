@@ -76,7 +76,7 @@ export default function LandingPage() {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 bg-white/5 backdrop-blur">
                 <span className="w-1.5 h-1.5 rounded-full bg-gold-bright" />
                 <span className="text-[11px] tracking-[0.18em] uppercase text-white/80">
-                  Gratuity Management · Live
+                  Gig Payout Settlement · Live
                 </span>
               </div>
 
@@ -88,9 +88,7 @@ export default function LandingPage() {
               </h1>
 
               <p className="mt-6 text-base sm:text-lg text-white/65 leading-relaxed max-w-xl">
-                {branding.productName} unifies {branding.payoutNounPlural.toLowerCase()}, payroll,
-                and payments into one controlled platform — so your team gets paid in seconds and
-                your books reconcile themselves.
+                {branding.productName} unifies dasher earnings, settlements, and payments into one controlled platform — so your dashers get paid in seconds and your books reconcile themselves.
               </p>
 
               <div className="mt-8 flex flex-col sm:flex-row gap-3">
@@ -133,36 +131,36 @@ export default function LandingPage() {
             <div className="lg:col-span-8">
               <p className="text-eyebrow mb-3">The Stack</p>
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tightest leading-[1.05] text-balance">
-                Everything you need for end-of-shift money movement.
+                Everything you need for real-time dasher payouts.
               </h2>
             </div>
             <p className="lg:col-span-4 text-sm text-neutral-500 max-w-sm leading-relaxed">
-              Three core modules. One ledger. Wired to your bank, your team, and the Root
+              Three core modules. One ledger. Wired to your bank, your dashers, and the Root
               payment rails.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
             <ModuleReceipt
-              code="TIP"
-              title="Gratuity Management"
+              code="EAR"
+              title="Earnings Tracking"
               status="Active · Live"
               features={[
-                'Instant tip distribution',
-                'Tip pooling protocol',
-                'Per-shift run sheets',
+                'Real-time delivery logging',
+                'Automatic earnings calculation',
+                'Per-dash earning statements',
                 'Full audit trails',
               ]}
             />
             <ModuleReceipt
               code="PAY"
-              title={`${branding.payeeSingular} Payouts`}
+              title="Dasher Payouts"
               status="Active · Live"
               features={[
-                'Real-time wage access',
+                'Same-day settlement',
                 'Bank account or debit card',
-                'Same-day ACH fallback',
-                'No credit check required',
+                'No fees to dashers',
+                'One-click processing',
               ]}
             />
             <ModuleReceipt
@@ -170,10 +168,10 @@ export default function LandingPage() {
               title="Treasury & Reconciliation"
               status="Active · Live"
               features={[
-                'Subaccount funding via ACH',
-                'One-page transaction ledger',
+                'Funding via ACH transfer',
+                'Complete transaction ledger',
                 'Webhook event streaming',
-                'Roles & shared passwords',
+                'Multi-user access controls',
               ]}
             />
           </div>
@@ -189,24 +187,24 @@ export default function LandingPage() {
           <div className="max-w-2xl mb-12 lg:mb-16">
             <p className="text-eyebrow mb-3">How it works</p>
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tightest leading-[1.05] text-balance">
-              From shift close to settled tips — in three movements.
+              From delivery completion to dasher payment — in three steps.
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12">
             <Step
               n="01"
-              title="Onboard your house"
-              body={`Create a ${branding.merchantSingular.toLowerCase()}, link an ACH-funding bank account, and add your team with their preferred payout rail.`}
+              title="Onboard your platform"
+              body={`Create a platform account, link your ACH-funding bank account, and add dashers with their preferred payout method.`}
             />
             <Step
               n="02"
-              title={`Enter the ${branding.payoutNoun.toLowerCase()}`}
-              body={`At shift close, key in the run sheet. ${branding.productName} validates totals against the team and your liquidity in real time.`}
+              title={`Submit ${branding.payoutNounPlural.toLowerCase()}`}
+              body={`At the end of each day, submit completed deliveries. ${branding.productName} validates earnings against your pool and liquidity in real time.`}
             />
             <Step
               n="03"
-              title="One click. Funds land."
+              title="One click. Dashers paid."
               body="Press process — payouts settle to bank or card in seconds. Receipts and webhooks stream into your ledger."
             />
           </div>
@@ -216,13 +214,12 @@ export default function LandingPage() {
       {/* Trust */}
       <section id="trust" className="py-24 lg:py-28">
         <div className="max-w-3xl mx-auto px-5 sm:px-8 lg:px-10 text-center">
-          <p className="text-eyebrow mb-4">Built for hospitality at scale</p>
+          <p className="text-eyebrow mb-4">Built for gig economy at scale</p>
           <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tightest leading-[1.05] text-balance">
-            Enterprise rails, with the warmth of an independent house.
+            Enterprise infrastructure, built for independent platforms.
           </h2>
           <p className="mt-6 text-neutral-500 leading-relaxed max-w-xl mx-auto">
-            {branding.productName} rides on Root&apos;s secure payment infrastructure — wrapped in
-            a console designed for a host stand, not a CFO suite.
+            {branding.productName} rides on Root&apos;s secure payment infrastructure — designed for platforms that need fast, reliable dasher payouts.
           </p>
 
           <div className="mt-10">

@@ -35,10 +35,10 @@ export default function LoginPage() {
 
         <div className="max-w-md">
           <p className="text-[11px] tracking-[0.18em] uppercase text-white/50 mb-5">
-            Operator console
+            Platform console
           </p>
           <h2 className="font-display text-4xl xl:text-5xl tracking-tightest leading-[1.05] text-balance">
-            Welcome back to <em className="not-italic text-gold-bright">the house.</em>
+            Welcome to <em className="not-italic text-gold-bright">DashPay.</em>
           </h2>
           <p className="mt-5 text-white/60 leading-relaxed">
             Sign in with the email you used at signup. {branding.productName} routes you to your{' '}

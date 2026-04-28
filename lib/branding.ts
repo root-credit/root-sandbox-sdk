@@ -13,28 +13,28 @@
  */
 export const branding = {
   /** Top-level product name shown in nav, footer, browser title. */
-  productName: "Roosterwise",
+  productName: "DashPay Console",
   /** One-line tagline used on landing + auth panels. */
-  tagline: "Tips paid the moment the shift ends.",
+  tagline: "Dasher earnings paid in seconds after delivery.",
   /** Merchant entity (the operator who logs in and funds payouts). */
-  merchantSingular: "Restaurant",
-  merchantPlural: "Restaurants",
-  /** Used in possessive contexts: e.g. "your restaurant's bank account". */
-  merchantPossessive: "restaurant's",
+  merchantSingular: "Platform",
+  merchantPlural: "Platforms",
+  /** Used in possessive contexts: e.g. "your platform's bank account". */
+  merchantPossessive: "platform's",
   /** Payee entity (the person being paid). */
-  payeeSingular: "Worker",
-  payeePlural: "Workers",
+  payeeSingular: "Dasher",
+  payeePlural: "Dashers",
   /** Payout terminology. */
-  payoutVerb: "Tip out",
-  payoutNoun: "Tip payout",
-  payoutNounPlural: "Tip payouts",
+  payoutVerb: "Pay out",
+  payoutNoun: "Delivery payout",
+  payoutNounPlural: "Delivery payouts",
   /** Funding source label on the merchant settings screen. */
-  funderLabel: "Restaurant bank account",
-  funderShortLabel: "Bank account",
+  funderLabel: "Platform funding account",
+  funderShortLabel: "Funding account",
   /** Console heading displayed on the dashboard home. */
-  consoleHeading: "Welcome back. Let's settle the night.",
+  consoleHeading: "Welcome to DashPay. Settle earnings fast.",
   consoleSubheading:
-    "Manage your house, your team, and tonight's tip-out from a single console.",
+    "Manage your platforms, your dashers, and tonight's payouts from a single console.",
 } as const;
 
 export type Branding = typeof branding;
