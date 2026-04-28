@@ -1,6 +1,4 @@
 {
-  "root": "roosterwise",
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "outputDirectory": ".next/standalone"
+  "buildCommand": "cd roosterwise && npm install && npm run build",
+  "outputDirectory": "roosterwise/.next"
 }
