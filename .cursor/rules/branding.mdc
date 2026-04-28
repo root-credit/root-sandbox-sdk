@@ -1,0 +1,52 @@
+---
+description: Vertical labels (product name, merchant/payee/payout nouns) live in lib/branding.ts. Auto-applied to any UI file.
+globs:
+  - "app/**/*.{ts,tsx}"
+  - "components/**/*.{ts,tsx}"
+alwaysApply: true
+---
+
+# Branding rule
+
+All user-visible nouns for the active vertical live in [`lib/branding.ts`](mdc:lib/branding.ts).
+Pull them from there; do not hardcode "Restaurant", "Worker", "Tip", "Roosterwise",
+or any other vertical-specific word in component code.
+
+```ts
+import { branding } from '@/lib/branding';
+
+// ✅
+<h1>{branding.productName} console</h1>
+<p>Manage your {branding.payeePlural.toLowerCase()}.</p>
+<button>Run {branding.payoutNoun.toLowerCase()}</button>
+
+// ❌
+<h1>Roosterwise console</h1>
+<p>Manage your workers.</p>
+<button>Run tip-out</button>
+```
+
+## When you may keep a literal
+
+- Marketing prose blocks (`app/page.tsx` hero, `Module Receipt` feature copy).
+  Reskinning a vertical includes rewriting the marketing copy; this is fine.
+- SVG monogram letters that follow `branding.productName.charAt(0)`.
+- Dev-only values in `e2e-test.js`.
+
+## When you must NOT keep a literal
+
+- Form labels, table headers, page titles, breadcrumbs, button copy.
+- Toasts, error messages, success messages.
+- Email placeholder values (`branding.merchantSingular.toLowerCase()` works fine).
+
+## Reskinning checklist (one-file change)
+
+When asked to "reskin to <vertical>":
+
+1. Open `lib/branding.ts`.
+2. Edit `productName`, `merchantSingular/Plural`, `payeeSingular/Plural`,
+   `payoutNoun/Plural`, `funderLabel`, `tagline`, `consoleHeading`,
+   `consoleSubheading`.
+3. Optional: update the marketing copy on `app/page.tsx`.
+4. Stop. Do not edit `lib/types/*`, `lib/hooks/*`, `app/actions/*`, route
+   handlers, or Redis keys.

@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { LoginForm } from '@/components/LoginForm';
+import { branding } from '@/lib/branding';
 
 export default function LoginPage() {
+  const monogram = branding.productName.charAt(0);
+
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] bg-background">
-      {/* Left brand panel */}
       <aside className="relative hidden lg:flex flex-col justify-between bg-ink text-white p-12 overflow-hidden">
         <div
           aria-hidden
@@ -26,9 +28,9 @@ export default function LoginPage() {
 
         <Link href="/" className="flex items-center gap-2.5">
           <span className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-white/10 text-gold-bright font-display border border-white/15">
-            R
+            {monogram}
           </span>
-          <span className="font-display text-lg tracking-tightest">Roosterwise</span>
+          <span className="font-display text-lg tracking-tightest">{branding.productName}</span>
         </Link>
 
         <div className="max-w-md">
@@ -39,8 +41,9 @@ export default function LoginPage() {
             Welcome back to <em className="not-italic text-gold-bright">the house.</em>
           </h2>
           <p className="mt-5 text-white/60 leading-relaxed">
-            Sign in with the email you used at signup. Roosterwise will route you to your
-            restaurant&apos;s console — workers, payouts, treasury, all in one place.
+            Sign in with the email you used at signup. {branding.productName} routes you to your{' '}
+            {branding.merchantPossessive} console — {branding.payeePlural.toLowerCase()}, payouts, treasury,
+            all in one place.
           </p>
 
           <div className="mt-10 grid grid-cols-2 gap-4">
@@ -54,15 +57,13 @@ export default function LoginPage() {
         </p>
       </aside>
 
-      {/* Right form panel */}
       <main className="flex flex-col">
-        {/* Mobile brand bar */}
         <div className="lg:hidden border-b border-neutral-200 bg-surface px-6 py-5">
           <Link href="/" className="inline-flex items-center gap-2.5">
             <span className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-ink text-gold-bright font-display border border-neutral-200">
-              R
+              {monogram}
             </span>
-            <span className="font-display text-lg tracking-tightest">Roosterwise</span>
+            <span className="font-display text-lg tracking-tightest">{branding.productName}</span>
           </Link>
         </div>
 
@@ -71,8 +72,8 @@ export default function LoginPage() {
             <p className="text-eyebrow mb-3">Sign in</p>
             <h1 className="font-display text-4xl tracking-tightest mb-3">Operator login</h1>
             <p className="text-sm text-neutral-500 leading-relaxed mb-10">
-              Sign in with the email used at signup. Each email maps to a single
-              restaurant account in your console.
+              Sign in with the email used at signup. Each email maps to a single{' '}
+              {branding.merchantSingular.toLowerCase()} account in your console.
             </p>
 
             <LoginForm />
@@ -89,7 +90,7 @@ export default function LoginPage() {
               href="/signup"
               className="block w-full text-center px-4 py-3 rounded-md border border-neutral-300 hover:border-ink hover:bg-neutral-50 transition-smooth text-sm font-medium"
             >
-              Create a Roosterwise account
+              Create a {branding.productName} account
             </Link>
           </div>
         </div>

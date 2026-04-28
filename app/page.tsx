@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { branding } from '@/lib/branding';
 
 export default function LandingPage() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -39,7 +40,7 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 h-16 sm:h-20 flex items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-2.5 text-white">
               <Monogram />
-              <span className="font-display text-lg tracking-tightest">Roosterwise</span>
+              <span className="font-display text-lg tracking-tightest">{branding.productName}</span>
             </Link>
             <div className="hidden md:flex items-center gap-8 text-[13px] text-white/65">
               <a href="#stack" className="hover:text-white transition-smooth">The Stack</a>
@@ -80,13 +81,16 @@ export default function LandingPage() {
               </div>
 
               <h1 className="mt-7 font-display tracking-tightest text-[2.75rem] sm:text-6xl lg:text-7xl leading-[1.02] text-balance">
-                Tips paid the moment the shift{' '}
-                <em className="not-italic text-gold-bright">ends.</em>
+                {branding.tagline.split(' ').slice(0, -1).join(' ')}{' '}
+                <em className="not-italic text-gold-bright">
+                  {branding.tagline.split(' ').slice(-1)[0]}
+                </em>
               </h1>
 
               <p className="mt-6 text-base sm:text-lg text-white/65 leading-relaxed max-w-xl">
-                Roosterwise unifies tipping, payroll, and payments into one controlled
-                platform — so your team gets paid in seconds and your books reconcile themselves.
+                {branding.productName} unifies {branding.payoutNounPlural.toLowerCase()}, payroll,
+                and payments into one controlled platform — so your team gets paid in seconds and
+                your books reconcile themselves.
               </p>
 
               <div className="mt-8 flex flex-col sm:flex-row gap-3">
@@ -152,7 +156,7 @@ export default function LandingPage() {
             />
             <ModuleReceipt
               code="PAY"
-              title="Worker Payouts"
+              title={`${branding.payeeSingular} Payouts`}
               status="Active · Live"
               features={[
                 'Real-time wage access',
@@ -193,12 +197,12 @@ export default function LandingPage() {
             <Step
               n="01"
               title="Onboard your house"
-              body="Create a restaurant, link an ACH-funding bank account, and add your team with their preferred payout rail."
+              body={`Create a ${branding.merchantSingular.toLowerCase()}, link an ACH-funding bank account, and add your team with their preferred payout rail.`}
             />
             <Step
               n="02"
-              title="Enter the tip-out"
-              body="At shift close, key in the run sheet. Roosterwise validates totals against the team and your liquidity in real time."
+              title={`Enter the ${branding.payoutNoun.toLowerCase()}`}
+              body={`At shift close, key in the run sheet. ${branding.productName} validates totals against the team and your liquidity in real time.`}
             />
             <Step
               n="03"
@@ -217,8 +221,8 @@ export default function LandingPage() {
             Enterprise rails, with the warmth of an independent house.
           </h2>
           <p className="mt-6 text-neutral-500 leading-relaxed max-w-xl mx-auto">
-            Roosterwise rides on Root&apos;s secure payment infrastructure — wrapped in a
-            console designed for a host stand, not a CFO suite.
+            {branding.productName} rides on Root&apos;s secure payment infrastructure — wrapped in
+            a console designed for a host stand, not a CFO suite.
           </p>
 
           <div className="mt-10">
@@ -238,10 +242,10 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 py-8 sm:py-10 flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-2.5">
             <Monogram dark />
-            <span className="font-display text-base tracking-tightest">Roosterwise</span>
+            <span className="font-display text-base tracking-tightest">{branding.productName}</span>
           </div>
           <p className="text-xs text-neutral-500 text-center sm:text-right">
-            © {new Date().getFullYear()} Roosterwise · Modern hospitality finance.{' '}
+            © {new Date().getFullYear()} {branding.productName} · Modern payouts infrastructure.{' '}
             <Link
               href="/admin"
               className="text-neutral-400 hover:text-neutral-600 underline-offset-2 ml-2"
@@ -267,7 +271,7 @@ function Monogram({ dark = false }: { dark?: boolean }) {
       }`}
       aria-hidden
     >
-      R
+      {branding.productName.charAt(0)}
     </span>
   );
 }
@@ -336,7 +340,7 @@ function LiveTicketCard() {
     <div className="relative">
       <div className="rounded-xl bg-white text-ink shadow-lg-custom border border-white/10 overflow-hidden">
         <div className="px-5 py-4 flex items-center justify-between border-b border-neutral-200">
-          <span className="font-display text-sm">Roosterwise Console</span>
+          <span className="font-display text-sm">{branding.productName} Console</span>
           <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.18em] uppercase text-success">
             <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
             Live

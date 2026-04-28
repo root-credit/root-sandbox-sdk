@@ -4,16 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-
-const signupSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  restaurantName: z.string().min(2, 'Restaurant name must be at least 2 characters'),
-  phone: z.string().min(10, 'Phone number must be at least 10 digits'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-});
-
-type SignupFormData = z.infer<typeof signupSchema>;
+import { branding } from '@/lib/branding';
+import { useSignup } from '@/lib/hooks/useAuth';
+import {
+  signupMerchantInputSchema,
+  type SignupMerchantInput,
+} from '@/lib/types/merchant';
 
 const inputClass =
   'w-full px-3.5 py-2.5 bg-surface text-foreground rounded-md border border-neutral-200 ' +
@@ -25,42 +21,24 @@ const labelClass =
 
 export function SignupForm() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const { signup, isSubmitting } = useSignup();
   const [error, setError] = useState('');
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignupFormData>({
-    resolver: zodResolver(signupSchema),
+  } = useForm<SignupMerchantInput>({
+    resolver: zodResolver(signupMerchantInputSchema),
   });
 
-  async function onSubmit(data: SignupFormData) {
-    setIsLoading(true);
+  async function onSubmit(data: SignupMerchantInput) {
     setError('');
-
     try {
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Signup failed');
-      }
-
-      const { sessionToken } = await response.json();
-
-      document.cookie = `session=${sessionToken}; path=/; max-age=86400; SameSite=Strict`;
-
+      await signup(data);
       router.push('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -80,7 +58,7 @@ export function SignupForm() {
           {...register('email')}
           type="email"
           id="email"
-          placeholder="admin@restaurant.com"
+          placeholder={`admin@${branding.merchantSingular.toLowerCase()}.com`}
           className={inputClass}
         />
         {errors.email && (
@@ -89,18 +67,18 @@ export function SignupForm() {
       </div>
 
       <div>
-        <label htmlFor="restaurantName" className={labelClass}>
-          Restaurant Name
+        <label htmlFor="merchantName" className={labelClass}>
+          {branding.merchantSingular} name
         </label>
         <input
-          {...register('restaurantName')}
+          {...register('merchantName')}
           type="text"
-          id="restaurantName"
-          placeholder="My Restaurant"
+          id="merchantName"
+          placeholder={`My ${branding.merchantSingular}`}
           className={inputClass}
         />
-        {errors.restaurantName && (
-          <p className="text-error text-xs mt-1.5">{errors.restaurantName.message}</p>
+        {errors.merchantName && (
+          <p className="text-error text-xs mt-1.5">{errors.merchantName.message}</p>
         )}
       </div>
 
@@ -139,10 +117,10 @@ export function SignupForm() {
 
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isSubmitting}
         className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-md bg-ink text-white text-sm font-medium tracking-tight hover:bg-ink-soft transition-smooth disabled:opacity-50 disabled:cursor-not-allowed shadow-sm-custom hover:shadow-md-custom"
       >
-        {isLoading ? (
+        {isSubmitting ? (
           <>
             <Spinner /> Creating account…
           </>

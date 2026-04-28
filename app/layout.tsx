@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
+import { branding } from "@/lib/branding";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,9 +21,8 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Roosterwise — Just-in-time tip payouts",
-  description:
-    "Modern tip distribution for restaurant teams. Settle end-of-shift gratuities in seconds, not days.",
+  title: `${branding.productName} — ${branding.tagline}`,
+  description: branding.tagline,
   viewport: {
     width: "device-width",
     initialScale: 1,

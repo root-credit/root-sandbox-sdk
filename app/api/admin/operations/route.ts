@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSessionFromCookies } from "@/lib/admin-session";
 import {
-  clearAllWorkersData,
-  removeWorkerById,
-  clearAllRestaurantSessions,
+  clearAllPayeesData,
+  removePayeeById,
+  clearAllOperatorSessions,
   clearAllTransactions,
-  clearAllRestaurantBankFields,
+  clearAllMerchantBankFields,
 } from "@/lib/redis-admin";
 import { setStoredLoginPassword } from "@/lib/app-settings";
 
 type Operation =
-  | "clear_all_workers"
-  | "remove_worker"
+  | "clear_all_payees"
+  | "remove_payee"
   | "clear_sessions_and_transactions"
   | "clear_bank_fields"
   | "set_shared_login_password";
@@ -36,32 +36,38 @@ export async function POST(request: NextRequest) {
 
   try {
     switch (operation) {
-      case "clear_all_workers": {
-        const r = await clearAllWorkersData();
+      case "clear_all_payees": {
+        const r = await clearAllPayeesData();
         return NextResponse.json({
           ok: true,
-          message: "All worker records cleared.",
+          message: "All payee records cleared.",
           deletedKeys: r.deletedKeys,
         });
       }
-      case "remove_worker": {
-        const workerId =
-          typeof body.workerId === "string" ? body.workerId.trim() : "";
-        if (!workerId) {
-          return NextResponse.json({ error: "workerId required" }, { status: 400 });
+      case "remove_payee": {
+        const payeeId =
+          typeof body.payeeId === "string" ? body.payeeId.trim() : "";
+        if (!payeeId) {
+          return NextResponse.json(
+            { error: "payeeId required" },
+            { status: 400 }
+          );
         }
-        const removed = await removeWorkerById(workerId);
+        const removed = await removePayeeById(payeeId);
         if (!removed) {
-          return NextResponse.json({ error: "Worker not found" }, { status: 404 });
+          return NextResponse.json(
+            { error: "Payee not found" },
+            { status: 404 }
+          );
         }
         return NextResponse.json({
           ok: true,
-          message: `Worker ${workerId} removed.`,
+          message: `Payee ${payeeId} removed.`,
         });
       }
       case "clear_sessions_and_transactions": {
         let deletedKeys = 0;
-        deletedKeys += (await clearAllRestaurantSessions()).deletedKeys;
+        deletedKeys += (await clearAllOperatorSessions()).deletedKeys;
         deletedKeys += (await clearAllTransactions()).deletedKeys;
         return NextResponse.json({
           ok: true,
@@ -70,10 +76,10 @@ export async function POST(request: NextRequest) {
         });
       }
       case "clear_bank_fields": {
-        const r = await clearAllRestaurantBankFields();
+        const r = await clearAllMerchantBankFields();
         return NextResponse.json({
           ok: true,
-          message: "Bank tokens removed from restaurant records.",
+          message: "Bank tokens removed from merchant records.",
           updated: r.updated,
         });
       }
@@ -90,11 +96,14 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           ok: true,
           message:
-            "Shared app login password updated. All restaurant users must use this password.",
+            "Shared app login password updated. All merchant users must use this password.",
         });
       }
       default:
-        return NextResponse.json({ error: "Unknown operation" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Unknown operation" },
+          { status: 400 }
+        );
     }
   } catch (e) {
     console.error("[admin operations]", e);

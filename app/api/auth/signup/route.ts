@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { registerRestaurant, generateSessionToken } from '@/lib/auth';
+import { registerMerchant, generateSessionToken } from '@/lib/auth';
 import { setSession } from '@/lib/redis';
 import { verifySharedAppPassword } from '@/lib/app-settings';
 import { HARDCODED_ADMIN_EMAIL } from '@/lib/admin-session';
@@ -8,9 +8,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { email, restaurantName, phone, password } = body;
+    const { email, merchantName, phone, password } = body;
 
-    if (!email || !restaurantName || !phone) {
+    if (!email || !merchantName || !phone) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            'This email is reserved for the admin console. Use a different email to create a restaurant account.',
+            'This email is reserved for the admin console. Use a different email to create a merchant account.',
         },
         { status: 400 }
       );
@@ -45,38 +45,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Register the restaurant
-    const { restaurantId, rootCustomerId } = await registerRestaurant({
+    const { merchantId, rootPayerId } = await registerMerchant({
       email,
-      restaurantName,
+      merchantName,
       phone,
     });
 
-    console.log("[v0] Registered restaurant:", restaurantId);
+    console.log('[v0] Registered merchant:', merchantId);
 
-    // Generate session token
     const sessionToken = generateSessionToken();
 
-    // Store session
     await setSession(sessionToken, {
-      adminEmail: email,
-      restaurantId,
+      merchantEmail: email,
+      merchantId,
     });
 
     return NextResponse.json(
       {
         sessionToken,
-        restaurantId,
-        rootCustomerId,
+        merchantId,
+        rootPayerId,
       },
       { status: 201 }
     );
   } catch (error) {
     console.error('[v0] Signup error:', error);
     const message = error instanceof Error ? error.message : 'Signup failed';
-    return NextResponse.json(
-      { error: message },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }

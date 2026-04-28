@@ -1,172 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { randomUUID } from 'crypto';
-import {
-  getRestaurant,
-  getWorker,
-  setTransaction,
-  getRestaurantTransactions,
-} from '@/lib/redis';
-import { createTipPayout, payoutRailForWorker } from '@/lib/root-api';
-import { getCurrentSession, sessionOwnsRestaurant } from '@/lib/session';
+import { processPayout } from '@/app/actions/payouts';
+import { listTransactions } from '@/app/actions/transactions';
+import { processPayoutInputSchema } from '@/lib/types/payout';
+
+/**
+ * Thin route delegators around the typed Server Actions in `app/actions/payouts.ts`
+ * and `app/actions/transactions.ts`. Kept for compatibility with non-React HTTP clients
+ * (CLI scripts, webhooks). Components MUST use the hooks in `lib/hooks/*` instead of
+ * calling these endpoints directly.
+ */
+
+function errorResponse(error: unknown, defaultStatus: number) {
+  if (error instanceof Error) {
+    if (error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (error.message === 'Merchant not found') {
+      return NextResponse.json({ error: 'Merchant not found' }, { status: 404 });
+    }
+    return NextResponse.json({ error: error.message }, { status: defaultStatus });
+  }
+  return NextResponse.json({ error: 'Unknown error' }, { status: defaultStatus });
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { restaurantId, tips, totalAmount } = body;
-
-    // Validate restaurant ID from body
-    if (!restaurantId) {
-      return NextResponse.json(
-        { error: 'Missing restaurantId' },
-        { status: 400 }
-      );
-    }
-
-    const session = await getCurrentSession();
-    if (!sessionOwnsRestaurant(session, restaurantId)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    if (!Array.isArray(tips) || tips.length === 0) {
-      return NextResponse.json(
-        { error: 'Missing or empty tips array' },
-        { status: 400 }
-      );
-    }
-
-    const restaurant = await getRestaurant(restaurantId);
-    if (!restaurant) {
-      return NextResponse.json(
-        { error: 'Restaurant not found' },
-        { status: 404 }
-      );
-    }
-
-    // Process each tip payout
-    const results = [];
-    const transactionIds = [];
-
-    for (const tip of tips) {
-      const worker = await getWorker(tip.workerId);
-      if (!worker) {
-        console.error(`[v0] Worker not found: ${tip.workerId}`);
-        results.push({
-          workerId: tip.workerId,
-          amount: tip.amount,
-          status: 'failed',
-          error: 'Worker not found',
-        });
-        continue;
-      }
-
-      const rail = payoutRailForWorker(worker);
-
-      try {
-        // Convert amount to cents
-        const amountCents = Math.round(tip.amount * 100);
-
-        const payout = await createTipPayout(
-          worker.rootPayeeId,
-          amountCents,
-          rail
-        );
-
-        console.log('[v0] Payout processed:', payout.id, { rail });
-
-        // Save transaction
-        const transactionId = randomUUID();
-        await setTransaction(transactionId, {
-          id: transactionId,
-          restaurantId,
-          workerId: worker.id,
-          workerName: worker.name,
-          workerEmail: worker.email,
-          amountCents,
-          amount: tip.amount,
-          status: payout.status || 'completed',
-          rootPayoutId: payout.id,
-          rootTransactionId: payout.id,
-          createdAt: Date.now(),
-          completedAt: Date.now(),
-        });
-
-        transactionIds.push(transactionId);
-
-        results.push({
-          workerId: worker.id,
-          workerName: worker.name,
-          amount: tip.amount,
-          status: 'success',
-          rail,
-          payoutId: payout.id,
-          transactionId,
-        });
-      } catch (err) {
-        console.error('[v0] Error processing payout for worker:', err);
-        results.push({
-          workerId: tip.workerId,
-          amount: tip.amount,
-          status: 'failed',
-          rail,
-          error: err instanceof Error ? err.message : 'Unknown error',
-        });
-      }
-    }
-
-    return NextResponse.json(
-      {
-        success: true,
-        totalAmount,
-        payoutCount: tips.length,
-        results,
-        transactionIds,
-      },
-      { status: 200 }
-    );
+    const input = processPayoutInputSchema.parse(body);
+    const result = await processPayout(input);
+    return NextResponse.json(result, { status: 200 });
   } catch (error) {
-    console.error('[v0] Payouts error:', error);
-    const message = error instanceof Error ? error.message : 'Failed to process payouts';
-    return NextResponse.json(
-      { error: message },
-      { status: 400 }
-    );
+    return errorResponse(error, 400);
   }
 }
 
-// Get transaction history
 export async function GET(request: NextRequest) {
   try {
-    const restaurantId = request.nextUrl.searchParams.get('restaurantId');
-
-    if (!restaurantId) {
-      return NextResponse.json(
-        { error: 'Missing restaurantId' },
-        { status: 400 }
-      );
+    const merchantId = request.nextUrl.searchParams.get('merchantId');
+    if (!merchantId) {
+      return NextResponse.json({ error: 'Missing merchantId' }, { status: 400 });
     }
-
-    const session = await getCurrentSession();
-    if (!sessionOwnsRestaurant(session, restaurantId)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const transactions = await getRestaurantTransactions(restaurantId);
-
-    return NextResponse.json(
-      { transactions },
-      { status: 200 }
-    );
+    const transactions = await listTransactions(merchantId);
+    return NextResponse.json({ transactions }, { status: 200 });
   } catch (error) {
-    console.error('[v0] Get transactions error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch transactions' },
-      { status: 500 }
-    );
+    return errorResponse(error, 500);
   }
 }

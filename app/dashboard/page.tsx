@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { getCurrentSession } from '@/lib/session';
+import { branding } from '@/lib/branding';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
@@ -12,28 +13,25 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <DashboardHeader email={session.adminEmail} />
+      <DashboardHeader email={session.merchantEmail} />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 lg:px-10 py-12">
-        {/* Welcome */}
         <section className="mb-12">
           <p className="text-eyebrow mb-3">Operator console</p>
           <h1 className="font-display text-4xl md:text-5xl tracking-tightest text-balance">
-            Welcome back. <span className="text-neutral-400">Let&apos;s settle the night.</span>
+            {branding.consoleHeading}
           </h1>
           <p className="text-neutral-500 mt-3 max-w-xl">
-            Manage your house, your team, and tonight&apos;s tip-out from a single console.
+            {branding.consoleSubheading}
           </p>
         </section>
 
-        {/* Stats strip */}
         <section className="mb-12 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <StatTile label="Active workers" value="0" />
+          <StatTile label={`Active ${branding.payeePlural.toLowerCase()}`} value="0" />
           <StatTile label="Total paid out" value="$0.00" accent />
           <StatTile label="Transactions" value="0" />
         </section>
 
-        {/* Module tiles */}
         <section>
           <div className="flex items-end justify-between gap-4 mb-5">
             <div>
@@ -44,17 +42,17 @@ export default async function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <ModuleTile
               href="/dashboard/payouts"
-              code="TIP"
+              code="PAY"
               title="Process payouts"
-              desc="Run an end-of-shift tip-out and settle in seconds."
+              desc={`Run an end-of-shift ${branding.payoutNoun.toLowerCase()} and settle in seconds.`}
               icon={<IconBolt />}
               primary
             />
             <ModuleTile
-              href="/dashboard/workers"
+              href="/dashboard/payees"
               code="TEAM"
-              title="Workers"
-              desc="Add team members and link bank accounts or debit cards."
+              title={branding.payeePlural}
+              desc={`Add ${branding.payeePlural.toLowerCase()} and link bank accounts or debit cards.`}
               icon={<IconUsers />}
             />
             <ModuleTile
@@ -65,10 +63,10 @@ export default async function DashboardPage() {
               icon={<IconLedger />}
             />
             <ModuleTile
-              href="/dashboard/restaurant"
+              href="/dashboard/merchant"
               code="HSE"
-              title="Restaurant"
-              desc="Restaurant profile and ACH funding source."
+              title={branding.merchantSingular}
+              desc={`${branding.merchantSingular} profile and ACH funding source.`}
               icon={<IconBuilding />}
             />
           </div>
@@ -77,8 +75,6 @@ export default async function DashboardPage() {
     </div>
   );
 }
-
-/* ---------- subcomponents ---------- */
 
 function StatTile({
   label,
@@ -174,8 +170,6 @@ function ModuleTile({
     </Link>
   );
 }
-
-/* ---------- icons ---------- */
 
 function IconBolt() {
   return (

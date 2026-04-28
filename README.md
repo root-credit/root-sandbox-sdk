@@ -1,262 +1,170 @@
-# @useroot/sandbox-sdk
+# Generic Root Payouts Template — v0-Ready
 
-A tiny, deterministic JS/TS SDK for the **Root Pay sandbox APIs**. Built so a v0-generated demo app can wire payments correctly with one or two lines of code, instead of the AI re-inventing auth, polling, and response-envelope handling on every prompt.
+> A vertical-agnostic Next.js starter for the **Root Pay sandbox APIs**, designed so v0 (or any LLM) only writes UI while a typed contract layer handles every payments interaction deterministically.
 
-- **Zero runtime dependencies.** Native `fetch` only. Node 18+.
-- **Deterministic.** Auth header, base URL, error class, response unwrapping, and rail-aware polling are all baked in.
-- **Server-only.** The `X-API-KEY` must never reach the browser. Use the SDK from Server Actions, Route Handlers, RSC, or plain Node scripts.
-- **Sandbox-aware.** Ships the allowed test bank/card/routing numbers, the `John Failed` magic name, and per-rail polling defaults.
-- **Coverage:** subaccounts (incl. moves), payees + payee payment methods, payers + payer payment methods, payouts, payins, webhooks, party session tokens, plus high-level `flows.payTo` / `flows.chargeFrom` orchestrators.
+[![Open in v0](https://v0.dev/chat/api/open?title=Root+Payouts+Template&url=https%3A%2F%2Fgithub.com%2Fuseroot%2Froot-sandbox-sdk)](https://v0.dev/chat/api/open?title=Root+Payouts+Template&url=https%3A%2F%2Fgithub.com%2Fuseroot%2Froot-sandbox-sdk)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fuseroot%2Froot-sandbox-sdk&env=ROOT_API_KEY,UPSTASH_REDIS_REST_URL,UPSTASH_REDIS_REST_TOKEN,AUTH_SECRET&envDescription=Root+sandbox+key%2C+Upstash+Redis+credentials%2C+and+a+random+session+signing+secret&envLink=https%3A%2F%2Fgithub.com%2Fuseroot%2Froot-sandbox-sdk%2Fblob%2Fmain%2F.env.example)
 
 ---
 
-## Install
+## Why this template exists
+
+Most Root payments demos start the same way: scaffold a Next.js app, copy-paste an SDK call, then spend hours debugging response envelopes, polling, money units, rail selection, and session handling. v0 makes the UI fast, but it has to re-derive the payments contract every time it generates a screen — so each prompt iteration is probabilistic.
+
+This template flips that:
+
+- **The payments contract is locked behind a typed surface.** v0 only ever imports from `lib/hooks`, `app/actions`, `lib/types`, and `lib/branding` — never the SDK directly, never `fetch('/api/...')` from a component.
+- **The vertical is just labels.** The data model uses generic terms (`Merchant`, `Payee`, `Payout`). All user-visible copy lives in `lib/branding.ts`. Reskin from "restaurant tipping" to marketplace settlements / payroll / freelance / refunds by editing one file.
+- **There's a prompt library.** Six paste-ready prompts (`prompts/01-…` through `prompts/06-…`) generate the most common screens correctly on the first try.
+- **There's an `AGENTS.md`.** A single doc Cursor / v0 / Claude / Codex read at session start that encodes the hard rules and contract surface.
+
+---
+
+## 30-second quickstart
 
 ```bash
-pnpm add @useroot/sandbox-sdk
-# or
-npm i @useroot/sandbox-sdk
+git clone <this repo>
+cd root-sandbox-sdk
+cp .env.example .env.local      # fill in the four required keys
+pnpm install                     # or npm i / yarn
+pnpm --filter ./sdk build        # build the bundled SDK once
+pnpm dev                         # http://localhost:3000
 ```
 
-Set environment variables in your demo's `.env.local`:
+Sign up at `/signup` with any email + the shared password from `.env.local`, link a sandbox bank, add a payee, and run a payout. Then open v0 and paste any prompt from [`prompts/`](prompts) to extend.
 
-```env
-# Full API token (three segments). NOT a bare UUID — use the whole `token_value`:
-ROOT_API_KEY=test_<token_id>_<secret>
-ROOT_BASE_URL=https://api.useroot.com           # optional, this is the default
-ROOT_DEFAULT_SUBACCOUNT_ID=<optional, pre-created subaccount id>
-```
-
-`ROOT_API_KEY` must match what the Root API expects: `test_<uuid>_<secret>` or `live_<uuid>_<secret>` (the value returned when you create an API token). A UUID by itself will return **`INVALID_TOKEN`** from the server.
+> Want to use this as a starter for a brand-new app? Click **"Use this template"** on GitHub, or hit the `Open in v0` button at the top.
 
 ---
 
-## Quick start
+## Architecture
 
-### 1. Single-call payout (most common demo flow)
+```mermaid
+flowchart TB
+  subgraph v0Layer [v0 territory]
+    Pages["app/* pages and components"]
+  end
 
-```ts
-import { Root } from '@useroot/sandbox-sdk'
+  subgraph Contract [Deterministic contract — LLM imports only]
+    Hooks["lib/hooks/*.ts<br/>(typed React hooks)"]
+    Actions["app/actions/*.ts<br/>(typed Server Actions)"]
+    Types["lib/types/*.ts<br/>(Zod schemas + TS enums)"]
+    Branding["lib/branding.ts<br/>(vertical labels)"]
+  end
 
-const root = new Root() // reads ROOT_API_KEY + ROOT_BASE_URL from env
+  subgraph Core [Vertical-agnostic core — server-only]
+    Session["lib/session.ts"]
+    Storage["lib/redis.ts"]
+    SDKWrap["lib/root-api.ts"]
+  end
 
-const { finalPayout } = await root.flows.payTo({
-  payee: { name: 'Quinn Ramirez', email: 'quinn@example.com' },
-  amount_in_cents: 12_500,
-  rail: 'instant_bank',
-  // paymentMethod, subaccount_id, currency_code are all optional;
-  // sandbox-allowed test bank defaults are used automatically.
-})
+  subgraph External [External]
+    RootSDK["@root-credit/root-sdk"]
+    Upstash["Upstash Redis"]
+    Sandbox["api.useroot.com"]
+  end
 
-console.log(finalPayout.status) // 'settled' (or 'failed' on the John Failed flow)
+  Pages -->|only path| Hooks
+  Pages --> Branding
+  Hooks --> Actions
+  Actions --> Types
+  Hooks --> Types
+  Actions --> Session
+  Actions --> Storage
+  Actions --> SDKWrap
+  SDKWrap --> RootSDK
+  RootSDK --> Sandbox
+  Storage --> Upstash
 ```
 
-That single call:
-1. Reuses the payee if one already exists with the same email; otherwise creates it.
-2. Attaches a sandbox-allowed default pay-to-bank payment method.
-3. Resolves a subaccount (env → list → create) and uses it.
-4. Creates the payout with `auto_approve: true`.
-5. Polls `GET /api/payouts/{id}` with the right interval/timeout for the chosen rail until terminal.
-
-### 2. Single-call payin
-
-```ts
-const { finalPayin } = await root.flows.chargeFrom({
-  payer: { name: 'Acme Buyer', email: 'ap@acme.com' },
-  amount_in_cents: 99_900,
-  rail: 'standard_ach', // payins only accept 'standard_ach' | 'same_day_ach'
-})
-```
-
-### 3. Resource-style usage (when you want full control)
-
-```ts
-const subaccount = await root.subaccounts.getOrCreateDefault()
-
-const payee = await root.payees.create({ name: 'Morgan Liu', email: 'm@example.com' })
-const pm = await root.payees.attachPayToBank(payee.id) // sandbox defaults
-
-const payout = await root.payouts.create({
-  payee_id: payee.id,
-  amount_in_cents: 5_000,
-  rail: 'same_day_ach',
-  subaccount_id: subaccount.id,
-})
-
-const final = await root.payouts.waitForTerminal(payout.id, {
-  rail: 'same_day_ach',
-  onUpdate: (snap) => console.log('status:', snap.status),
-})
-```
-
-### 4. Failure simulation
-
-```ts
-import { FAILURE_SIMULATION_NAME, payeeNameForTransaction } from '@useroot/sandbox-sdk'
-
-await root.flows.payTo({
-  payee: { name: 'Quinn Ramirez', email: 'quinn@example.com' },
-  amount_in_cents: 1234,
-  rail: 'instant_bank',
-  simulateFailure: true, // swaps the payee name to 'John Failed' for this transfer
-})
-```
+**The hard rule for v0:** read from `lib/branding.ts`, call hooks/actions, never `fetch`, never import the SDK in client code. See [`AGENTS.md`](AGENTS.md) for the full list.
 
 ---
 
-## Next.js (App Router) integration
+## Working with v0
 
-The SDK is server-only. Construct it inside a server module and call from Server Actions, Route Handlers, or RSC:
+1. Open this repo in v0 (badge above) or paste the GitHub URL into a v0 chat.
+2. Paste any prompt from [`prompts/`](prompts):
+   - [`01-payouts-screen`](prompts/01-payouts-screen) — batch payout grid
+   - [`02-payee-onboarding`](prompts/02-payee-onboarding) — add-a-payee form (bank or debit card)
+   - [`03-merchant-bank-link`](prompts/03-merchant-bank-link) — link the merchant funding bank
+   - [`04-transactions-table`](prompts/04-transactions-table) — payout history with status pills
+   - [`05-reskin-vertical`](prompts/05-reskin-vertical) — re-skin to a new vertical (one file change)
+   - [`06-webhook-listener`](prompts/06-webhook-listener) — `payout.completed` / `payout.failed` listener
+3. v0 reads `AGENTS.md`, the contract layer, and `lib/branding.ts` and produces working UI.
+4. `.cursor/rules/payments.mdc` and `.cursor/rules/branding.mdc` keep Cursor and Bugbot aligned with the same rules.
 
-```ts
-// app/lib/root.ts
-import 'server-only'
-import { Root } from '@useroot/sandbox-sdk'
+---
 
-export const root = new Root()
+## Required environment variables
+
+| Variable | Purpose |
+| --- | --- |
+| `ROOT_API_KEY` | Full sandbox token (`test_<uuid>_<secret>`). A bare UUID will fail. |
+| `UPSTASH_REDIS_REST_URL` | Upstash Redis REST URL for sessions, merchants, payees, transactions. |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST token. |
+| `AUTH_SECRET` | Random ≥32-char string used to HMAC-sign session cookies (`openssl rand -hex 32`). |
+
+See [`.env.example`](.env.example) for the full annotated template (acquisition source for each key, format hint, optional vars).
+
+---
+
+## Repo layout
+
 ```
-
-```ts
-// app/actions.ts
-'use server'
-import { root } from './lib/root'
-
-export async function runPayout(formData: FormData) {
-  const amount = Number(formData.get('amount'))
-  return root.flows.payTo({
-    payee: { name: 'Quinn Ramirez', email: 'q@example.com' },
-    amount_in_cents: amount,
-    rail: 'instant_bank',
-  })
-}
+.
+├── app/                # Next.js App Router (pages, route handlers, actions)
+│   ├── actions/        # Typed Server Actions (the LLM-callable contract)
+│   ├── api/            # Thin route handlers that delegate to actions
+│   └── dashboard/      # Authenticated console (per-merchant)
+├── components/         # UI components — call hooks, never fetch
+├── lib/
+│   ├── branding.ts     # The ONLY file with vertical copy
+│   ├── hooks/          # Typed React hooks for the contract surface
+│   ├── types/          # Zod schemas + inferred TS types + enums
+│   ├── redis.ts        # Upstash storage primitives (server-only)
+│   ├── root-api.ts     # @root-credit/root-sdk wrapper (server-only)
+│   └── session.ts      # HMAC-signed cookie session helpers
+├── prompts/            # Paste-ready v0 prompts + reference implementations
+├── sdk/                # The @root-credit/root-sdk package (vendored)
+├── AGENTS.md           # Hard rules, contract surface, recipes
+├── LLM-SDK.md          # Mirror of sdk/LLM.md for v0 default context
+└── .cursor/rules/      # Auto-applied Cursor rules
 ```
 
 ---
 
-## API surface (high-level)
+## Determinism guarantees (template + SDK)
 
-```
-new Root({ apiKey?, baseUrl?, timeoutMs?, maxRetries?, onRequest?, defaultHeaders? })
-
-root.subaccounts
-  .create({ name })
-  .get(id)
-  .update(id, { name })
-  .list({ limit?, cursor?, ... })
-  .move({ from_subaccount_id, to_subaccount_id, amount_in_cents })
-  .getOrCreateDefault({ name?, envVar? })          // env → list → create
-
-root.payees
-  .create({ name, email, metadata? }) / .get(id) / .list(params)
-  .update(id, { name?, email?, metadata? })
-  .findByEmail(email)
-  .attachPayToBank(id, { account_number?, routing_number?, routing_number_type? })
-  .attachPushToCard(id, { card_number?, card_expiry_date? })
-  .listPaymentMethods(id) / .getPaymentMethod(id, pmId)
-  .setDefaultPaymentMethod(id, pmId) / .deletePaymentMethod(id, pmId)
-
-root.payers
-  .create / .get / .list / .update / .findByEmail
-  .attachPayByBank(id, body?, { is_default? })
-  .listPaymentMethods / .getPaymentMethod / .getDefaultPaymentMethod
-  .setDefaultPaymentMethod / .deletePaymentMethod
-
-root.payouts
-  .create({ payee_id, amount_in_cents, rail, subaccount_id?, auto_approve?=true, currency_code?='USD', metadata? })
-  .get(id) / .list(params) / .cancel(id)
-  .waitForTerminal(id, { rail?, intervalMs?, timeoutMs?, onUpdate?, signal? })
-
-root.payins
-  .create({ payer_id, amount_in_cents, rail?='standard_ach', auto_approve?=true, ... })
-  .get(id) / .list(params) / .approve(id) / .cancel(id)
-  .waitForTerminal(id, { rail?, ... })
-
-root.webhooks
-  .create({ url, description? })  // returns secret_key (only on create)
-  .list / .get / .toggle / .delete
-
-root.sessionTokens
-  .createForParty({ party_id, party_type? })
-
-root.flows
-  .payTo({ payee, amount_in_cents, rail, paymentMethod?, subaccount_id?, simulateFailure?, waitForTerminal?=true, onStatus? })
-  .chargeFrom({ payer, amount_in_cents, rail?, bank?, subaccount_id?, simulateFailure?, waitForTerminal?=true, onStatus? })
-
-root.request<T>(path, { method, body?, query?, headers?, timeoutMs?, signal? })
-```
+| Concern | Where it's enforced |
+| --- | --- |
+| Money is integer cents | `lib/types/payments.ts` (`Money`, `dollarsToCents`, `formatMoney`) |
+| Rails are typed | `PaymentRail` const enum (no string literals) |
+| Statuses are typed | `PayoutStatus` const enum |
+| No client-side SDK use | `verify-contract` script + `.cursor/rules/payments.mdc` |
+| No client-side `fetch('/api/…')` | Same |
+| Vertical copy isolated | `lib/branding.ts` is the single source |
+| Session cookies signed | HMAC via `AUTH_SECRET` |
+| Auth header for SDK | `X-API-KEY` from `ROOT_API_KEY` (full token, not a UUID) |
+| Polling | `waitForTerminal` per-rail defaults (see SDK README) |
 
 ---
 
-## Determinism contract
+## Verifying you haven't broken the contract
 
-The SDK guarantees the following so the AI never has to "remember" them:
-
-| Concern | Guarantee |
-|---|---|
-| Auth header | `X-API-KEY`, sourced from `apiKey` option or `process.env.ROOT_API_KEY`. Value must be the full token `test_<uuid>_<secret>` or `live_<uuid>_<secret>`, not a bare UUID. Never `Authorization: Bearer …`. |
-| Base URL | `baseUrl` option → `process.env.ROOT_BASE_URL` → `https://api.useroot.com`. |
-| Money | Always `amount_in_cents` (integers). The SDK does not accept dollars. |
-| Response shape | Single objects auto-unwrap `{ data: … }`; lists keep their `{ data, has_more, next_cursor }` shape. |
-| Errors | Non-2xx → throws `RootApiError` with `.status`, `.code`, `.body`, `.rawText`, and a friendly message. |
-| Retries | 5xx and 429 → 1 retry with exponential backoff. Configurable via `maxRetries`. |
-| Network errors | Retried up to `maxRetries` times. |
-| Polling | `waitForTerminal` uses per-rail defaults: `instant_*` 1.5s × 20s, `same_day_ach` / `standard_ach` 3s × 90s, `wire` 5s × 180s. |
-| Defaults | `auto_approve: true` and `currency_code: 'USD'` on payouts/payins so demos don't stall in approval queues. |
-| Sandbox safety | Test bank/card/routing numbers exposed as `ALLOWED_TEST_*` constants. Random numbers will be rejected by sandbox. |
-| Failure simulation | `simulateFailure: true` (or `payeeNameForTransaction`) swaps in `John Failed` — the only name that triggers a sandbox failure. |
-
----
-
-## Pagination
-
-```ts
-import { paginate, collectAll } from '@useroot/sandbox-sdk'
-
-for await (const page of paginate((p) => root.payouts.list({ ...p, status: 'failed' }))) {
-  for (const payout of page.data) console.log(payout.id, payout.status)
-}
-
-const everyFailed = await collectAll((p) => root.payouts.list({ ...p, status: 'failed' }))
+```bash
+pnpm verify-contract     # greps for forbidden patterns
+pnpm typecheck            # tsc --noEmit
+pnpm dev
 ```
 
----
-
-## Status helpers
-
-```ts
-import { isTerminal, isSuccess, statusLabel, terminalForRail } from '@useroot/sandbox-sdk'
-
-statusLabel(payout.status)        // 'Queued' | 'Sent to bank' | 'Processing' | 'Paid' | 'Failed' | 'Canceled' | 'Under review'
-isTerminal(payout.status)         // true for settled / debited / failed / canceled
-isSuccess(payout.status)          // true for settled / debited
-terminalForRail('standard_ach')   // 'debited'
-terminalForRail('instant_bank')   // 'settled'
-```
+The `verify-contract` script fails if any client-side code imports the SDK directly, calls `lib/root-api`, or uses `fetch('/api/…')`. Add it to your CI to enforce the rules permanently.
 
 ---
 
-## Observability
+## SDK
 
-Every HTTP call can be observed via the `onRequest` hook — handy for the "API timeline" panels demos like to render:
-
-```ts
-const root = new Root({
-  onRequest: ({ method, path, status, durationMs }) => {
-    console.log(`${method} ${path} → ${status} (${durationMs}ms)`)
-  },
-})
-```
-
----
-
-## What this SDK does NOT cover (intentionally)
-
-- `/superuser/*` endpoints (operator/cookie auth — out of scope for demo apps).
-- OAuth client bootstrap and `/api/api-tokens` (operator-provisioned).
-- Treasury endpoints requiring superuser auth (`list_treasury_*`, h2h processing, send transfers).
-- File-upload endpoints.
-
-For anything not yet covered, use `root.request<T>(path, opts)` as an escape hatch.
+The Next.js app uses `@root-credit/root-sdk`, vendored at [`sdk/`](sdk). Its README is [`sdk/README.md`](sdk/README.md) and its LLM cheat sheet is [`sdk/LLM.md`](sdk/LLM.md) (mirrored at repo root as [`LLM-SDK.md`](LLM-SDK.md) so v0 picks it up by default).
 
 ---
 

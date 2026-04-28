@@ -12,7 +12,7 @@ export const rootAPI = new Root({
   baseUrl: ROOT_API_BASE,
 });
 
-type PayoutRail =
+export type PayoutRail =
   | "instant_bank"
   | "instant_card"
   | "same_day_ach"
@@ -22,10 +22,10 @@ type PayoutRail =
 /**
  * Root payouts API rails depend on how the payee receives funds (bank RTP vs push-to-card).
  */
-export function payoutRailForWorker(worker: {
+export function payoutRailForPayee(payee: {
   paymentMethodType?: string;
 }): PayoutRail {
-  return worker.paymentMethodType === "debit_card"
+  return payee.paymentMethodType === "debit_card"
     ? "instant_card"
     : "instant_bank";
 }
@@ -44,21 +44,21 @@ function isDuplicatePayerConflict(error: unknown): boolean {
  * Create a payer in Root, or if one already exists for this email (e.g. Redis was cleared),
  * resolve and return the existing payer via list/findByEmail.
  */
-export async function getOrCreateRootPayer(restaurantData: {
+export async function getOrCreateRootPayer(merchantData: {
   email: string;
   name: string;
   phone?: string;
 }) {
   try {
     const response = await rootAPI.payers.create({
-      email: restaurantData.email,
-      name: restaurantData.name,
+      email: merchantData.email,
+      name: merchantData.name,
       metadata: {
-        type: "restaurant",
+        type: "merchant",
         onboardingDate: new Date().toISOString(),
       },
     });
-    console.log("[v0] Created Root payer (restaurant):", response.id);
+    console.log("[v0] Created Root payer (merchant):", response.id);
     return response;
   } catch (error) {
     if (!isDuplicatePayerConflict(error)) {
@@ -68,7 +68,7 @@ export async function getOrCreateRootPayer(restaurantData: {
     console.warn(
       "[v0] Root payer already exists for this email; reusing existing payer (typical after Redis clear)."
     );
-    const existing = await rootAPI.payers.findByEmail(restaurantData.email);
+    const existing = await rootAPI.payers.findByEmail(merchantData.email);
     if (existing) {
       console.log("[v0] Linked existing Root payer:", existing.id);
       return existing;
@@ -80,49 +80,23 @@ export async function getOrCreateRootPayer(restaurantData: {
 }
 
 /**
- * Create a payer (restaurant) in Root — fails if email already exists.
- * Prefer {@link getOrCreateRootPayer} for signup flows that must survive Redis-only clears.
+ * Create a payee in Root.
  */
-export async function createRootPayer(restaurantData: {
-  email: string;
-  name: string;
-  phone?: string;
-}) {
-  try {
-    const response = await rootAPI.payers.create({
-      email: restaurantData.email,
-      name: restaurantData.name,
-      metadata: {
-        type: "restaurant",
-        onboardingDate: new Date().toISOString(),
-      },
-    });
-    console.log("[v0] Created Root payer (restaurant):", response.id);
-    return response;
-  } catch (error) {
-    console.error("[v0] Error creating Root payer:", error);
-    throw error;
-  }
-}
-
-/**
- * Create a payee (worker) in Root
- */
-export async function createRootPayee(workerData: {
+export async function createRootPayee(payeeData: {
   email: string;
   name: string;
   phone?: string;
 }) {
   try {
     const response = await rootAPI.payees.create({
-      email: workerData.email,
-      name: workerData.name,
+      email: payeeData.email,
+      name: payeeData.name,
       metadata: {
-        type: "worker",
+        type: "payee",
         onboardingDate: new Date().toISOString(),
       },
     });
-    console.log("[v0] Created Root payee (worker):", response.id);
+    console.log("[v0] Created Root payee:", response.id);
     return response;
   } catch (error) {
     console.error("[v0] Error creating Root payee:", error);
@@ -131,7 +105,7 @@ export async function createRootPayee(workerData: {
 }
 
 /**
- * Attach a bank account to a payer for funding
+ * Attach a bank account to a payer for funding (ACH debit pull).
  */
 export async function attachPayerBankAccount(
   payerId: string,
@@ -154,7 +128,7 @@ export async function attachPayerBankAccount(
 }
 
 /**
- * Attach a bank account to a payee for receiving funds
+ * Attach a bank account to a payee for receiving funds.
  */
 export async function attachPayeeBankAccount(
   payeeId: string,
@@ -177,7 +151,7 @@ export async function attachPayeeBankAccount(
 }
 
 /**
- * Attach a debit card to a payee for receiving funds
+ * Attach a debit card to a payee for receiving funds (instant push-to-card).
  */
 export async function attachPayeeDebitCard(
   payeeId: string,
@@ -202,9 +176,10 @@ export async function attachPayeeDebitCard(
 }
 
 /**
- * Create a payout from a payee (worker)
+ * Create a payout to a payee. Rail must be compatible with the payee's payment method
+ * (use {@link payoutRailForPayee} to derive it from a stored Payee record).
  */
-export async function createTipPayout(
+export async function createPayout(
   payeeId: string,
   amountCents: number,
   rail: PayoutRail = "instant_bank"
@@ -216,7 +191,7 @@ export async function createTipPayout(
       rail,
       auto_approve: true,
       metadata: {
-        type: "tip_payout",
+        type: "payout",
         processedAt: new Date().toISOString(),
       },
     });
@@ -229,7 +204,7 @@ export async function createTipPayout(
 }
 
 /**
- * Get payout status
+ * Get current payout status from Root.
  */
 export async function getPayoutStatus(payoutId: string) {
   try {

@@ -1,4 +1,4 @@
-import { redis, getWorker, deleteWorker } from "./redis";
+import { redis, getPayee, deletePayee } from "./redis";
 
 async function delKeys(keys: string[]): Promise<number> {
   if (keys.length === 0) return 0;
@@ -12,40 +12,39 @@ async function delKeys(keys: string[]): Promise<number> {
   return n;
 }
 
-/** Delete every `worker:*` key and every `restaurant:*:workers` set. */
-export async function clearAllWorkersData(): Promise<{ deletedKeys: number }> {
-  const workerKeys = await redis.keys("worker:*");
-  const workerSetKeys = await redis.keys("restaurant:*:workers");
-  const n =
-    (await delKeys(workerKeys)) + (await delKeys(workerSetKeys));
+/** Delete every `payee:*` key and every `merchant:*:payees` set. */
+export async function clearAllPayeesData(): Promise<{ deletedKeys: number }> {
+  const payeeKeys = await redis.keys("payee:*");
+  const payeeSetKeys = await redis.keys("merchant:*:payees");
+  const n = (await delKeys(payeeKeys)) + (await delKeys(payeeSetKeys));
   return { deletedKeys: n };
 }
 
-/** Remove one worker and its membership set entry. */
-export async function removeWorkerById(workerId: string): Promise<boolean> {
-  const w = await getWorker(workerId);
-  if (!w?.restaurantId) return false;
-  await deleteWorker(workerId, w.restaurantId);
+/** Remove one payee and its membership set entry. */
+export async function removePayeeById(payeeId: string): Promise<boolean> {
+  const p = await getPayee(payeeId);
+  if (!p?.merchantId) return false;
+  await deletePayee(payeeId, p.merchantId);
   return true;
 }
 
-/** All `session:*` restaurant user sessions (not admin_session — different prefix). */
-export async function clearAllRestaurantSessions(): Promise<{ deletedKeys: number }> {
+/** All `session:*` operator sessions (not admin_session — different prefix). */
+export async function clearAllOperatorSessions(): Promise<{ deletedKeys: number }> {
   const keys = await redis.keys("session:*");
   return { deletedKeys: await delKeys(keys) };
 }
 
-/** All transactions and per-restaurant transaction index sets. */
+/** All transactions and per-merchant transaction index sets. */
 export async function clearAllTransactions(): Promise<{ deletedKeys: number }> {
   const txKeys = await redis.keys("transaction:*");
-  const idxKeys = await redis.keys("restaurant:*:transactions");
+  const idxKeys = await redis.keys("merchant:*:transactions");
   const n = (await delKeys(txKeys)) + (await delKeys(idxKeys));
   return { deletedKeys: n };
 }
 
-/** Strip bankAccountToken from each `restaurant:{uuid}` record (root keys only). */
-export async function clearAllRestaurantBankFields(): Promise<{ updated: number }> {
-  const keys = await redis.keys("restaurant:*");
+/** Strip bankAccountToken from each `merchant:{uuid}` record (root keys only). */
+export async function clearAllMerchantBankFields(): Promise<{ updated: number }> {
+  const keys = await redis.keys("merchant:*");
   const rootKeys = keys.filter((k) => k.split(":").length === 2);
   let updated = 0;
   for (const key of rootKeys) {

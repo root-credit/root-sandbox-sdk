@@ -1,75 +1,39 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { DashboardHeader } from '@/components/DashboardHeader';
+import { branding } from '@/lib/branding';
+import { useSession } from '@/lib/hooks/useSession';
+import { useTransactions } from '@/lib/hooks/useTransactions';
+import { centsToDollars, formatMoney } from '@/lib/types/payments';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-
-interface Transaction {
-  id: string;
-  workerName: string;
-  workerEmail: string;
-  amount: number;
-  status: string;
-  createdAt: number;
-  completedAt: number;
-}
-
 export default function TransactionsPage() {
   const router = useRouter();
-  const [session, setSession] = useState<any>(null);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { session } = useSession();
+  const merchantId = session?.merchantId ?? null;
+  const { transactions, isLoading, error } = useTransactions(merchantId);
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        const sessionResponse = await fetch('/api/session');
-        if (!sessionResponse.ok) {
-          router.push('/login');
-          return;
-        }
-        const sessionData = await sessionResponse.json();
-        setSession(sessionData);
-        loadTransactions(sessionData.restaurantId);
-      } catch (err) {
-        router.push('/login');
-      }
-    }
+    if (session === undefined) router.push('/login');
+  }, [session, router]);
 
-    loadData();
-  }, [router]);
+  if (!session) return null;
 
-  async function loadTransactions(restaurantId: string) {
-    try {
-      setIsLoading(true);
-      const response = await fetch(`/api/payouts?restaurantId=${restaurantId}`);
-      if (!response.ok) throw new Error('Failed to load transactions');
-
-      const data = await response.json();
-      setTransactions(data.transactions || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load transactions');
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  if (!session) {
-    return null;
-  }
-
-  const totalPaidOut = transactions.reduce((sum, t) => sum + t.amount, 0);
-  const successfulTransactions = transactions.filter(t => t.status === 'completed').length;
+  const totalPaidCents = transactions.reduce(
+    (sum, t) => sum + (t.amountCents ?? 0),
+    0
+  );
+  const successfulTransactions = transactions.filter(
+    (t) => t.status === 'completed' || t.status === 'success'
+  ).length;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <DashboardHeader email={session.adminEmail} />
+      <DashboardHeader email={session.merchantEmail} />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 lg:px-10 py-12">
-        {/* Header */}
         <div className="mb-10">
           <Crumbs />
           <h1 className="font-display text-4xl md:text-5xl tracking-tightest mt-3">
@@ -86,25 +50,16 @@ export default function TransactionsPage() {
           </div>
         )}
 
-        {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <StatTile
-            label="Total paid out"
-            value={`$${(totalPaidOut / 100).toFixed(2)}`}
-            accent
-          />
+          <StatTile label="Total paid out" value={formatMoney(totalPaidCents)} accent />
           <StatTile
             label="Successful payouts"
             value={String(successfulTransactions)}
             tone="success"
           />
-          <StatTile
-            label="Total transactions"
-            value={String(transactions.length)}
-          />
+          <StatTile label="Total transactions" value={String(transactions.length)} />
         </div>
 
-        {/* Transactions Table */}
         <div className="bg-surface border border-neutral-200 rounded-lg overflow-hidden shadow-sm-custom">
           {isLoading ? (
             <div className="p-12 text-center text-sm text-neutral-500">
@@ -136,7 +91,7 @@ export default function TransactionsPage() {
               <table className="w-full">
                 <thead>
                   <tr className="text-[11px] tracking-[0.14em] uppercase text-neutral-500 bg-neutral-100/60 border-b border-neutral-200">
-                    <th className="px-6 py-3 text-left font-medium">Worker</th>
+                    <th className="px-6 py-3 text-left font-medium">{branding.payeeSingular}</th>
                     <th className="px-6 py-3 text-left font-medium">Email</th>
                     <th className="px-6 py-3 text-right font-medium">Amount</th>
                     <th className="px-6 py-3 text-left font-medium">Status</th>
@@ -149,12 +104,12 @@ export default function TransactionsPage() {
                       key={transaction.id}
                       className="border-b border-neutral-150 last:border-b-0 hover:bg-neutral-50/60 transition-smooth"
                     >
-                      <td className="px-6 py-4 text-sm font-medium">{transaction.workerName}</td>
+                      <td className="px-6 py-4 text-sm font-medium">{transaction.payeeName}</td>
                       <td className="px-6 py-4 text-sm text-neutral-500 font-mono-tab">
-                        {transaction.workerEmail}
+                        {transaction.payeeEmail}
                       </td>
                       <td className="px-6 py-4 text-right text-sm font-mono-tab font-semibold">
-                        ${(transaction.amount / 100).toFixed(2)}
+                        ${centsToDollars(transaction.amountCents ?? 0).toFixed(2)}
                       </td>
                       <td className="px-6 py-4 text-sm">
                         <StatusBadge status={transaction.status} />
@@ -231,6 +186,11 @@ function StatTile({
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; cls: string; dot: string }> = {
     completed: {
+      label: 'Settled',
+      cls: 'bg-success-soft border-success/20 text-success',
+      dot: 'bg-success',
+    },
+    success: {
       label: 'Settled',
       cls: 'bg-success-soft border-success/20 text-success',
       dot: 'bg-success',

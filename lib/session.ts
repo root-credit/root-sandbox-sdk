@@ -1,14 +1,14 @@
 import { cookies } from 'next/headers';
 import { getSession } from './redis';
 
-/** Compare session restaurant id with id from URL/body (handles casing / stray whitespace). */
-export function sessionOwnsRestaurant(
-  session: { restaurantId: string } | null | undefined,
-  restaurantId: string | null | undefined,
+/** Compare session merchant id with id from URL/body (handles casing / stray whitespace). */
+export function sessionOwnsMerchant(
+  session: { merchantId: string } | null | undefined,
+  merchantId: string | null | undefined,
 ): boolean {
-  if (!session?.restaurantId || restaurantId == null) return false;
+  if (!session?.merchantId || merchantId == null) return false;
   return (
-    session.restaurantId.trim().toLowerCase() === restaurantId.trim().toLowerCase()
+    session.merchantId.trim().toLowerCase() === merchantId.trim().toLowerCase()
   );
 }
 
@@ -24,16 +24,12 @@ export async function getCurrentSession() {
   return session;
 }
 
-export async function getCurrentRestaurant() {
+/** Convenience: minimal merchant identity (just IDs); fetch full record from Redis when needed. */
+export async function getCurrentMerchantIdentity() {
   const session = await getCurrentSession();
-  if (!session) {
-    return null;
-  }
-
-  // For now, return minimal data from session
-  // In future, could fetch full restaurant data from Redis
+  if (!session) return null;
   return {
-    id: session.restaurantId,
-    adminEmail: session.adminEmail,
+    id: session.merchantId,
+    merchantEmail: session.merchantEmail,
   };
 }

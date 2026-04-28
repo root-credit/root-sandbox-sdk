@@ -39,7 +39,7 @@ export async function setStoredLoginPassword(plain: string): Promise<void> {
 }
 
 /**
- * Login/signup must satisfy this password for all restaurant accounts (sandbox demo).
+ * Login/signup must satisfy this shared password (sandbox demo for all merchant accounts).
  * If Redis has no hash, only DEFAULT_APP_LOGIN_PASSWORD is accepted until admin sets one.
  */
 export async function verifySharedAppPassword(password: string): Promise<boolean> {

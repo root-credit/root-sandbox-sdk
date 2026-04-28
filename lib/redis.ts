@@ -23,10 +23,10 @@ function parseStoredJson<T = any>(data: unknown): T | null {
   return null;
 }
 
-// Session utilities
+// ---------- Sessions ----------
 export async function setSession(
   sessionId: string,
-  data: { adminEmail: string; restaurantId: string }
+  data: { merchantEmail: string; merchantId: string }
 ) {
   await redis.setex(
     `session:${sessionId}`,
@@ -37,92 +37,118 @@ export async function setSession(
 
 export async function getSession(sessionId: string) {
   const data = await redis.get(`session:${sessionId}`);
-  return parseStoredJson(data);
+  return parseStoredJson<{ merchantEmail: string; merchantId: string }>(data);
 }
 
 export async function deleteSession(sessionId: string) {
   await redis.del(`session:${sessionId}`);
 }
 
-// Restaurant utilities
-export async function setRestaurant(
-  restaurantId: string,
-  data: {
-    id: string;
-    adminEmail: string;
-    restaurantName: string;
-    phone: string;
-    rootCustomerId: string;
-    bankAccountToken?: string;
-    createdAt: number;
-    updatedAt: number;
-  }
-) {
-  await redis.set(
-    `restaurant:${restaurantId}`,
-    JSON.stringify(data)
-  );
+// ---------- Merchants ----------
+export interface MerchantRecord {
+  id: string;
+  merchantEmail: string;
+  merchantName: string;
+  phone: string;
+  rootPayerId: string;
+  bankAccountToken?: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
-export async function getRestaurant(restaurantId: string) {
-  const data = await redis.get(`restaurant:${restaurantId}`);
-  return parseStoredJson(data);
+export async function setMerchant(merchantId: string, data: MerchantRecord) {
+  await redis.set(`merchant:${merchantId}`, JSON.stringify(data));
 }
 
-export async function getRestaurantByEmail(adminEmail: string) {
-  const keys = await redis.keys(`restaurant:*`);
+export async function getMerchant(merchantId: string) {
+  const data = await redis.get(`merchant:${merchantId}`);
+  return parseStoredJson<MerchantRecord>(data);
+}
+
+export async function getMerchantByEmail(merchantEmail: string) {
+  const keys = await redis.keys(`merchant:*`);
   for (const key of keys) {
+    // Skip nested index keys like "merchant:{id}:payees"
+    if (key.split(":").length !== 2) continue;
     const data = await redis.get(key);
-    const restaurant = parseStoredJson(data);
-    if (restaurant && restaurant.adminEmail === adminEmail) {
-      return restaurant;
+    const merchant = parseStoredJson<MerchantRecord>(data);
+    if (merchant && merchant.merchantEmail === merchantEmail) {
+      return merchant;
     }
   }
   return null;
 }
 
-// Worker utilities
-export async function setWorker(workerId: string, data: any) {
-  await redis.set(`worker:${workerId}`, JSON.stringify(data));
-  const restaurantId = data.restaurantId;
-  await redis.sadd(`restaurant:${restaurantId}:workers`, workerId);
+// ---------- Payees ----------
+export interface PayeeRecord {
+  id: string;
+  merchantId: string;
+  name: string;
+  email: string;
+  phone: string;
+  paymentMethodId: string;
+  paymentMethodType: "bank_account" | "debit_card";
+  rootPayeeId: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
-export async function getWorker(workerId: string) {
-  const data = await redis.get(`worker:${workerId}`);
-  return parseStoredJson(data);
+export async function setPayee(payeeId: string, data: PayeeRecord) {
+  await redis.set(`payee:${payeeId}`, JSON.stringify(data));
+  await redis.sadd(`merchant:${data.merchantId}:payees`, payeeId);
 }
 
-export async function getRestaurantWorkers(restaurantId: string) {
-  const workerIds = await redis.smembers(`restaurant:${restaurantId}:workers`);
-  const workers = [];
-  for (const workerId of workerIds) {
-    const worker = await getWorker(workerId);
-    if (worker) workers.push(worker);
+export async function getPayee(payeeId: string) {
+  const data = await redis.get(`payee:${payeeId}`);
+  return parseStoredJson<PayeeRecord>(data);
+}
+
+export async function getMerchantPayees(merchantId: string) {
+  const payeeIds = await redis.smembers(`merchant:${merchantId}:payees`);
+  const payees: PayeeRecord[] = [];
+  for (const payeeId of payeeIds) {
+    const payee = await getPayee(payeeId);
+    if (payee) payees.push(payee);
   }
-  return workers;
+  return payees;
 }
 
-export async function deleteWorker(workerId: string, restaurantId: string) {
-  await redis.del(`worker:${workerId}`);
-  await redis.srem(`restaurant:${restaurantId}:workers`, workerId);
+export async function deletePayee(payeeId: string, merchantId: string) {
+  await redis.del(`payee:${payeeId}`);
+  await redis.srem(`merchant:${merchantId}:payees`, payeeId);
 }
 
-// Transaction utilities
-export async function setTransaction(transactionId: string, data: any) {
+// ---------- Transactions ----------
+export interface TransactionRecord {
+  id: string;
+  merchantId: string;
+  payeeId: string;
+  payeeName: string;
+  payeeEmail: string;
+  amountCents: number;
+  amount: number;
+  status: string;
+  rootPayoutId: string;
+  rootTransactionId: string;
+  createdAt: number;
+  completedAt: number;
+}
+
+export async function setTransaction(transactionId: string, data: TransactionRecord) {
   await redis.set(`transaction:${transactionId}`, JSON.stringify(data));
-  const restaurantId = data.restaurantId;
-  await redis.sadd(`restaurant:${restaurantId}:transactions`, transactionId);
+  await redis.sadd(`merchant:${data.merchantId}:transactions`, transactionId);
 }
 
 export async function getTransaction(transactionId: string) {
   const data = await redis.get(`transaction:${transactionId}`);
-  return parseStoredJson(data);
+  return parseStoredJson<TransactionRecord>(data);
 }
 
-export async function getRestaurantTransactions(restaurantId: string) {
-  const transactionIds = await redis.smembers(`restaurant:${restaurantId}:transactions`);
-  const transactions = [];
+export async function getMerchantTransactions(merchantId: string) {
+  const transactionIds = await redis.smembers(
+    `merchant:${merchantId}:transactions`
+  );
+  const transactions: TransactionRecord[] = [];
   for (const transactionId of transactionIds) {
     const transaction = await getTransaction(transactionId);
     if (transaction) transactions.push(transaction);

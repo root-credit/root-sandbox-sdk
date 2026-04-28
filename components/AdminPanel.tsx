@@ -1,13 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
-type WorkerRow = {
-  id: string;
-  name: string;
-  restaurantId: string;
-  paymentMethodType?: string;
-};
+import { branding } from '@/lib/branding';
+import {
+  useAdminAuth,
+  useAdminOperations,
+  useAdminPayees,
+} from '@/lib/hooks/useAdmin';
 
 const inputClass =
   'w-full px-3.5 py-2.5 bg-surface text-foreground rounded-md border border-neutral-200 ' +
@@ -21,103 +20,59 @@ const sectionEyebrow =
   'text-[11px] tracking-[0.18em] uppercase text-neutral-500 font-medium';
 
 export function AdminPanel() {
-  const [authorized, setAuthorized] = useState<boolean | null>(null);
+  const auth = useAdminAuth();
+  const { payees, refresh: refreshPayees, setPayees } = useAdminPayees();
+  const ops = useAdminOperations();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [workers, setWorkers] = useState<WorkerRow[]>([]);
-  const [selectedWorkerId, setSelectedWorkerId] = useState('');
+  const [selectedPayeeId, setSelectedPayeeId] = useState('');
   const [newSharedPassword, setNewSharedPassword] = useState('');
   const [message, setMessage] = useState<{ type: 'ok' | 'err'; text: string } | null>(
-    null
+    null,
   );
-  const [busy, setBusy] = useState<string | null>(null);
 
-  async function refreshAuth() {
-    try {
-      const res = await fetch('/api/admin/me', { credentials: 'include' });
-      setAuthorized(res.ok);
-      if (res.ok) {
-        await loadWorkers();
-      }
-    } catch {
-      setAuthorized(false);
-    }
-  }
-
-  async function loadWorkers() {
-    const res = await fetch('/api/admin/workers', { credentials: 'include' });
-    if (!res.ok) return;
-    const data = await res.json();
-    setWorkers(data.workers ?? []);
-  }
+  const authorized = auth.authorized;
+  const busy = auth.isSubmitting ? 'login' : ops.busy;
 
   useEffect(() => {
-    refreshAuth();
-  }, []);
+    auth.refresh().then((ok) => {
+      if (ok) refreshPayees();
+    });
+  }, [auth, refreshPayees]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setMessage(null);
-    setBusy('login');
-    try {
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-      });
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(j.error || 'Login failed');
-      }
-      setAuthorized(true);
-      await loadWorkers();
+    const ok = await auth.login(email, password);
+    if (ok) {
+      await refreshPayees();
       setPassword('');
       setMessage({ type: 'ok', text: 'Signed in to admin.' });
-    } catch (err) {
-      setMessage({
-        type: 'err',
-        text: err instanceof Error ? err.message : 'Login failed',
-      });
-    } finally {
-      setBusy(null);
+    } else if (auth.error) {
+      setMessage({ type: 'err', text: auth.error });
     }
   }
 
   async function logout() {
-    await fetch('/api/admin/logout', { method: 'POST', credentials: 'include' });
-    setAuthorized(false);
-    setWorkers([]);
+    await auth.logout();
+    setPayees([]);
     setMessage({ type: 'ok', text: 'Logged out.' });
   }
 
   async function runOperation(
     operation: string,
-    extra?: Record<string, unknown>
+    extra?: Record<string, unknown>,
   ): Promise<boolean> {
     setMessage(null);
-    setBusy(operation);
-    try {
-      const res = await fetch('/api/admin/operations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ operation, ...extra }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Request failed');
-      setMessage({ type: 'ok', text: data.message || JSON.stringify(data) });
-      await loadWorkers();
+    const result = await ops.run(operation, extra);
+    if (result.ok) {
+      setMessage({ type: 'ok', text: result.message || 'Done.' });
+      await refreshPayees();
       return true;
-    } catch (err) {
-      setMessage({
-        type: 'err',
-        text: err instanceof Error ? err.message : 'Failed',
-      });
-      return false;
-    } finally {
-      setBusy(null);
     }
+    setMessage({ type: 'err', text: result.message || 'Failed' });
+    return false;
   }
 
   function confirmThen(label: string, fn: () => void) {
@@ -147,7 +102,7 @@ export function AdminPanel() {
             Operator credentials
           </h2>
           <p className="text-sm text-neutral-500 mb-6 leading-relaxed">
-            Uses fixed demo credentials (same code everywhere — nothing stored in Redis).
+            Uses fixed admin credentials (hardcoded — nothing stored in Redis).
             Email{' '}
             <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">
               admin@root.credit
@@ -227,55 +182,59 @@ export function AdminPanel() {
       {message && <Message message={message} />}
 
       <Section
-        title="Workers"
-        description="Clear every worker record and worker index sets in Redis."
+        title={branding.payeePlural}
+        description={`Clear every payee record and ${branding.merchantSingular.toLowerCase()} index sets in Redis.`}
         tone="danger"
       >
         <button
           type="button"
           disabled={busy !== null}
           onClick={() =>
-            confirmThen('This deletes ALL workers for ALL restaurants.', () =>
-              runOperation('clear_all_workers')
+            confirmThen(
+              `This deletes ALL ${branding.payeePlural.toLowerCase()} for ALL ${branding.merchantPlural.toLowerCase()}.`,
+              () => runOperation('clear_all_payees')
             )
           }
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-error text-white text-sm font-medium hover:opacity-90 transition-smooth disabled:opacity-50"
         >
-          {busy === 'clear_all_workers' ? <><Spinner /> Clearing…</> : 'Clear all workers'}
+          {busy === 'clear_all_payees' ? <><Spinner /> Clearing…</> : `Clear all ${branding.payeePlural.toLowerCase()}`}
         </button>
 
         <div className="pt-5 mt-5 border-t border-neutral-150">
-          <p className="text-sm font-medium text-foreground mb-1">Remove one worker</p>
+          <p className="text-sm font-medium text-foreground mb-1">
+            Remove one {branding.payeeSingular.toLowerCase()}
+          </p>
           <p className="text-sm text-neutral-500 mb-3">
-            Targeted removal of a single worker by ID.
+            Targeted removal of a single {branding.payeeSingular.toLowerCase()} by ID.
           </p>
           <div className="flex flex-wrap gap-3 items-end">
             <div className="flex-1 min-w-[240px]">
-              <label className={labelClass}>Worker</label>
+              <label className={labelClass}>{branding.payeeSingular}</label>
               <select
-                value={selectedWorkerId}
-                onChange={(e) => setSelectedWorkerId(e.target.value)}
+                value={selectedPayeeId}
+                onChange={(e) => setSelectedPayeeId(e.target.value)}
                 className={inputClass}
               >
-                <option value="">Select worker…</option>
-                {workers.map((w) => (
-                  <option key={w.id} value={w.id}>
-                    {w.name} ({w.id.slice(0, 8)}…)
+                <option value="">Select {branding.payeeSingular.toLowerCase()}…</option>
+                {payees.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} ({p.id.slice(0, 8)}…)
                   </option>
                 ))}
               </select>
             </div>
             <button
               type="button"
-              disabled={busy !== null || !selectedWorkerId}
+              disabled={busy !== null || !selectedPayeeId}
               onClick={() =>
-                confirmThen('This removes one worker from Redis.', () =>
-                  runOperation('remove_worker', { workerId: selectedWorkerId })
+                confirmThen(
+                  `This removes one ${branding.payeeSingular.toLowerCase()} from Redis.`,
+                  () => runOperation('remove_payee', { payeeId: selectedPayeeId })
                 )
               }
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-warning text-white text-sm font-medium hover:opacity-90 transition-smooth disabled:opacity-50"
             >
-              {busy === 'remove_worker' ? <><Spinner /> Removing…</> : 'Remove worker'}
+              {busy === 'remove_payee' ? <><Spinner /> Removing…</> : `Remove ${branding.payeeSingular.toLowerCase()}`}
             </button>
           </div>
         </div>
@@ -283,7 +242,7 @@ export function AdminPanel() {
 
       <Section
         title="Sessions & transactions"
-        description="Clears restaurant user sessions and payout transaction history in Redis. Does not remove restaurants or workers."
+        description={`Clears ${branding.merchantSingular.toLowerCase()} user sessions and payout transaction history in Redis. Does not remove ${branding.merchantPlural.toLowerCase()} or ${branding.payeePlural.toLowerCase()}.`}
       >
         <button
           type="button"
@@ -301,11 +260,11 @@ export function AdminPanel() {
       </Section>
 
       <Section
-        title="Bank tokens (restaurants)"
+        title={`Bank tokens (${branding.merchantPlural.toLowerCase()})`}
         description={
           <>
             Removes <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">bankAccountToken</code>{' '}
-            from each restaurant record (does not call Root APIs).
+            from each {branding.merchantSingular.toLowerCase()} record (does not call Root APIs).
           </>
         }
       >
@@ -327,7 +286,7 @@ export function AdminPanel() {
         title="Shared app login password"
         description={
           <>
-            All restaurant accounts use one shared password (stored hashed in Redis).
+            All {branding.merchantSingular.toLowerCase()} accounts use one shared password (stored hashed in Redis).
             Until you set one here, the default is{' '}
             <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">
               1234567890

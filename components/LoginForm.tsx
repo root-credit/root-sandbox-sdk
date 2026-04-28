@@ -4,14 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
+import { branding } from '@/lib/branding';
+import { useLogin } from '@/lib/hooks/useAuth';
+import { loginInputSchema, type LoginInput } from '@/lib/types/merchant';
 
 const inputClass =
   'w-full px-3.5 py-2.5 bg-surface text-foreground rounded-md border border-neutral-200 ' +
@@ -20,59 +15,24 @@ const inputClass =
 
 export function LoginForm() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const { login, isSubmitting } = useLogin();
   const [error, setError] = useState('');
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginInputSchema),
   });
 
-  async function onSubmit(data: LoginFormData) {
-    setIsLoading(true);
+  async function onSubmit(data: LoginInput) {
     setError('');
-
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        let msg =
-          (errorData as { error?: string }).error || 'Login failed';
-        if (response.status === 404) {
-          msg += ' Create one with this email on the sign-up page.';
-        }
-        throw new Error(msg);
-      }
-
-      const result = (await response.json()) as {
-        sessionToken?: string;
-        isAdmin?: boolean;
-        redirectTo?: string;
-      };
-
-      // Admin path: server has already set the admin_session cookie.
-      if (result.isAdmin) {
-        router.push(result.redirectTo || '/admin');
-        return;
-      }
-
-      if (result.sessionToken) {
-        document.cookie = `session=${result.sessionToken}; path=/; max-age=86400; SameSite=Strict`;
-      }
-
-      router.push('/dashboard');
+      const outcome = await login(data);
+      router.push(outcome.redirectTo);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -96,7 +56,7 @@ export function LoginForm() {
           type="email"
           id="email"
           autoComplete="username"
-          placeholder="you@restaurant.com"
+          placeholder={`you@${branding.merchantSingular.toLowerCase()}.com`}
           className={inputClass}
         />
         {errors.email && (
@@ -126,10 +86,10 @@ export function LoginForm() {
 
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isSubmitting}
         className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-md bg-ink text-white text-sm font-medium tracking-tight hover:bg-ink-soft transition-smooth disabled:opacity-50 disabled:cursor-not-allowed shadow-sm-custom hover:shadow-md-custom"
       >
-        {isLoading ? (
+        {isSubmitting ? (
           <>
             <Spinner /> Signing in…
           </>

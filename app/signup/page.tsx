@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { SignupForm } from '@/components/SignupForm';
+import { branding } from '@/lib/branding';
 
 export default function SignupPage() {
+  const monogram = branding.productName.charAt(0);
+
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-[1fr_1.05fr] bg-background">
-      {/* Right brand panel — visually anchored on the right for signup variant */}
       <aside className="relative hidden lg:flex flex-col justify-between bg-ink text-white p-12 overflow-hidden lg:order-2">
         <div
           aria-hidden
@@ -26,9 +28,9 @@ export default function SignupPage() {
 
         <Link href="/" className="flex items-center gap-2.5">
           <span className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-white/10 text-gold-bright font-display border border-white/15">
-            R
+            {monogram}
           </span>
-          <span className="font-display text-lg tracking-tightest">Roosterwise</span>
+          <span className="font-display text-lg tracking-tightest">{branding.productName}</span>
         </Link>
 
         <div className="max-w-md">
@@ -40,12 +42,13 @@ export default function SignupPage() {
           </h2>
           <p className="mt-5 text-white/60 leading-relaxed">
             Spin up an operator account in under two minutes. We&apos;ll provision your Root
-            payer, your restaurant subaccount, and a clean ledger — wired to the team you add next.
+            payer, your {branding.merchantSingular.toLowerCase()} subaccount, and a clean ledger —
+            wired to the team you add next.
           </p>
 
           <ul className="mt-10 space-y-3 text-sm text-white/70">
             <Bullet>Same-day onboarding, sandbox-safe</Bullet>
-            <Bullet>Bank or debit card payouts per worker</Bullet>
+            <Bullet>Bank or debit card payouts per {branding.payeeSingular.toLowerCase()}</Bullet>
             <Bullet>One ledger, every payout, every time</Bullet>
           </ul>
         </div>
@@ -55,15 +58,13 @@ export default function SignupPage() {
         </p>
       </aside>
 
-      {/* Form panel */}
       <main className="flex flex-col lg:order-1">
-        {/* Mobile brand bar */}
         <div className="lg:hidden border-b border-neutral-200 bg-surface px-6 py-5">
           <Link href="/" className="inline-flex items-center gap-2.5">
             <span className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-ink text-gold-bright font-display border border-neutral-200">
-              R
+              {monogram}
             </span>
-            <span className="font-display text-lg tracking-tightest">Roosterwise</span>
+            <span className="font-display text-lg tracking-tightest">{branding.productName}</span>
           </Link>
         </div>
 
@@ -72,8 +73,8 @@ export default function SignupPage() {
             <p className="text-eyebrow mb-3">Get started</p>
             <h1 className="font-display text-4xl tracking-tightest mb-3">Create your account</h1>
             <p className="text-sm text-neutral-500 leading-relaxed mb-10">
-              Tell us about your restaurant. We&apos;ll set up your operator console and
-              provision the payment rails behind it.
+              Tell us about your {branding.merchantSingular.toLowerCase()}. We&apos;ll set up your
+              operator console and provision the payment rails behind it.
             </p>
 
             <SignupForm />

@@ -2,30 +2,25 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { branding } from '@/lib/branding';
+import { useLogout } from '@/lib/hooks/useAuth';
 
 const NAV: { href: string; label: string }[] = [
   { href: '/dashboard', label: 'Overview' },
   { href: '/dashboard/payouts', label: 'Payouts' },
-  { href: '/dashboard/workers', label: 'Workers' },
+  { href: '/dashboard/payees', label: branding.payeePlural },
   { href: '/dashboard/transactions', label: 'Transactions' },
-  { href: '/dashboard/restaurant', label: 'Restaurant' },
+  { href: '/dashboard/merchant', label: branding.merchantSingular },
 ];
 
 export function DashboardHeader({ email }: { email: string }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isLoading, setIsLoading] = useState(false);
+  const { logout, isSubmitting } = useLogout();
 
   async function handleLogout() {
-    setIsLoading(true);
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-      document.cookie = 'session=; path=/; max-age=0';
-      router.push('/');
-    } finally {
-      setIsLoading(false);
-    }
+    await logout();
+    router.push('/');
   }
 
   function isActive(href: string) {
@@ -36,13 +31,12 @@ export function DashboardHeader({ email }: { email: string }) {
   return (
     <header className="sticky top-0 z-30 bg-surface/85 backdrop-blur-md border-b border-neutral-200">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
-        {/* Top row */}
         <div className="h-16 flex items-center justify-between gap-6">
           <Link href="/dashboard" className="flex items-center gap-2.5">
             <span className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-ink text-gold-bright font-display border border-neutral-200">
-              R
+              {branding.productName.charAt(0)}
             </span>
-            <span className="font-display text-lg tracking-tightest">Roosterwise</span>
+            <span className="font-display text-lg tracking-tightest">{branding.productName}</span>
             <span className="hidden md:inline-flex ml-3 px-2 py-0.5 rounded text-[10px] tracking-[0.18em] uppercase text-neutral-500 border border-neutral-200">
               Console
             </span>
@@ -55,10 +49,10 @@ export function DashboardHeader({ email }: { email: string }) {
             </div>
             <button
               onClick={handleLogout}
-              disabled={isLoading}
+              disabled={isSubmitting}
               className="inline-flex items-center gap-2 px-3.5 py-2 text-sm rounded-md border border-neutral-200 hover:border-ink hover:bg-neutral-100 transition-smooth disabled:opacity-50"
             >
-              {isLoading ? 'Signing out…' : 'Sign out'}
+              {isSubmitting ? 'Signing out…' : 'Sign out'}
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -66,7 +60,6 @@ export function DashboardHeader({ email }: { email: string }) {
           </div>
         </div>
 
-        {/* Sub navigation */}
         <nav className="-mb-px flex gap-1 overflow-x-auto">
           {NAV.map((item) => {
             const active = isActive(item.href);

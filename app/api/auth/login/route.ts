@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateSessionToken, validateEmail } from '@/lib/auth';
-import { setSession, getRestaurantByEmail } from '@/lib/redis';
+import { setSession, getMerchantByEmail } from '@/lib/redis';
 import { verifySharedAppPassword } from '@/lib/app-settings';
 import {
   HARDCODED_ADMIN_EMAIL,
@@ -10,11 +10,11 @@ import {
 } from '@/lib/admin-session';
 
 /**
- * Restaurant login.
+ * Operator login.
  *
  * Special-case: the hardcoded admin email (admin@root.credit) is recognised here so
  * the admin can sign in from this single login screen without ever touching Redis.
- * Real restaurant users go through the shared-password gate and a Redis restaurant lookup.
+ * Real merchant users go through the shared-password gate and a Redis merchant lookup.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -76,13 +76,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const restaurant = await getRestaurantByEmail(trimmedEmail);
-    if (!restaurant) {
+    const merchant = await getMerchantByEmail(trimmedEmail);
+    if (!merchant) {
       return NextResponse.json(
         {
           error:
             'No account exists for this email. Sign up first, then sign in with the same email and password.',
-          code: 'RESTAURANT_ACCOUNT_NOT_FOUND',
+          code: 'MERCHANT_ACCOUNT_NOT_FOUND',
         },
         { status: 404 }
       );
@@ -93,14 +93,14 @@ export async function POST(request: NextRequest) {
     const sessionToken = generateSessionToken();
 
     await setSession(sessionToken, {
-      adminEmail: restaurant.adminEmail,
-      restaurantId: restaurant.id,
+      merchantEmail: merchant.merchantEmail,
+      merchantId: merchant.id,
     });
 
     return NextResponse.json(
       {
         sessionToken,
-        restaurantId: restaurant.id,
+        merchantId: merchant.id,
       },
       { status: 200 }
     );

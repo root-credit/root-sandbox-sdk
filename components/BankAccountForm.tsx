@@ -3,19 +3,12 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-
-const bankAccountSchema = z.object({
-  accountNumber: z.string().min(8, 'Account number must be at least 8 digits'),
-  routingNumber: z.string().regex(/^\d{9}$/, 'Routing number must be 9 digits'),
-  accountHolderName: z.string().min(2, 'Account holder name is required'),
-  accountType: z.enum(['checking', 'savings']),
-});
-
-type BankAccountFormData = z.infer<typeof bankAccountSchema>;
+import { branding } from '@/lib/branding';
+import { useLinkBank } from '@/lib/hooks/useMerchant';
+import { linkBankInputSchema, type LinkBankInput } from '@/lib/types/merchant';
 
 interface BankAccountFormProps {
-  restaurantId: string;
+  merchantId: string;
   onSuccess?: () => void;
 }
 
@@ -27,50 +20,31 @@ const inputClass =
 const labelClass =
   'block text-[11px] tracking-[0.14em] uppercase text-neutral-500 mb-2';
 
-export function BankAccountForm({ restaurantId, onSuccess }: BankAccountFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
+export function BankAccountForm({ merchantId, onSuccess }: BankAccountFormProps) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const { linkBank, isSubmitting } = useLinkBank();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<BankAccountFormData>({
-    resolver: zodResolver(bankAccountSchema),
-    defaultValues: {
-      accountType: 'checking',
-    },
+  } = useForm<LinkBankInput>({
+    resolver: zodResolver(linkBankInputSchema),
+    defaultValues: { accountType: 'checking' },
   });
 
-  async function onSubmit(data: BankAccountFormData) {
-    setIsLoading(true);
+  async function onSubmit(data: LinkBankInput) {
     setError('');
     setSuccess('');
-
     try {
-      const response = await fetch('/api/restaurant/bank-account', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...data,
-          restaurantId,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to link bank account');
-      }
-
+      await linkBank(merchantId, data);
       setSuccess('Bank account linked successfully!');
       reset();
       if (onSuccess) onSuccess();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -96,7 +70,7 @@ export function BankAccountForm({ restaurantId, onSuccess }: BankAccountFormProp
           {...register('accountHolderName')}
           type="text"
           id="accountHolderName"
-          placeholder="Restaurant name"
+          placeholder={`${branding.merchantSingular} name`}
           className={inputClass}
         />
         {errors.accountHolderName && (
@@ -151,10 +125,10 @@ export function BankAccountForm({ restaurantId, onSuccess }: BankAccountFormProp
 
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isSubmitting}
         className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-md bg-ink text-white text-sm font-medium tracking-tight hover:bg-ink-soft transition-smooth disabled:opacity-50 disabled:cursor-not-allowed shadow-sm-custom hover:shadow-md-custom"
       >
-        {isLoading ? (
+        {isSubmitting ? (
           <>
             <Spinner /> Linking account…
           </>
