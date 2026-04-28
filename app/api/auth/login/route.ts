@@ -2,10 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateSessionToken, validateEmail } from '@/lib/auth';
 import { setSession, getRestaurantByEmail } from '@/lib/redis';
 import { verifySharedAppPassword } from '@/lib/app-settings';
+import {
+  HARDCODED_ADMIN_EMAIL,
+  verifyAdminCredentials,
+  createAdminSessionToken,
+  ADMIN_SESSION_TTL_SEC,
+} from '@/lib/admin-session';
 
 /**
- * Restaurant login: email must match a restaurant created via Sign up (stored in Redis).
- * The shared app password only restricts who can use this demo; identity is the restaurant email.
+ * Restaurant login.
+ *
+ * Special-case: the hardcoded admin email (admin@root.credit) is recognised here so
+ * the admin can sign in from this single login screen without ever touching Redis.
+ * Real restaurant users go through the shared-password gate and a Redis restaurant lookup.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -35,10 +44,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Hardcoded admin path — fully bypasses Redis.
+    if (trimmedEmail.toLowerCase() === HARDCODED_ADMIN_EMAIL.toLowerCase()) {
+      if (!verifyAdminCredentials(trimmedEmail, password)) {
+        return NextResponse.json(
+          { error: 'Invalid admin credentials' },
+          { status: 401 }
+        );
+      }
+      const token = createAdminSessionToken();
+      const res = NextResponse.json({
+        ok: true,
+        isAdmin: true,
+        redirectTo: '/admin',
+      });
+      res.cookies.set('admin_session', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: ADMIN_SESSION_TTL_SEC,
+      });
+      return res;
+    }
+
     const passwordOk = await verifySharedAppPassword(password);
     if (!passwordOk) {
       return NextResponse.json(
-        { error: 'Invalid app password' },
+        { error: 'Invalid password' },
         { status: 401 }
       );
     }
@@ -48,7 +81,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            'No restaurant account exists for this email. Sign up first, then sign in with the same email and shared app password.',
+            'No account exists for this email. Sign up first, then sign in with the same email and password.',
           code: 'RESTAURANT_ACCOUNT_NOT_FOUND',
         },
         { status: 404 }

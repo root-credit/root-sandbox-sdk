@@ -47,15 +47,26 @@ export function LoginForm() {
         let msg =
           (errorData as { error?: string }).error || 'Login failed';
         if (response.status === 404) {
-          msg +=
-            ' New users should create an account on Sign up using this email.';
+          msg += ' Create one with this email on the sign-up page.';
         }
         throw new Error(msg);
       }
 
-      const { sessionToken } = await response.json();
+      const result = (await response.json()) as {
+        sessionToken?: string;
+        isAdmin?: boolean;
+        redirectTo?: string;
+      };
 
-      document.cookie = `session=${sessionToken}; path=/; max-age=86400; SameSite=Strict`;
+      // Admin path: server has already set the admin_session cookie.
+      if (result.isAdmin) {
+        router.push(result.redirectTo || '/admin');
+        return;
+      }
+
+      if (result.sessionToken) {
+        document.cookie = `session=${result.sessionToken}; path=/; max-age=86400; SameSite=Strict`;
+      }
 
       router.push('/dashboard');
     } catch (err) {
@@ -78,13 +89,14 @@ export function LoginForm() {
           htmlFor="email"
           className="block text-[11px] tracking-[0.14em] uppercase text-neutral-500 mb-2"
         >
-          Email Address
+          Email address
         </label>
         <input
           {...register('email')}
           type="email"
           id="email"
-          placeholder="admin@restaurant.com"
+          autoComplete="username"
+          placeholder="you@restaurant.com"
           className={inputClass}
         />
         {errors.email && (
@@ -97,26 +109,19 @@ export function LoginForm() {
           htmlFor="password"
           className="block text-[11px] tracking-[0.14em] uppercase text-neutral-500 mb-2"
         >
-          App password
+          Password
         </label>
         <input
           {...register('password')}
           type="password"
           id="password"
           autoComplete="current-password"
-          placeholder="Shared demo password"
+          placeholder="Enter your password"
           className={inputClass}
         />
         {errors.password && (
           <p className="text-error text-xs mt-1.5">{errors.password.message}</p>
         )}
-        <p className="text-xs text-neutral-500 mt-2 leading-relaxed">
-          Same shared password for every restaurant in this demo (default{' '}
-          <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">
-            1234567890
-          </code>{' '}
-          until changed in admin).
-        </p>
       </div>
 
       <button

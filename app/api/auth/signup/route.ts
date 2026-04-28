@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { registerRestaurant, generateSessionToken } from '@/lib/auth';
 import { setSession } from '@/lib/redis';
 import { verifySharedAppPassword } from '@/lib/app-settings';
+import { HARDCODED_ADMIN_EMAIL } from '@/lib/admin-session';
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,6 +17,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (
+      typeof email === 'string' &&
+      email.trim().toLowerCase() === HARDCODED_ADMIN_EMAIL.toLowerCase()
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            'This email is reserved for the admin console. Use a different email to create a restaurant account.',
+        },
+        { status: 400 }
+      );
+    }
+
     if (typeof password !== 'string' || password.length < 8) {
       return NextResponse.json(
         { error: 'Password is required (min 8 characters)' },
@@ -26,7 +40,7 @@ export async function POST(request: NextRequest) {
     const passwordOk = await verifySharedAppPassword(password);
     if (!passwordOk) {
       return NextResponse.json(
-        { error: 'Invalid password — use the shared app password for this demo' },
+        { error: 'Invalid password' },
         { status: 401 }
       );
     }

@@ -71,9 +71,8 @@ export default function LoginPage() {
             <p className="text-eyebrow mb-3">Sign in</p>
             <h1 className="font-display text-4xl tracking-tightest mb-3">Operator login</h1>
             <p className="text-sm text-neutral-500 leading-relaxed mb-10">
-              Use the same email you used at signup — each email maps to one restaurant
-              account. This demo uses a single shared app password for every restaurant
-              (not your email password).
+              Sign in with the email used at signup. Each email maps to a single
+              restaurant account in your console.
             </p>
 
             <LoginForm />

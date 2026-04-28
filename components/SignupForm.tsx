@@ -122,26 +122,19 @@ export function SignupForm() {
 
       <div>
         <label htmlFor="password" className={labelClass}>
-          App password
+          Password
         </label>
         <input
           {...register('password')}
           type="password"
           id="password"
           autoComplete="new-password"
-          placeholder="Shared demo password"
+          placeholder="Choose a password (min 8 characters)"
           className={inputClass}
         />
         {errors.password && (
           <p className="text-error text-xs mt-1.5">{errors.password.message}</p>
         )}
-        <p className="text-xs text-neutral-500 mt-2 leading-relaxed">
-          Same shared password for every account (default{' '}
-          <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">
-            1234567890
-          </code>{' '}
-          unless set in admin).
-        </p>
       </div>
 
       <button
