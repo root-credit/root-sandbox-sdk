@@ -18,10 +18,16 @@ if (fs.existsSync(marker)) {
 }
 
 console.log('[@useroot/sandbox-sdk] building dist/ (prepare hook)…')
-// Delegates to npm run build — script uses npx tsup so PATH does not need local node_modules/.bin/tsup (Vercel / npm install).
-execSync('npm run build', {
-  stdio: 'inherit',
-  cwd: root,
-  env: process.env,
-  shell: true,
-})
+try {
+  execSync('npm run build', {
+    stdio: 'inherit',
+    cwd: root,
+    env: process.env,
+    shell: true,
+  })
+} catch (err) {
+  console.error(
+    '[@useroot/sandbox-sdk] prepare failed. For file:/workspace installs, package.json "files" must include src/, tsconfig.json, and tsup.config.ts so tsup can compile.',
+  )
+  throw err
+}

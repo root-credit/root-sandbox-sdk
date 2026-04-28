@@ -1,10 +1,9 @@
-src
+# Applied on top of package.json "files" — do not list src/tsconfig/tsup here or they get excluded from npm pack / file: installs.
 examples
-tsconfig.json
-tsup.config.ts
 node_modules
 *.log
 .DS_Store
 .env
 .env.*
 .tsbuildinfo
+test-app/.env

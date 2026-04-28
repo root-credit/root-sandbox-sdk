@@ -18,15 +18,18 @@
   },
   "files": [
     "dist",
+    "src",
     "scripts/prepare.mjs",
+    "tsconfig.json",
+    "tsup.config.ts",
     "README.md",
     "LLM.md",
     "LICENSE"
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "npx --yes tsup@8.5.1",
-    "dev": "npx --yes tsup@8.5.1 --watch",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "typecheck": "tsc --noEmit && tsc --noEmit -p examples/tsconfig.json",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build",
@@ -50,11 +53,13 @@
   "engines": {
     "node": ">=18"
   },
+  "dependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^5.7.2"
+  },
   "devDependencies": {
     "@types/node": "^22.9.0",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "tsup": "^8.3.5",
-    "typescript": "^5.7.2"
+    "express": "^4.21.2"
   }
 }
