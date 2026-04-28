@@ -1,5 +1,6 @@
 node_modules
-dist
+# dist/ is intentionally committed so file:/git installs work on Vercel without build tools.
+# Run `pnpm build` locally and commit the result before pushing a release.
 *.log
 .DS_Store
 .env
