@@ -1,0 +1,76 @@
+---
+description: Hard rules for any code that touches payments, payees, or merchant data. Auto-applied to UI, hooks, and route handlers.
+globs:
+  - "app/**/*.{ts,tsx}"
+  - "components/**/*.{ts,tsx}"
+  - "lib/hooks/**/*.{ts,tsx}"
+alwaysApply: true
+---
+
+# Payments contract — hard rules
+
+Read [`AGENTS.md`](mdc:AGENTS.md) for the full table of allowed imports.
+
+## Forbidden patterns (will fail `pnpm verify-contract`)
+
+```ts
+// ❌ NEVER
+const res = await fetch('/api/payouts', { method: 'POST', body: JSON.stringify({...}) });
+import { rootAPI } from '@/lib/root-api';      // in a 'use client' file
+import { Root } from '@root-credit/root-sdk';  // in a 'use client' file
+```
+
+## Required patterns
+
+```ts
+// ✅ Mutations from a client component → use the hook
+import { useProcessPayout } from '@/lib/hooks/useProcessPayout';
+const { processPayout, isProcessing } = useProcessPayout();
+await processPayout({ merchantId, lineItems, totalAmount });
+
+// ✅ Server-side reads → use the server action
+import { listPayees } from '@/app/actions/payees';
+const payees = await listPayees(merchantId);
+
+// ✅ Money handling
+import { dollarsToCents, formatMoney, type Money } from '@/lib/types/payments';
+const cents: Money = dollarsToCents(form.amount);
+<span>{formatMoney(cents)}</span>
+
+// ✅ Rails — use the const enum, never a string literal
+import { PaymentRail } from '@/lib/types/payments';
+if (rail === PaymentRail.InstantBank) { … }
+```
+
+## Domain identifiers
+
+- Use `Merchant` for the funder, `Payee` for the recipient, `Payout` for the
+  individual transfer, `Transaction` for the persisted ledger entry.
+- IDs: `merchantId`, `payeeId`, `transactionId`, `rootPayerId`, `rootPayeeId`.
+- Never reintroduce `restaurantId`, `workerId`, or `tipPayout`.
+- Email field on a merchant is `merchantEmail`, not `adminEmail` or `email`.
+
+## Adding new payment functionality
+
+1. Schema first: add Zod schemas + inferred TS types in `lib/types/<entity>.ts`.
+2. Server action next: add a `'use server'` function in `app/actions/<entity>.ts`
+   that parses the schema, calls Redis/SDK helpers, and returns a typed result.
+3. Hook last: wrap the action in `lib/hooks/use<Action>.ts`.
+4. Component imports the hook only.
+
+If you find yourself wanting to add a new `route.ts` handler, ask whether a
+server action would do the job instead. The handlers under `app/api/*` exist
+only for non-React HTTP clients.
+
+## Money rule (zero tolerance)
+
+```text
+storage     → integer cents
+transport   → integer cents
+compute     → integer cents
+display     → formatMoney(cents) at the very last step
+form input  → dollars (parsed by the form), then dollarsToCents() before submit
+```
+
+Do NOT multiply or divide by 100 inline anywhere except inside `dollarsToCents`
+and `centsToDollars`.

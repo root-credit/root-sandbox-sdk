@@ -1,0 +1,25 @@
+{
+  "name": "@root-credit/root-sdk",
+  "version": "0.1.0",
+  "description": "Root Pay sandbox SDK for roosterwise",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "prepare": "node scripts/prepare.mjs"
+  },
+  "dependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^5.7.2"
+  }
+}
