@@ -37,16 +37,20 @@ export function verifyAdminCredentials(email: string, password: string): boolean
   );
 }
 
-const ADMIN_SESSION_PREFIX = "admin_session:";
+/**
+ * Redis keys for admin HTTP sessions. Prefixed to avoid collisions with other data on shared
+ * Upstash instances (legacy keys named admin_session:* may exist as non-string types → WRONGTYPE).
+ */
+const ADMIN_SESSION_PREFIX = "roosterwise:admin_session:v1:";
 export const ADMIN_SESSION_TTL_SEC = 60 * 60 * 8; // 8 hours
 
 export async function createAdminSessionToken(): Promise<string> {
   const token = randomUUID();
-  await redis.setex(
-    `${ADMIN_SESSION_PREFIX}${token}`,
-    ADMIN_SESSION_TTL_SEC,
-    JSON.stringify({ email: getConfiguredAdminEmail() })
-  );
+  const key = `${ADMIN_SESSION_PREFIX}${token}`;
+  const payload = JSON.stringify({ email: getConfiguredAdminEmail() });
+  // Drop key first so SET succeeds even if a wrong-type value existed under the same name.
+  await redis.del(key);
+  await redis.setex(key, ADMIN_SESSION_TTL_SEC, payload);
   return token;
 }
 
