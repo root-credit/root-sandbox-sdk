@@ -11,6 +11,18 @@ export const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
+/**
+ * We store JSON with `JSON.stringify`. `@upstash/redis` enables automatic JSON deserialization
+ * by default, so `get` may return either a string or an already-parsed object. Calling
+ * `JSON.parse` on an object stringifies to "[object Object]" and throws "is not valid JSON".
+ */
+function parseStoredJson<T = any>(data: unknown): T | null {
+  if (data == null) return null;
+  if (typeof data === "object") return data as T;
+  if (typeof data === "string") return JSON.parse(data) as T;
+  return null;
+}
+
 // Session utilities
 export async function setSession(
   sessionId: string,
@@ -25,7 +37,7 @@ export async function setSession(
 
 export async function getSession(sessionId: string) {
   const data = await redis.get(`session:${sessionId}`);
-  return data ? JSON.parse(data as string) : null;
+  return parseStoredJson(data);
 }
 
 export async function deleteSession(sessionId: string) {
@@ -54,18 +66,16 @@ export async function setRestaurant(
 
 export async function getRestaurant(restaurantId: string) {
   const data = await redis.get(`restaurant:${restaurantId}`);
-  return data ? JSON.parse(data as string) : null;
+  return parseStoredJson(data);
 }
 
 export async function getRestaurantByEmail(adminEmail: string) {
   const keys = await redis.keys(`restaurant:*`);
   for (const key of keys) {
     const data = await redis.get(key);
-    if (data) {
-      const restaurant = JSON.parse(data as string);
-      if (restaurant.adminEmail === adminEmail) {
-        return restaurant;
-      }
+    const restaurant = parseStoredJson(data);
+    if (restaurant && restaurant.adminEmail === adminEmail) {
+      return restaurant;
     }
   }
   return null;
@@ -80,7 +90,7 @@ export async function setWorker(workerId: string, data: any) {
 
 export async function getWorker(workerId: string) {
   const data = await redis.get(`worker:${workerId}`);
-  return data ? JSON.parse(data as string) : null;
+  return parseStoredJson(data);
 }
 
 export async function getRestaurantWorkers(restaurantId: string) {
@@ -107,7 +117,7 @@ export async function setTransaction(transactionId: string, data: any) {
 
 export async function getTransaction(transactionId: string) {
   const data = await redis.get(`transaction:${transactionId}`);
-  return data ? JSON.parse(data as string) : null;
+  return parseStoredJson(data);
 }
 
 export async function getRestaurantTransactions(restaurantId: string) {
