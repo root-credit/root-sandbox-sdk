@@ -56,15 +56,15 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+        <div className="p-4 bg-error bg-opacity-5 border border-error border-opacity-20 rounded-lg text-error text-sm font-medium">
           {error}
         </div>
       )}
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium mb-2">
+        <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-2">
           Email Address
         </label>
         <input
@@ -72,19 +72,19 @@ export function LoginForm() {
           type="email"
           id="email"
           placeholder="admin@restaurant.com"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-transparent transition-smooth text-foreground placeholder-gray-500"
         />
         {errors.email && (
-          <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
+          <p className="text-error text-sm mt-1.5 font-medium">{errors.email.message}</p>
         )}
       </div>
 
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-2 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-2.5 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-smooth disabled:opacity-50 disabled:cursor-not-allowed shadow-sm-custom hover:shadow-md-custom"
       >
-        {isLoading ? 'Logging in...' : 'Login'}
+        {isLoading ? 'Signing in...' : 'Sign In'}
       </button>
     </form>
   );
