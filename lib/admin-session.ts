@@ -1,73 +1,82 @@
 import { cookies } from "next/headers";
-import { randomUUID } from "crypto";
-import { redis } from "./redis";
+import { createHmac, timingSafeEqual } from "crypto";
 
-function parseAdminSessionPayload(raw: unknown): { email: string } | null {
-  if (raw == null) return null;
-  if (typeof raw === "object" && raw !== null && "email" in raw) {
-    return { email: String((raw as { email: string }).email) };
-  }
-  if (typeof raw === "string") {
-    try {
-      const o = JSON.parse(raw) as { email: string };
-      return o?.email ? { email: o.email } : null;
-    } catch {
-      return null;
-    }
-  }
-  return null;
-}
+/**
+ * Demo admin gate — fixed credentials (not stored in Redis).
+ * Cookie sessions are signed with HMAC only (stateless).
+ */
+export const HARDCODED_ADMIN_EMAIL = "admin@root.credit";
+export const HARDCODED_ADMIN_PASSWORD = "1234567890";
 
-export const ADMIN_EMAIL_DEFAULT = "admin@root.credit";
-export const ADMIN_PASSWORD_DEFAULT = "1234567890";
+/**
+ * Used only to sign the HTTP-only admin cookie (no Redis).
+ * Override in env if you need rotation without redeploying secrets embedded elsewhere.
+ */
+const ADMIN_COOKIE_SECRET =
+  process.env.ADMIN_SESSION_SECRET ??
+  "roosterwise-admin-hmac-v1-demo-change-if-public-repo";
 
-export function getConfiguredAdminEmail(): string {
-  return process.env.ADMIN_EMAIL?.trim() || ADMIN_EMAIL_DEFAULT;
-}
-
-export function getConfiguredAdminPassword(): string {
-  return process.env.ADMIN_PASSWORD ?? ADMIN_PASSWORD_DEFAULT;
-}
+export const ADMIN_SESSION_TTL_SEC = 60 * 60 * 8; // 8 hours
 
 export function verifyAdminCredentials(email: string, password: string): boolean {
-  const e = email.trim().toLowerCase();
   return (
-    e === getConfiguredAdminEmail().toLowerCase() &&
-    password === getConfiguredAdminPassword()
+    email.trim().toLowerCase() === HARDCODED_ADMIN_EMAIL.toLowerCase() &&
+    password === HARDCODED_ADMIN_PASSWORD
   );
 }
 
-/**
- * Redis keys for admin HTTP sessions. Prefixed to avoid collisions with other data on shared
- * Upstash instances (legacy keys named admin_session:* may exist as non-string types → WRONGTYPE).
- */
-const ADMIN_SESSION_PREFIX = "roosterwise:admin_session:v1:";
-export const ADMIN_SESSION_TTL_SEC = 60 * 60 * 8; // 8 hours
-
-export async function createAdminSessionToken(): Promise<string> {
-  const token = randomUUID();
-  const key = `${ADMIN_SESSION_PREFIX}${token}`;
-  const payload = JSON.stringify({ email: getConfiguredAdminEmail() });
-  // Drop key first so SET succeeds even if a wrong-type value existed under the same name.
-  await redis.del(key);
-  await redis.setex(key, ADMIN_SESSION_TTL_SEC, payload);
-  return token;
+export function createAdminSessionToken(): string {
+  const expSec = Math.floor(Date.now() / 1000) + ADMIN_SESSION_TTL_SEC;
+  const payloadObj = {
+    v: 1 as const,
+    email: HARDCODED_ADMIN_EMAIL,
+    exp: expSec,
+  };
+  const payload = Buffer.from(JSON.stringify(payloadObj), "utf8").toString("base64url");
+  const sig = createHmac("sha256", ADMIN_COOKIE_SECRET)
+    .update(payload)
+    .digest("base64url");
+  return `${payload}.${sig}`;
 }
 
-export async function getAdminSessionByToken(
-  token: string | undefined
-): Promise<{ email: string } | null> {
-  if (!token?.trim()) return null;
-  const raw = await redis.get(`${ADMIN_SESSION_PREFIX}${token.trim()}`);
-  return parseAdminSessionPayload(raw);
-}
+export function verifySignedAdminSession(
+  cookieValue: string | undefined
+): { email: string } | null {
+  if (!cookieValue?.includes(".")) return null;
+  const dot = cookieValue.lastIndexOf(".");
+  const payloadB64 = cookieValue.slice(0, dot);
+  const sig = cookieValue.slice(dot + 1);
+  if (!payloadB64 || !sig) return null;
 
-export async function deleteAdminSessionToken(token: string): Promise<void> {
-  await redis.del(`${ADMIN_SESSION_PREFIX}${token.trim()}`);
+  const expectedSig = createHmac("sha256", ADMIN_COOKIE_SECRET)
+    .update(payloadB64)
+    .digest("base64url");
+
+  const a = Buffer.from(sig, "utf8");
+  const b = Buffer.from(expectedSig, "utf8");
+  if (a.length !== b.length) return null;
+  try {
+    if (!timingSafeEqual(a, b)) return null;
+  } catch {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(
+      Buffer.from(payloadB64, "base64url").toString("utf8")
+    ) as { email?: string; exp?: number; v?: number };
+    if (typeof parsed.exp !== "number" || typeof parsed.email !== "string") {
+      return null;
+    }
+    if (parsed.exp < Math.floor(Date.now() / 1000)) return null;
+    return { email: parsed.email };
+  } catch {
+    return null;
+  }
 }
 
 export async function getAdminSessionFromCookies(): Promise<{ email: string } | null> {
   const cookieStore = await cookies();
-  const token = cookieStore.get("admin_session")?.value;
-  return getAdminSessionByToken(token);
+  const raw = cookieStore.get("admin_session")?.value;
+  return verifySignedAdminSession(raw);
 }

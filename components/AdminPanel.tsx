@@ -132,9 +132,11 @@ export function AdminPanel() {
       <div className="max-w-md mx-auto">
         <h2 className="text-xl font-semibold mb-4">Admin sign-in</h2>
         <p className="text-sm text-gray-600 mb-6">
-          Demo admin console — credentials are fixed unless overridden via{' '}
-          <code className="text-xs bg-gray-100 px-1 rounded">ADMIN_EMAIL</code>{' '}
-          / <code className="text-xs bg-gray-100 px-1 rounded">ADMIN_PASSWORD</code>.
+          Uses fixed demo credentials (same code everywhere — nothing stored in Redis).
+          Email <code className="text-xs bg-gray-100 px-1 rounded">admin@root.credit</code>
+          {' '}/
+          {' '}password in{' '}
+          <code className="text-xs bg-gray-100 px-1 rounded">lib/admin-session.ts</code>.
         </p>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
