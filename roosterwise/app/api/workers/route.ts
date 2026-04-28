@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
         cardNumber,
         expiryMonth,
         expiryYear,
-        cardholderName,
+        // cardholderName is not accepted by the Root push-to-card API
       });
       paymentMethodId = cardResult.id || workerRootId;
     }
