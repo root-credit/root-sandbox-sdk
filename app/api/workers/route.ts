@@ -4,9 +4,9 @@ import {
   setWorker,
   getRestaurantWorkers,
   getRestaurant,
-  getSession,
 } from '@/lib/redis';
 import { createRootPayee, attachPayeeBankAccount, attachPayeeDebitCard } from '@/lib/root-api';
+import { getCurrentSession, sessionOwnsRestaurant } from '@/lib/session';
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,18 +19,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const cookieHeader = request.headers.get('cookie') || '';
-    const sessionMatch = cookieHeader.match(/session=([^;]+)/);
-
-    if (!sessionMatch) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const session = await getSession(sessionMatch[1].trim());
-    if (!session || session.restaurantId !== restaurantId) {
+    const session = await getCurrentSession();
+    if (!sessionOwnsRestaurant(session, restaurantId)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -54,16 +44,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieHeader = request.headers.get('cookie') || '';
-    const sessionMatch = cookieHeader.match(/session=([^;]+)/);
-
-    if (!sessionMatch) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const body = await request.json();
     const {
       name,
@@ -88,8 +68,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const session = await getSession(sessionMatch[1].trim());
-    if (!session || session.restaurantId !== restaurantId) {
+    const session = await getCurrentSession();
+    if (!sessionOwnsRestaurant(session, restaurantId)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

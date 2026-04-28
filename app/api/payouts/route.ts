@@ -5,22 +5,12 @@ import {
   getWorker,
   setTransaction,
   getRestaurantTransactions,
-  getSession,
 } from '@/lib/redis';
 import { createTipPayout } from '@/lib/root-api';
+import { getCurrentSession, sessionOwnsRestaurant } from '@/lib/session';
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieHeader = request.headers.get('cookie') || '';
-    const sessionMatch = cookieHeader.match(/session=([^;]+)/);
-    
-    if (!sessionMatch) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const body = await request.json();
     const { restaurantId, tips, totalAmount } = body;
 
@@ -32,8 +22,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const session = await getSession(sessionMatch[1].trim());
-    if (!session || session.restaurantId !== restaurantId) {
+    const session = await getCurrentSession();
+    if (!sessionOwnsRestaurant(session, restaurantId)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -140,16 +130,6 @@ export async function POST(request: NextRequest) {
 // Get transaction history
 export async function GET(request: NextRequest) {
   try {
-    const cookieHeader = request.headers.get('cookie') || '';
-    const sessionMatch = cookieHeader.match(/session=([^;]+)/);
-    
-    if (!sessionMatch) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const restaurantId = request.nextUrl.searchParams.get('restaurantId');
 
     if (!restaurantId) {
@@ -159,8 +139,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const session = await getSession(sessionMatch[1].trim());
-    if (!session || session.restaurantId !== restaurantId) {
+    const session = await getCurrentSession();
+    if (!sessionOwnsRestaurant(session, restaurantId)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

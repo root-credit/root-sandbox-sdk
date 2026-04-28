@@ -1,25 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRestaurant, setRestaurant } from '@/lib/redis';
 import { attachPayerBankAccount } from '@/lib/root-api';
+import { getCurrentSession, sessionOwnsRestaurant } from '@/lib/session';
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieHeader = request.headers.get('cookie') || '';
-    const sessionMatch = cookieHeader.match(/session=([^;]+)/);
-
-    if (!sessionMatch) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const body = await request.json();
     const {
       accountNumber,
       routingNumber,
       restaurantId,
     } = body;
+
+    if (!restaurantId) {
+      return NextResponse.json(
+        { error: 'Missing restaurantId' },
+        { status: 400 }
+      );
+    }
+
+    const session = await getCurrentSession();
+    if (!sessionOwnsRestaurant(session, restaurantId)) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
 
     // Get the restaurant to get Root customer ID
     const restaurant = await getRestaurant(restaurantId);
