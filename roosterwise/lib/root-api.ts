@@ -4,7 +4,7 @@ if (!process.env.ROOT_API_KEY) {
   throw new Error("Missing ROOT_API_KEY environment variable");
 }
 
-const ROOT_API_BASE = process.env.ROOT_API_BASE_URL || "https://api.useroot.com";
+const ROOT_API_BASE = process.env.ROOT_BASE_URL || "https://sandbox.root.com";
 
 export const rootAPI = new Root({
   apiKey: process.env.ROOT_API_KEY,

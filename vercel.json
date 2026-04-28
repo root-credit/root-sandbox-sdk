@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd roosterwise && npm run build",
+  "installCommand": "cd roosterwise && npm install",
+  "outputDirectory": "roosterwise/.next"
+}
