@@ -1,4 +1,3 @@
 {
-  "buildCommand": "cd roosterwise && npm install && npm run build",
-  "outputDirectory": "roosterwise/.next"
+  "framework": "nextjs"
 }
