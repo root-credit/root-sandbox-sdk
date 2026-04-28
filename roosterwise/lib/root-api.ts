@@ -69,14 +69,12 @@ export async function attachPayerBankAccount(
   bankData: {
     accountNumber: string;
     routingNumber: string;
-    accountHolderName: string;
   }
 ) {
   try {
-    const response = await rootAPI.payers.attachPayToBank(payerId, {
-      accountNumber: bankData.accountNumber,
-      routingNumber: bankData.routingNumber,
-      accountHolderName: bankData.accountHolderName,
+    const response = await rootAPI.payers.attachPayByBank(payerId, {
+      account_number: bankData.accountNumber,
+      routing_number: bankData.routingNumber,
     });
     console.log("[v0] Attached bank account to payer:", payerId);
     return response;
@@ -94,14 +92,12 @@ export async function attachPayeeBankAccount(
   bankData: {
     accountNumber: string;
     routingNumber: string;
-    accountHolderName: string;
   }
 ) {
   try {
-    const response = await rootAPI.payees.attachPayByBank(payeeId, {
-      accountNumber: bankData.accountNumber,
-      routingNumber: bankData.routingNumber,
-      accountHolderName: bankData.accountHolderName,
+    const response = await rootAPI.payees.attachPayToBank(payeeId, {
+      account_number: bankData.accountNumber,
+      routing_number: bankData.routingNumber,
     });
     console.log("[v0] Attached bank account to payee:", payeeId);
     return response;
@@ -120,17 +116,13 @@ export async function attachPayeeDebitCard(
     cardNumber: string;
     expiryMonth: number;
     expiryYear: number;
-    cvv: string;
-    cardholderName: string;
   }
 ) {
   try {
+    const expiryDate = `${String(cardData.expiryMonth).padStart(2, '0')}/${String(cardData.expiryYear).slice(-2)}`;
     const response = await rootAPI.payees.attachPushToCard(payeeId, {
-      cardNumber: cardData.cardNumber,
-      expiryMonth: cardData.expiryMonth,
-      expiryYear: cardData.expiryYear,
-      cvv: cardData.cvv,
-      cardholderName: cardData.cardholderName,
+      card_number: cardData.cardNumber,
+      card_expiry_date: expiryDate,
     });
     console.log("[v0] Attached debit card to payee:", payeeId);
     return response;
@@ -141,21 +133,19 @@ export async function attachPayeeDebitCard(
 }
 
 /**
- * Create a payout from a payer to a payee
+ * Create a payout from a payee (worker)
  */
 export async function createTipPayout(
-  payerId: string,
   payeeId: string,
   amountCents: number,
-  rail: "rtp" | "ach" = "rtp"
+  rail: PayoutRail = "instant_card"
 ) {
   try {
     const response = await rootAPI.payouts.create({
-      amount: amountCents,
-      payerId,
-      payeeId,
+      payee_id: payeeId,
+      amount_in_cents: amountCents,
       rail,
-      description: "Tip payout from Roosterwise",
+      auto_approve: true,
       metadata: {
         type: "tip_payout",
         processedAt: new Date().toISOString(),
@@ -181,3 +171,5 @@ export async function getPayoutStatus(payoutId: string) {
     throw error;
   }
 }
+
+type PayoutRail = 'instant_bank' | 'instant_card' | 'same_day_ach' | 'standard_ach' | 'wire';

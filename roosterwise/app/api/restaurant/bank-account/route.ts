@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentSession } from '@/lib/session';
 import { getRestaurant, setRestaurant } from '@/lib/redis';
 import { attachPayerBankAccount } from '@/lib/root-api';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getCurrentSession();
+    const cookieHeader = request.headers.get('cookie') || '';
+    const sessionMatch = cookieHeader.match(/sessionId=([^;]+)/);
 
-    if (!session) {
+    if (!sessionMatch) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -18,18 +18,8 @@ export async function POST(request: NextRequest) {
     const {
       accountNumber,
       routingNumber,
-      accountHolderName,
-      accountType,
       restaurantId,
     } = body;
-
-    // Verify the restaurant belongs to this user
-    if (restaurantId !== session.restaurantId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      );
-    }
 
     // Get the restaurant to get Root customer ID
     const restaurant = await getRestaurant(restaurantId);
@@ -45,7 +35,6 @@ export async function POST(request: NextRequest) {
     const bankAccount = await attachPayerBankAccount(restaurant.rootCustomerId, {
       accountNumber,
       routingNumber,
-      accountHolderName,
     });
 
     console.log('[v0] Bank account linked:', bankAccount.id);

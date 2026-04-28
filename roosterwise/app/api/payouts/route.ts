@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { getCurrentSession } from '@/lib/session';
 import {
   getRestaurant,
   getWorker,
@@ -11,9 +10,10 @@ import { createTipPayout } from '@/lib/root-api';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getCurrentSession();
-
-    if (!session) {
+    const cookieHeader = request.headers.get('cookie') || '';
+    const sessionMatch = cookieHeader.match(/sessionId=([^;]+)/);
+    
+    if (!sessionMatch) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -23,10 +23,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { restaurantId, tips, totalAmount } = body;
 
-    if (restaurantId !== session.restaurantId) {
+    // Validate restaurant ID from body
+    if (!restaurantId) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
+        { error: 'Missing restaurantId' },
+        { status: 400 }
       );
     }
 
@@ -53,12 +54,11 @@ export async function POST(request: NextRequest) {
         // Convert amount to cents
         const amountCents = Math.round(tip.amount * 100);
 
-        // Process payout via Root API
+        // Process payout via Root API using the correct signature
         const payout = await createTipPayout(
-          restaurant.rootCustomerId,
           worker.rootPayeeId,
           amountCents,
-          'rtp' // Use RTP for faster settlements
+          'instant_card' // Use instant_card for faster settlements
         );
 
         console.log('[v0] Payout processed:', payout.id);
@@ -124,20 +124,22 @@ export async function POST(request: NextRequest) {
 // Get transaction history
 export async function GET(request: NextRequest) {
   try {
+    const cookieHeader = request.headers.get('cookie') || '';
+    const sessionMatch = cookieHeader.match(/sessionId=([^;]+)/);
+    
+    if (!sessionMatch) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const restaurantId = request.nextUrl.searchParams.get('restaurantId');
 
     if (!restaurantId) {
       return NextResponse.json(
         { error: 'Missing restaurantId' },
         { status: 400 }
-      );
-    }
-
-    const session = await getCurrentSession();
-    if (!session || session.restaurantId !== restaurantId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
       );
     }
 

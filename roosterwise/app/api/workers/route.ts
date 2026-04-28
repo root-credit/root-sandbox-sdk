@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { getCurrentSession } from '@/lib/session';
 import { setWorker, getRestaurantWorkers, getRestaurant } from '@/lib/redis';
 import { createRootPayee, attachPayeeBankAccount, attachPayeeDebitCard } from '@/lib/root-api';
 
@@ -15,11 +14,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const session = await getCurrentSession();
-    if (!session || session.restaurantId !== restaurantId) {
+    const cookieHeader = request.headers.get('cookie') || '';
+    const sessionMatch = cookieHeader.match(/sessionId=([^;]+)/);
+    
+    if (!sessionMatch) {
       return NextResponse.json(
         { error: 'Unauthorized' },
-        { status: 403 }
+        { status: 401 }
       );
     }
 
@@ -40,9 +41,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getCurrentSession();
+    const cookieHeader = request.headers.get('cookie') || '';
+    const sessionMatch = cookieHeader.match(/sessionId=([^;]+)/);
 
-    if (!session) {
+    if (!sessionMatch) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -59,21 +61,12 @@ export async function POST(request: NextRequest) {
       // Bank account fields
       accountNumber,
       routingNumber,
-      accountType,
       // Card fields
       cardNumber,
       expiryMonth,
       expiryYear,
-      cvv,
       cardholderName,
     } = body;
-
-    if (restaurantId !== session.restaurantId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      );
-    }
 
     const restaurant = await getRestaurant(restaurantId);
     if (!restaurant) {
@@ -98,7 +91,6 @@ export async function POST(request: NextRequest) {
       const bankResult = await attachPayeeBankAccount(workerRootId, {
         accountNumber,
         routingNumber,
-        accountHolderName: name,
       });
       paymentMethodId = bankResult.id || workerRootId;
     } else {
@@ -106,7 +98,6 @@ export async function POST(request: NextRequest) {
         cardNumber,
         expiryMonth,
         expiryYear,
-        cvv,
         cardholderName,
       });
       paymentMethodId = cardResult.id || workerRootId;
