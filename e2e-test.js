@@ -22,7 +22,7 @@ console.log('[v0] ============================================\n');
 // Test data
 const testRestaurant = {
   email: `admin-${Date.now()}@testrestaurant.com`,
-  password: 'TestPassword123!',
+  password: '1234567890',
   restaurantName: 'Test Restaurant',
   phone: '555-123-4567',
 };

@@ -8,6 +8,7 @@ import { z } from 'zod';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -43,10 +44,8 @@ export function LoginForm() {
 
       const { sessionToken } = await response.json();
 
-      // Store session in cookie
       document.cookie = `session=${sessionToken}; path=/; max-age=86400; SameSite=Strict`;
-      
-      // Redirect to dashboard
+
       router.push('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -77,6 +76,27 @@ export function LoginForm() {
         {errors.email && (
           <p className="text-error text-sm mt-1.5 font-medium">{errors.email.message}</p>
         )}
+      </div>
+
+      <div>
+        <label htmlFor="password" className="block text-sm font-semibold text-foreground mb-2">
+          App password
+        </label>
+        <input
+          {...register('password')}
+          type="password"
+          id="password"
+          autoComplete="current-password"
+          placeholder="Shared demo password"
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-transparent transition-smooth text-foreground placeholder-gray-500"
+        />
+        {errors.password && (
+          <p className="text-error text-sm mt-1.5 font-medium">{errors.password.message}</p>
+        )}
+        <p className="text-xs text-gray-500 mt-2">
+          Same shared password for every restaurant in this demo (default{' '}
+          <code className="bg-gray-100 px-1 rounded">1234567890</code> until changed in admin).
+        </p>
       </div>
 
       <button

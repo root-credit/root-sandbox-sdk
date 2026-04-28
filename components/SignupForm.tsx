@@ -10,6 +10,7 @@ const signupSchema = z.object({
   email: z.string().email('Invalid email address'),
   restaurantName: z.string().min(2, 'Restaurant name must be at least 2 characters'),
   phone: z.string().min(10, 'Phone number must be at least 10 digits'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
 type SignupFormData = z.infer<typeof signupSchema>;
@@ -111,6 +112,27 @@ export function SignupForm() {
         {errors.phone && (
           <p className="text-error text-sm mt-1.5 font-medium">{errors.phone.message}</p>
         )}
+      </div>
+
+      <div>
+        <label htmlFor="password" className="block text-sm font-semibold text-foreground mb-2">
+          App password
+        </label>
+        <input
+          {...register('password')}
+          type="password"
+          id="password"
+          autoComplete="new-password"
+          placeholder="Shared demo password"
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-transparent transition-smooth text-foreground placeholder-gray-500"
+        />
+        {errors.password && (
+          <p className="text-error text-sm mt-1.5 font-medium">{errors.password.message}</p>
+        )}
+        <p className="text-xs text-gray-500 mt-2">
+          Same shared password for every account (default{' '}
+          <code className="bg-gray-100 px-1 rounded">1234567890</code> unless set in admin).
+        </p>
       </div>
 
       <button

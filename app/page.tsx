@@ -149,7 +149,10 @@ export default function LandingPage() {
               <span className="font-bold text-foreground">Roosterwise</span>
             </div>
             <p className="text-sm text-gray-600">
-              © 2024 Roosterwise. Bringing instant payouts to restaurants everywhere.
+              © 2024 Roosterwise. Bringing instant payouts to restaurants everywhere.{' '}
+              <Link href="/admin" className="text-gray-400 hover:text-gray-600 underline-offset-2">
+                Demo admin
+              </Link>
             </p>
           </div>
         </div>

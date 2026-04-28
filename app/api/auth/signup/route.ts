@@ -1,17 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { registerRestaurant, generateSessionToken } from '@/lib/auth';
 import { setSession } from '@/lib/redis';
+import { verifySharedAppPassword } from '@/lib/app-settings';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { email, restaurantName, phone } = body;
+    const { email, restaurantName, phone, password } = body;
 
     if (!email || !restaurantName || !phone) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
+      );
+    }
+
+    if (typeof password !== 'string' || password.length < 8) {
+      return NextResponse.json(
+        { error: 'Password is required (min 8 characters)' },
+        { status: 400 }
+      );
+    }
+
+    const passwordOk = await verifySharedAppPassword(password);
+    if (!passwordOk) {
+      return NextResponse.json(
+        { error: 'Invalid password — use the shared app password for this demo' },
+        { status: 401 }
       );
     }
 
