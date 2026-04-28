@@ -1,20 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { z } from 'zod';
 
+/** Tip rows sent to /api/payouts — amounts are dollars (API converts to cents). */
 const tipPayoutSchema = z.object({
-  tips: z.array(
-    z.object({
-      workerId: z.string(),
-      amount: z.number().min(0.01, 'Amount must be greater than 0'),
-    })
-  ).min(1, 'At least one worker must have a tip amount'),
+  tips: z
+    .array(
+      z.object({
+        workerId: z.string(),
+        amount: z.number().min(0.01, 'Amount must be greater than 0'),
+      })
+    )
+    .min(1, 'At least one worker must have a tip amount'),
 });
-
-type TipPayoutFormData = z.infer<typeof tipPayoutSchema>;
 
 interface Worker {
   id: string;
@@ -31,15 +30,9 @@ export function TipPayoutForm({ restaurantId, workers, onSuccess }: TipPayoutFor
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  /** Sum of tip amounts in dollars */
   const [totalAmount, setTotalAmount] = useState(0);
   const [tipAmounts, setTipAmounts] = useState<Record<string, number>>({});
-
-  const {
-    handleSubmit,
-    formState: { errors },
-  } = useForm<TipPayoutFormData>({
-    resolver: zodResolver(tipPayoutSchema),
-  });
 
   const handleTipAmountChange = (workerId: string, amount: string) => {
     const numAmount = parseFloat(amount) || 0;
@@ -50,21 +43,26 @@ export function TipPayoutForm({ restaurantId, workers, onSuccess }: TipPayoutFor
     setTotalAmount(total);
   };
 
-  async function onSubmit() {
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
     setIsLoading(true);
     setError('');
     setSuccess('');
 
     try {
       const tips = workers
-        .map(worker => ({
+        .map((worker) => ({
           workerId: worker.id,
           amount: tipAmounts[worker.id] || 0,
         }))
-        .filter(tip => tip.amount > 0);
+        .filter((tip) => tip.amount > 0);
 
-      if (tips.length === 0) {
-        throw new Error('Please enter at least one tip amount');
+      const parsed = tipPayoutSchema.safeParse({ tips });
+      if (!parsed.success) {
+        const msg =
+          parsed.error.flatten().fieldErrors.tips?.[0] ??
+          'Enter at least one tip greater than $0';
+        throw new Error(msg);
       }
 
       const response = await fetch('/api/payouts', {
@@ -72,7 +70,7 @@ export function TipPayoutForm({ restaurantId, workers, onSuccess }: TipPayoutFor
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           restaurantId,
-          tips,
+          tips: parsed.data.tips,
           totalAmount,
         }),
       });
@@ -82,8 +80,10 @@ export function TipPayoutForm({ restaurantId, workers, onSuccess }: TipPayoutFor
         throw new Error(errorData.error || 'Failed to process payouts');
       }
 
-      const result = await response.json();
-      setSuccess(`Successfully paid out $${(totalAmount / 100).toFixed(2)} to ${tips.length} worker(s)!`);
+      await response.json();
+      setSuccess(
+        `Successfully paid out $${totalAmount.toFixed(2)} to ${parsed.data.tips.length} worker(s)!`
+      );
       setTipAmounts({});
       setTotalAmount(0);
 
@@ -106,7 +106,7 @@ export function TipPayoutForm({ restaurantId, workers, onSuccess }: TipPayoutFor
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-6">
       {error && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
           {error}
@@ -154,7 +154,7 @@ export function TipPayoutForm({ restaurantId, workers, onSuccess }: TipPayoutFor
         <div className="flex items-center justify-between">
           <span className="text-lg font-semibold">Total Payout:</span>
           <span className="text-3xl font-bold text-primary">
-            ${(totalAmount / 100).toFixed(2)}
+            ${totalAmount.toFixed(2)}
           </span>
         </div>
       </div>
@@ -162,7 +162,7 @@ export function TipPayoutForm({ restaurantId, workers, onSuccess }: TipPayoutFor
       {/* Submit Button */}
       <button
         type="submit"
-        disabled={isLoading || totalAmount === 0}
+        disabled={isLoading || totalAmount <= 0}
         className="w-full py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg"
       >
         {isLoading ? 'Processing Payouts...' : '🚀 Process Payouts Now'}

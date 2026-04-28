@@ -5,6 +5,7 @@ import {
   getWorker,
   setTransaction,
   getRestaurantTransactions,
+  getSession,
 } from '@/lib/redis';
 import { createTipPayout } from '@/lib/root-api';
 
@@ -27,6 +28,21 @@ export async function POST(request: NextRequest) {
     if (!restaurantId) {
       return NextResponse.json(
         { error: 'Missing restaurantId' },
+        { status: 400 }
+      );
+    }
+
+    const session = await getSession(sessionMatch[1].trim());
+    if (!session || session.restaurantId !== restaurantId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    if (!Array.isArray(tips) || tips.length === 0) {
+      return NextResponse.json(
+        { error: 'Missing or empty tips array' },
         { status: 400 }
       );
     }
@@ -140,6 +156,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Missing restaurantId' },
         { status: 400 }
+      );
+    }
+
+    const session = await getSession(sessionMatch[1].trim());
+    if (!session || session.restaurantId !== restaurantId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
       );
     }
 
