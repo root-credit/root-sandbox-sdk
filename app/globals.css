@@ -1,48 +1,104 @@
 @import "tailwindcss";
 
 :root {
-  /* Primary - Professional Tech Blue */
-  --color-primary: #0F766E;
-  --color-primary-light: #14B8A6;
-  --color-primary-dark: #0D5B4D;
+  /* Surfaces */
+  --color-background: #FAF8F2;
+  --color-surface: #FFFFFF;
+  --color-surface-2: #F4F1E7;
+  --color-foreground: #0A0A0A;
 
-  /* Neutrals - Clean & Professional */
-  --color-background: #FFFFFF;
-  --color-foreground: #0F172A;
-  --color-gray-50: #F8FAFC;
-  --color-gray-100: #F1F5F9;
-  --color-gray-200: #E2E8F0;
-  --color-gray-300: #CBD5E1;
-  --color-gray-400: #94A3B8;
-  --color-gray-500: #64748B;
-  --color-gray-600: #475569;
-  --color-gray-700: #334155;
+  /* Brand palette — charcoal & gold (hospitality/enterprise tone) */
+  --color-ink: #0A0A0A;          /* dark hero / primary buttons */
+  --color-ink-soft: #1F1F1F;
+  --color-ink-2: #262626;
+  --color-gold: #A16207;          /* deep gold for accents/borders */
+  --color-gold-bright: #D4A017;   /* highlight gold */
+  --color-gold-soft: #F4E5B7;     /* gold tint backgrounds */
 
-  /* Accents */
-  --color-success: #10B981;
-  --color-error: #EF4444;
-  --color-warning: #F59E0B;
-  --color-info: #0EA5E9;
+  /* Neutrals */
+  --color-neutral-50: #FAFAF7;
+  --color-neutral-100: #F5F4EE;
+  --color-neutral-150: #ECEAE0;
+  --color-neutral-200: #E5E2D5;
+  --color-neutral-300: #C8C3B0;
+  --color-neutral-400: #9A9583;
+  --color-neutral-500: #6B6655;
+  --color-neutral-600: #494538;
+  --color-neutral-700: #2E2B22;
+  --color-neutral-800: #18170F;
+
+  /* Status */
+  --color-success: #15803D;
+  --color-success-soft: #DCFCE7;
+  --color-error: #B91C1C;
+  --color-error-soft: #FEE2E2;
+  --color-warning: #B45309;
+  --color-warning-soft: #FEF3C7;
+  --color-info: #0369A1;
+  --color-info-soft: #E0F2FE;
+
+  /* Legacy aliases used across components (kept to avoid logic-touching) */
+  --color-primary: var(--color-ink);
+  --color-primary-light: var(--color-ink-soft);
+  --color-primary-dark: #000000;
+  --color-gray-50: var(--color-neutral-50);
+  --color-gray-100: var(--color-neutral-100);
+  --color-gray-200: var(--color-neutral-200);
+  --color-gray-300: var(--color-neutral-300);
+  --color-gray-400: var(--color-neutral-400);
+  --color-gray-500: var(--color-neutral-500);
+  --color-gray-600: var(--color-neutral-500);
+  --color-gray-700: var(--color-neutral-700);
 }
 
 @theme inline {
-  --color-primary: var(--color-primary);
   --color-background: var(--color-background);
   --color-foreground: var(--color-foreground);
-  --color-gray-50: var(--color-gray-50);
-  --color-gray-100: var(--color-gray-100);
-  --color-gray-200: var(--color-gray-200);
-  --color-gray-300: var(--color-gray-300);
-  --color-gray-400: var(--color-gray-400);
-  --color-gray-500: var(--color-gray-500);
-  --color-gray-600: var(--color-gray-600);
-  --color-gray-700: var(--color-gray-700);
+  --color-surface: var(--color-surface);
+  --color-surface-2: var(--color-surface-2);
+
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-gold: var(--color-gold);
+  --color-gold-bright: var(--color-gold-bright);
+  --color-gold-soft: var(--color-gold-soft);
+
+  --color-neutral-50: var(--color-neutral-50);
+  --color-neutral-100: var(--color-neutral-100);
+  --color-neutral-150: var(--color-neutral-150);
+  --color-neutral-200: var(--color-neutral-200);
+  --color-neutral-300: var(--color-neutral-300);
+  --color-neutral-400: var(--color-neutral-400);
+  --color-neutral-500: var(--color-neutral-500);
+  --color-neutral-600: var(--color-neutral-600);
+  --color-neutral-700: var(--color-neutral-700);
+  --color-neutral-800: var(--color-neutral-800);
+
   --color-success: var(--color-success);
+  --color-success-soft: var(--color-success-soft);
   --color-error: var(--color-error);
+  --color-error-soft: var(--color-error-soft);
   --color-warning: var(--color-warning);
+  --color-warning-soft: var(--color-warning-soft);
   --color-info: var(--color-info);
+  --color-info-soft: var(--color-info-soft);
+
+  /* legacy aliases for existing class usage */
+  --color-primary: var(--color-ink);
+  --color-primary-light: var(--color-ink-soft);
+  --color-primary-dark: #000000;
+  --color-gray-50: var(--color-neutral-50);
+  --color-gray-100: var(--color-neutral-100);
+  --color-gray-200: var(--color-neutral-200);
+  --color-gray-300: var(--color-neutral-300);
+  --color-gray-400: var(--color-neutral-400);
+  --color-gray-500: var(--color-neutral-500);
+  --color-gray-600: var(--color-neutral-500);
+  --color-gray-700: var(--color-neutral-700);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fraunces);
 }
 
 * {
@@ -59,46 +115,123 @@ html {
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-geist-sans), sans-serif;
-  line-height: 1.6;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "ss02", "cv11";
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Utility Classes */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
-/* Button Reset */
 button {
   font-family: inherit;
   cursor: pointer;
 }
 
-/* Link Reset */
 a {
   text-decoration: none;
   color: inherit;
 }
 
-/* Smooth Transitions */
+/* Selection */
+::selection {
+  background: var(--color-gold-soft);
+  color: var(--color-ink);
+}
+
+/* Scrollbar — subtle */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-300);
+  border-radius: 999px;
+  border: 2px solid var(--color-background);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neutral-400);
+}
+
+/* Display + utility classes */
 @layer utilities {
+  .font-display {
+    font-family: var(--font-fraunces), ui-serif, Georgia, "Times New Roman", serif;
+    font-feature-settings: "ss01" on, "salt" on;
+  }
+  .font-mono-tab {
+    font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-feature-settings: "tnum" on;
+  }
+  .tracking-tightest {
+    letter-spacing: -0.04em;
+  }
+  .text-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-neutral-500);
+  }
   .transition-smooth {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
-
   .shadow-sm-custom {
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(10, 10, 10, 0.04);
   }
-
   .shadow-md-custom {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow:
+      0 1px 2px rgba(10, 10, 10, 0.04),
+      0 8px 24px -12px rgba(10, 10, 10, 0.12);
+  }
+  .shadow-lg-custom {
+    box-shadow:
+      0 1px 2px rgba(10, 10, 10, 0.04),
+      0 14px 32px -10px rgba(10, 10, 10, 0.18);
+  }
+  .ring-focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
   }
 
-  .shadow-lg-custom {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  /* Gold rule used as decorative divider */
+  .gold-rule {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--color-gold-bright) 30%,
+      var(--color-gold-bright) 70%,
+      transparent 100%
+    );
   }
+
+  /* "Receipt" perforated edge */
+  .perforated-edge {
+    background-image: radial-gradient(
+      circle at 6px 50%,
+      var(--color-background) 6px,
+      transparent 7px
+    );
+    background-size: 20px 12px;
+    background-repeat: repeat-y;
+  }
+}
+
+/* Form primitives — apply automatically to base elements where safe */
+input,
+select,
+textarea {
+  font-family: inherit;
+  color: var(--color-foreground);
+  background: var(--color-surface);
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.18);
+  border-color: var(--color-gold) !important;
 }

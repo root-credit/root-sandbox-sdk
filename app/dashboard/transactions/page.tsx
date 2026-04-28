@@ -68,95 +68,98 @@ export default function TransactionsPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <DashboardHeader email={session.adminEmail} />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-12">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-6 lg:px-10 py-12">
         {/* Header */}
-        <div className="mb-8">
-          <Link
-            href="/dashboard"
-            className="text-primary hover:underline text-sm mb-4 inline-block"
-          >
-            ← Back to Dashboard
-          </Link>
-          <h1 className="text-3xl font-bold">Transaction History</h1>
-          <p className="text-gray-600 mt-2">All tip payouts processed through Roosterwise</p>
+        <div className="mb-10">
+          <Crumbs />
+          <h1 className="font-display text-4xl md:text-5xl tracking-tightest mt-3">
+            Transactions
+          </h1>
+          <p className="text-neutral-500 mt-2 max-w-md">
+            Every payout, every status, every receipt — written to the ledger.
+          </p>
         </div>
 
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 mb-6">
+          <div className="px-4 py-3 bg-error-soft border border-error/20 rounded-md text-error text-sm mb-6">
             {error}
           </div>
         )}
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <p className="text-gray-600 text-sm">Total Paid Out</p>
-            <p className="text-3xl font-bold text-primary mt-2">
-              ${(totalPaidOut / 100).toFixed(2)}
-            </p>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <p className="text-gray-600 text-sm">Successful Transactions</p>
-            <p className="text-3xl font-bold text-green-600 mt-2">
-              {successfulTransactions}
-            </p>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <p className="text-gray-600 text-sm">Total Transactions</p>
-            <p className="text-3xl font-bold text-primary mt-2">
-              {transactions.length}
-            </p>
-          </div>
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <StatTile
+            label="Total paid out"
+            value={`$${(totalPaidOut / 100).toFixed(2)}`}
+            accent
+          />
+          <StatTile
+            label="Successful payouts"
+            value={String(successfulTransactions)}
+            tone="success"
+          />
+          <StatTile
+            label="Total transactions"
+            value={String(transactions.length)}
+          />
         </div>
 
         {/* Transactions Table */}
-        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="bg-surface border border-neutral-200 rounded-lg overflow-hidden shadow-sm-custom">
           {isLoading ? (
-            <div className="p-8 text-center text-gray-600">Loading transactions...</div>
+            <div className="p-12 text-center text-sm text-neutral-500">
+              Loading transactions…
+            </div>
           ) : transactions.length === 0 ? (
-            <div className="p-8 text-center">
-              <p className="text-gray-600 mb-4">No transactions yet</p>
+            <div className="p-16 text-center">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-neutral-100 text-neutral-400 mb-4">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 6h18M3 12h18M3 18h12" strokeLinecap="round" />
+                </svg>
+              </div>
+              <h3 className="font-display text-xl tracking-tightest">No transactions yet</h3>
+              <p className="text-neutral-500 mt-2 mb-6 text-sm">
+                Process your first payout to populate the ledger.
+              </p>
               <Link
                 href="/dashboard/payouts"
-                className="text-primary hover:underline"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-ink text-white text-sm font-medium hover:bg-ink-soft transition-smooth"
               >
                 Process your first payout
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M13 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </Link>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="border-b border-gray-200 bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold">Worker</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold">Email</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold">Amount</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold">Status</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold">Date</th>
+                <thead>
+                  <tr className="text-[11px] tracking-[0.14em] uppercase text-neutral-500 bg-neutral-100/60 border-b border-neutral-200">
+                    <th className="px-6 py-3 text-left font-medium">Worker</th>
+                    <th className="px-6 py-3 text-left font-medium">Email</th>
+                    <th className="px-6 py-3 text-right font-medium">Amount</th>
+                    <th className="px-6 py-3 text-left font-medium">Status</th>
+                    <th className="px-6 py-3 text-left font-medium">Date</th>
                   </tr>
                 </thead>
                 <tbody>
                   {transactions.map((transaction) => (
-                    <tr key={transaction.id} className="border-b border-gray-200 hover:bg-gray-50">
+                    <tr
+                      key={transaction.id}
+                      className="border-b border-neutral-150 last:border-b-0 hover:bg-neutral-50/60 transition-smooth"
+                    >
                       <td className="px-6 py-4 text-sm font-medium">{transaction.workerName}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{transaction.workerEmail}</td>
-                      <td className="px-6 py-4 text-sm font-semibold">
+                      <td className="px-6 py-4 text-sm text-neutral-500 font-mono-tab">
+                        {transaction.workerEmail}
+                      </td>
+                      <td className="px-6 py-4 text-right text-sm font-mono-tab font-semibold">
                         ${(transaction.amount / 100).toFixed(2)}
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          transaction.status === 'completed'
-                            ? 'bg-green-100 text-green-800'
-                            : transaction.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}>
-                          {transaction.status === 'completed' ? '✓ Completed' : transaction.status === 'pending' ? '⏳ Pending' : '✕ Failed'}
-                        </span>
+                        <StatusBadge status={transaction.status} />
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-6 py-4 text-sm text-neutral-500 font-mono-tab">
                         {new Date(transaction.createdAt).toLocaleDateString(undefined, {
                           year: 'numeric',
                           month: 'short',
@@ -174,5 +177,86 @@ export default function TransactionsPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+function Crumbs() {
+  return (
+    <nav className="text-[11px] tracking-[0.18em] uppercase text-neutral-400 flex items-center gap-2">
+      <Link href="/dashboard" className="hover:text-ink transition-smooth">
+        Console
+      </Link>
+      <span className="text-neutral-300">/</span>
+      <span className="text-ink">Transactions</span>
+    </nav>
+  );
+}
+
+function StatTile({
+  label,
+  value,
+  accent,
+  tone,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+  tone?: 'success';
+}) {
+  const valueColor = accent
+    ? 'text-gold'
+    : tone === 'success'
+    ? 'text-success'
+    : 'text-ink';
+  return (
+    <div className="relative bg-surface border border-neutral-200 rounded-lg p-5 overflow-hidden">
+      <div className="text-eyebrow">{label}</div>
+      <div className={`font-display text-3xl mt-2 tracking-tightest ${valueColor}`}>
+        {value}
+      </div>
+      {accent && (
+        <div
+          aria-hidden
+          className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(212,160,23,0.18), transparent 70%)',
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, { label: string; cls: string; dot: string }> = {
+    completed: {
+      label: 'Settled',
+      cls: 'bg-success-soft border-success/20 text-success',
+      dot: 'bg-success',
+    },
+    pending: {
+      label: 'Pending',
+      cls: 'bg-warning-soft border-warning/30 text-warning',
+      dot: 'bg-warning',
+    },
+    failed: {
+      label: 'Failed',
+      cls: 'bg-error-soft border-error/20 text-error',
+      dot: 'bg-error',
+    },
+  };
+  const variant = map[status] ?? {
+    label: status,
+    cls: 'bg-neutral-100 border-neutral-200 text-neutral-500',
+    dot: 'bg-neutral-400',
+  };
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] tracking-[0.05em] font-medium border ${variant.cls}`}
+    >
+      <span className={`w-1.5 h-1.5 rounded-full ${variant.dot}`} />
+      {variant.label}
+    </span>
   );
 }

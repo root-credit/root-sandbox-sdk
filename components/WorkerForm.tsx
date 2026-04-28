@@ -39,11 +39,21 @@ interface WorkerFormProps {
   onSuccess?: () => void;
 }
 
+const inputClass =
+  'w-full px-3.5 py-2.5 bg-surface text-foreground rounded-md border border-neutral-200 ' +
+  'placeholder:text-neutral-400 transition-smooth ' +
+  'focus:outline-none focus:border-gold focus:ring-[3px] focus:ring-gold-bright/25';
+
+const labelClass =
+  'block text-[11px] tracking-[0.14em] uppercase text-neutral-500 mb-2';
+
+const sectionEyebrow =
+  'text-[11px] tracking-[0.18em] uppercase text-neutral-500 font-medium';
+
 export function WorkerForm({ restaurantId, onSuccess }: WorkerFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [paymentType, setPaymentType] = useState<'bank_account' | 'debit_card'>('bank_account');
 
   const {
     register,
@@ -92,107 +102,119 @@ export function WorkerForm({ restaurantId, onSuccess }: WorkerFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+        <div className="px-4 py-3 bg-error-soft border border-error/20 rounded-md text-error text-sm">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+        <div className="px-4 py-3 bg-success-soft border border-success/20 rounded-md text-success text-sm">
           {success}
         </div>
       )}
 
       {/* Worker Info */}
-      <div className="space-y-4">
-        <h3 className="font-semibold text-lg">Worker Information</h3>
+      <fieldset className="space-y-4">
+        <legend className={sectionEyebrow}>Worker information</legend>
 
         <div>
-          <label htmlFor="name" className="block text-sm font-medium mb-2">
-            Full Name
+          <label htmlFor="name" className={labelClass}>
+            Full name
           </label>
           <input
             {...register('name')}
             type="text"
             id="name"
             placeholder="John Doe"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            className={inputClass}
           />
           {errors.name && (
-            <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
+            <p className="text-error text-xs mt-1.5">{errors.name.message}</p>
           )}
         </div>
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium mb-2">
-            Email Address
-          </label>
-          <input
-            {...register('email')}
-            type="email"
-            id="email"
-            placeholder="john@example.com"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-          {errors.email && (
-            <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="email" className={labelClass}>
+              Email address
+            </label>
+            <input
+              {...register('email')}
+              type="email"
+              id="email"
+              placeholder="john@example.com"
+              className={inputClass}
+            />
+            {errors.email && (
+              <p className="text-error text-xs mt-1.5">{errors.email.message}</p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="phone" className={labelClass}>
+              Phone number
+            </label>
+            <input
+              {...register('phone')}
+              type="tel"
+              id="phone"
+              placeholder="(555) 123-4567"
+              className={inputClass}
+            />
+            {errors.phone && (
+              <p className="text-error text-xs mt-1.5">{errors.phone.message}</p>
+            )}
+          </div>
         </div>
-
-        <div>
-          <label htmlFor="phone" className="block text-sm font-medium mb-2">
-            Phone Number
-          </label>
-          <input
-            {...register('phone')}
-            type="tel"
-            id="phone"
-            placeholder="(555) 123-4567"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-          {errors.phone && (
-            <p className="text-red-600 text-sm mt-1">{errors.phone.message}</p>
-          )}
-        </div>
-      </div>
+      </fieldset>
 
       {/* Payment Method Selection */}
-      <div className="space-y-4">
-        <h3 className="font-semibold text-lg">Payment Method</h3>
+      <fieldset className="space-y-4">
+        <legend className={sectionEyebrow}>Payout rail</legend>
 
-        <div className="flex gap-4">
-          <label className="flex items-center cursor-pointer">
-            <input
-              type="radio"
-              value="bank_account"
-              {...register('paymentMethodType')}
-              className="w-4 h-4"
-            />
-            <span className="ml-2">Bank Account</span>
-          </label>
-          <label className="flex items-center cursor-pointer">
-            <input
-              type="radio"
-              value="debit_card"
-              {...register('paymentMethodType')}
-              className="w-4 h-4"
-            />
-            <span className="ml-2">Debit Card</span>
-          </label>
+        <div className="grid grid-cols-2 gap-3">
+          <RadioCard
+            id="rail-bank"
+            value="bank_account"
+            register={register('paymentMethodType')}
+            checked={currentPaymentType === 'bank_account'}
+            title="Bank account"
+            desc="ACH or instant bank rail"
+            icon={
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M3 21h18M5 21V10l7-5 7 5v11M9 9h.01M15 9h.01" strokeLinecap="round" />
+              </svg>
+            }
+          />
+          <RadioCard
+            id="rail-card"
+            value="debit_card"
+            register={register('paymentMethodType')}
+            checked={currentPaymentType === 'debit_card'}
+            title="Debit card"
+            desc="Instant card push"
+            icon={
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="2" y="6" width="20" height="14" rx="2" />
+                <path d="M2 11h20" strokeLinecap="round" />
+              </svg>
+            }
+          />
         </div>
-      </div>
+      </fieldset>
 
       {/* Bank Account Fields */}
       {currentPaymentType === 'bank_account' && (
-        <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-medium">Bank Account Details</h4>
+        <fieldset className="rounded-lg border border-neutral-200 bg-surface-2 p-5 space-y-4">
+          <legend className="px-2 -ml-2 text-[11px] tracking-[0.18em] uppercase text-neutral-500">
+            Bank details
+          </legend>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="routingNumber" className="block text-sm font-medium mb-2">
-                Routing Number
+              <label htmlFor="routingNumber" className={labelClass}>
+                Routing number
               </label>
               <input
                 {...register('routingNumber')}
@@ -200,70 +222,72 @@ export function WorkerForm({ restaurantId, onSuccess }: WorkerFormProps) {
                 id="routingNumber"
                 placeholder="123456789"
                 maxLength={9}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className={`${inputClass} font-mono-tab`}
               />
               {errors.routingNumber && (
-                <p className="text-red-600 text-sm mt-1">{errors.routingNumber.message}</p>
+                <p className="text-error text-xs mt-1.5">{errors.routingNumber.message}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="accountNumber" className="block text-sm font-medium mb-2">
-                Account Number
+              <label htmlFor="accountNumber" className={labelClass}>
+                Account number
               </label>
               <input
                 {...register('accountNumber')}
                 type="password"
                 id="accountNumber"
                 placeholder="••••••••"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className={`${inputClass} font-mono-tab`}
               />
               {errors.accountNumber && (
-                <p className="text-red-600 text-sm mt-1">{errors.accountNumber.message}</p>
+                <p className="text-error text-xs mt-1.5">{errors.accountNumber.message}</p>
               )}
             </div>
           </div>
 
           <div>
-            <label htmlFor="accountType" className="block text-sm font-medium mb-2">
-              Account Type
+            <label htmlFor="accountType" className={labelClass}>
+              Account type
             </label>
             <select
               {...register('accountType')}
               id="accountType"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              className={inputClass}
             >
               <option value="checking">Checking</option>
               <option value="savings">Savings</option>
             </select>
           </div>
-        </div>
+        </fieldset>
       )}
 
       {/* Debit Card Fields */}
       {currentPaymentType === 'debit_card' && (
-        <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-medium">Debit Card Details</h4>
+        <fieldset className="rounded-lg border border-neutral-200 bg-surface-2 p-5 space-y-4">
+          <legend className="px-2 -ml-2 text-[11px] tracking-[0.18em] uppercase text-neutral-500">
+            Card details
+          </legend>
 
           <div>
-            <label htmlFor="cardholderName" className="block text-sm font-medium mb-2">
-              Cardholder Name
+            <label htmlFor="cardholderName" className={labelClass}>
+              Cardholder name
             </label>
             <input
               {...register('cardholderName')}
               type="text"
               id="cardholderName"
               placeholder="John Doe"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              className={inputClass}
             />
             {errors.cardholderName && (
-              <p className="text-red-600 text-sm mt-1">{errors.cardholderName.message}</p>
+              <p className="text-error text-xs mt-1.5">{errors.cardholderName.message}</p>
             )}
           </div>
 
           <div>
-            <label htmlFor="cardNumber" className="block text-sm font-medium mb-2">
-              Card Number
+            <label htmlFor="cardNumber" className={labelClass}>
+              Card number
             </label>
             <input
               {...register('cardNumber')}
@@ -271,17 +295,17 @@ export function WorkerForm({ restaurantId, onSuccess }: WorkerFormProps) {
               id="cardNumber"
               placeholder="••••••••••••••••"
               maxLength={16}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              className={`${inputClass} font-mono-tab`}
             />
             {errors.cardNumber && (
-              <p className="text-red-600 text-sm mt-1">{errors.cardNumber.message}</p>
+              <p className="text-error text-xs mt-1.5">{errors.cardNumber.message}</p>
             )}
           </div>
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label htmlFor="expiryMonth" className="block text-sm font-medium mb-2">
-                Expiry Month
+              <label htmlFor="expiryMonth" className={labelClass}>
+                Expiry month
               </label>
               <input
                 {...register('expiryMonth', { valueAsNumber: true })}
@@ -290,16 +314,16 @@ export function WorkerForm({ restaurantId, onSuccess }: WorkerFormProps) {
                 placeholder="MM"
                 min={1}
                 max={12}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className={`${inputClass} font-mono-tab`}
               />
               {errors.expiryMonth && (
-                <p className="text-red-600 text-sm mt-1">{errors.expiryMonth.message}</p>
+                <p className="text-error text-xs mt-1.5">{errors.expiryMonth.message}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="expiryYear" className="block text-sm font-medium mb-2">
-                Expiry Year
+              <label htmlFor="expiryYear" className={labelClass}>
+                Expiry year
               </label>
               <input
                 {...register('expiryYear', { valueAsNumber: true })}
@@ -307,15 +331,15 @@ export function WorkerForm({ restaurantId, onSuccess }: WorkerFormProps) {
                 id="expiryYear"
                 placeholder="YYYY"
                 min={new Date().getFullYear()}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className={`${inputClass} font-mono-tab`}
               />
               {errors.expiryYear && (
-                <p className="text-red-600 text-sm mt-1">{errors.expiryYear.message}</p>
+                <p className="text-error text-xs mt-1.5">{errors.expiryYear.message}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="cvv" className="block text-sm font-medium mb-2">
+              <label htmlFor="cvv" className={labelClass}>
                 CVV
               </label>
               <input
@@ -324,23 +348,100 @@ export function WorkerForm({ restaurantId, onSuccess }: WorkerFormProps) {
                 id="cvv"
                 placeholder="•••"
                 maxLength={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className={`${inputClass} font-mono-tab`}
               />
               {errors.cvv && (
-                <p className="text-red-600 text-sm mt-1">{errors.cvv.message}</p>
+                <p className="text-error text-xs mt-1.5">{errors.cvv.message}</p>
               )}
             </div>
           </div>
-        </div>
+        </fieldset>
       )}
 
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-2 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-md bg-ink text-white text-sm font-medium tracking-tight hover:bg-ink-soft transition-smooth disabled:opacity-50 disabled:cursor-not-allowed shadow-sm-custom hover:shadow-md-custom"
       >
-        {isLoading ? 'Adding Worker...' : 'Add Worker'}
+        {isLoading ? (
+          <>
+            <Spinner /> Adding worker…
+          </>
+        ) : (
+          <>
+            Add worker
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M13 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </>
+        )}
       </button>
     </form>
+  );
+}
+
+function RadioCard({
+  id,
+  value,
+  register,
+  checked,
+  title,
+  desc,
+  icon,
+}: {
+  id: string;
+  value: string;
+  register: ReturnType<ReturnType<typeof useForm>['register']>;
+  checked: boolean;
+  title: string;
+  desc: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <label
+      htmlFor={id}
+      className={`relative flex items-start gap-3 p-4 rounded-md border cursor-pointer transition-smooth ${
+        checked
+          ? 'border-ink bg-neutral-100/70 shadow-sm-custom'
+          : 'border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'
+      }`}
+    >
+      <input
+        type="radio"
+        id={id}
+        value={value}
+        {...register}
+        className="sr-only"
+      />
+      <span
+        className={`inline-flex items-center justify-center w-9 h-9 rounded-md flex-none ${
+          checked ? 'bg-ink text-gold-bright' : 'bg-neutral-100 text-neutral-500'
+        }`}
+      >
+        {icon}
+      </span>
+      <span className="flex-1 min-w-0">
+        <span className="block text-sm font-medium">{title}</span>
+        <span className="block text-xs text-neutral-500 mt-0.5">{desc}</span>
+      </span>
+      <span
+        className={`mt-1 w-4 h-4 rounded-full border flex-none transition-smooth ${
+          checked ? 'border-ink bg-ink' : 'border-neutral-300 bg-surface'
+        }`}
+      >
+        {checked && (
+          <span className="block m-auto mt-[3px] w-2 h-2 rounded-full bg-gold-bright" />
+        )}
+      </span>
+    </label>
+  );
+}
+
+function Spinner() {
+  return (
+    <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />
+      <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    </svg>
   );
 }

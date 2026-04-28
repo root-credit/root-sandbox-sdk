@@ -62,29 +62,38 @@ export default function PayoutsPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <DashboardHeader email={session.adminEmail} />
 
-      <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-12">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-6 lg:px-10 py-12">
         {/* Header */}
-        <div className="mb-8">
-          <Link
-            href="/dashboard"
-            className="text-primary hover:underline text-sm mb-4 inline-block"
-          >
-            ← Back to Dashboard
-          </Link>
-          <h1 className="text-3xl font-bold">Tip Payouts</h1>
-          <p className="text-gray-600 mt-2">Process end-of-day tips in 5 seconds</p>
+        <div className="mb-10">
+          <Crumbs />
+          <div className="flex items-end justify-between gap-6 flex-wrap mt-3">
+            <div>
+              <h1 className="font-display text-4xl md:text-5xl tracking-tightest">
+                Tip payouts
+              </h1>
+              <p className="text-neutral-500 mt-2 max-w-md">
+                Run end-of-shift gratuities and settle in seconds.
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-success">
+              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+              Rail live
+            </span>
+          </div>
         </div>
 
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 mb-6">
+          <div className="px-4 py-3 bg-error-soft border border-error/20 rounded-md text-error text-sm mb-6">
             {error}
           </div>
         )}
 
-        {/* Main Payout Form */}
-        <div className="bg-white border border-gray-200 rounded-lg p-8 mb-8">
+        {/* Main payout form */}
+        <div className="bg-surface border border-neutral-200 rounded-lg p-8 mb-8 shadow-sm-custom">
           {isLoading ? (
-            <div className="text-center text-gray-600">Loading workers...</div>
+            <div className="text-center text-sm text-neutral-500 py-8">
+              Loading workers…
+            </div>
           ) : (
             <TipPayoutForm
               restaurantId={session.restaurantId}
@@ -94,29 +103,83 @@ export default function PayoutsPage() {
           )}
         </div>
 
-        {/* Info Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <h3 className="font-semibold text-blue-900 mb-3">How It Works</h3>
-            <ol className="text-sm text-blue-800 space-y-2 list-decimal list-inside">
-              <li>Enter end-of-day tip amounts for your workers</li>
-              <li>Click &quot;Process Payouts Now&quot;</li>
-              <li>Tips are instantly sent to worker bank accounts/cards</li>
-              <li>Transaction history is saved automatically</li>
-            </ol>
-          </div>
-
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-            <h3 className="font-semibold text-green-900 mb-3">Quick Tips</h3>
-            <ul className="text-sm text-green-800 space-y-2 list-disc list-inside">
-              <li>Payouts process in ~5 seconds per worker</li>
-              <li>Worker payment methods must be linked first</li>
-              <li>Funds come from your bank account link</li>
-              <li>Check transaction history anytime</li>
-            </ul>
-          </div>
+        {/* Info strip */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InfoCard
+            eyebrow="How it works"
+            title="From shift close to settled"
+            items={[
+              'Enter end-of-day tip amounts for your workers',
+              'Press process — Roosterwise validates the totals',
+              'Tips land in worker bank accounts or debit cards',
+              'Receipts and ledger entries write automatically',
+            ]}
+            ordered
+          />
+          <InfoCard
+            eyebrow="Quick tips"
+            title="Run a clean tip-out"
+            items={[
+              'Settles in roughly 5 seconds per worker',
+              'Worker payment methods must be linked first',
+              'Funds pull from your linked restaurant bank',
+              'Audit everything in Transactions',
+            ]}
+          />
         </div>
       </main>
+    </div>
+  );
+}
+
+function Crumbs() {
+  return (
+    <nav className="text-[11px] tracking-[0.18em] uppercase text-neutral-400 flex items-center gap-2">
+      <Link href="/dashboard" className="hover:text-ink transition-smooth">
+        Console
+      </Link>
+      <span className="text-neutral-300">/</span>
+      <span className="text-ink">Payouts</span>
+    </nav>
+  );
+}
+
+function InfoCard({
+  eyebrow,
+  title,
+  items,
+  ordered,
+}: {
+  eyebrow: string;
+  title: string;
+  items: string[];
+  ordered?: boolean;
+}) {
+  return (
+    <div className="bg-surface border border-neutral-200 rounded-lg p-6">
+      <p className="text-eyebrow mb-2">{eyebrow}</p>
+      <h3 className="font-display text-lg tracking-tightest mb-4">{title}</h3>
+      {ordered ? (
+        <ol className="space-y-2.5 text-sm text-neutral-600 leading-relaxed">
+          {items.map((it, i) => (
+            <li key={it} className="flex items-start gap-3">
+              <span className="font-mono-tab text-[11px] mt-0.5 text-gold tracking-tight">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span>{it}</span>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <ul className="space-y-2 text-sm text-neutral-600 leading-relaxed">
+          {items.map((it) => (
+            <li key={it} className="flex items-start gap-2.5">
+              <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
+              <span>{it}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

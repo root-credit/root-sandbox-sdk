@@ -9,6 +9,17 @@ type WorkerRow = {
   paymentMethodType?: string;
 };
 
+const inputClass =
+  'w-full px-3.5 py-2.5 bg-surface text-foreground rounded-md border border-neutral-200 ' +
+  'placeholder:text-neutral-400 transition-smooth ' +
+  'focus:outline-none focus:border-gold focus:ring-[3px] focus:ring-gold-bright/25';
+
+const labelClass =
+  'block text-[11px] tracking-[0.14em] uppercase text-neutral-500 mb-2';
+
+const sectionEyebrow =
+  'text-[11px] tracking-[0.18em] uppercase text-neutral-500 font-medium';
+
 export function AdminPanel() {
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const [email, setEmail] = useState('');
@@ -121,100 +132,105 @@ export function AdminPanel() {
 
   if (authorized === null) {
     return (
-      <div className="min-h-[40vh] flex items-center justify-center text-gray-600">
-        Checking admin session…
+      <div className="min-h-[40vh] flex items-center justify-center text-sm text-neutral-500">
+        <Spinner /> <span className="ml-2">Checking admin session…</span>
       </div>
     );
   }
 
   if (!authorized) {
     return (
-      <div className="max-w-md mx-auto">
-        <h2 className="text-xl font-semibold mb-4">Admin sign-in</h2>
-        <p className="text-sm text-gray-600 mb-6">
-          Uses fixed demo credentials (same code everywhere — nothing stored in Redis).
-          Email <code className="text-xs bg-gray-100 px-1 rounded">admin@root.credit</code>
-          {' '}/
-          {' '}password in{' '}
-          <code className="text-xs bg-gray-100 px-1 rounded">lib/admin-session.ts</code>.
-        </p>
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="username"
-              className="w-full border rounded-lg px-3 py-2"
-              placeholder="admin@root.credit"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              className="w-full border rounded-lg px-3 py-2"
-              required
-            />
-          </div>
-          {message && (
-            <div
-              className={`text-sm p-3 rounded-lg ${
-                message.type === 'ok'
-                  ? 'bg-green-50 text-green-900'
-                  : 'bg-red-50 text-red-900'
-              }`}
-            >
-              {message.text}
+      <div className="max-w-md">
+        <div className="bg-surface border border-neutral-200 rounded-lg p-8 shadow-sm-custom">
+          <p className="text-eyebrow mb-1">Admin sign-in</p>
+          <h2 className="font-display text-2xl tracking-tightest mb-3">
+            Operator credentials
+          </h2>
+          <p className="text-sm text-neutral-500 mb-6 leading-relaxed">
+            Uses fixed demo credentials (same code everywhere — nothing stored in Redis).
+            Email{' '}
+            <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">
+              admin@root.credit
+            </code>{' '}
+            / password in{' '}
+            <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">
+              lib/admin-session.ts
+            </code>
+            .
+          </p>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className={labelClass}>Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="username"
+                className={inputClass}
+                placeholder="admin@root.credit"
+                required
+              />
             </div>
-          )}
-          <button
-            type="submit"
-            disabled={busy !== null}
-            className="w-full py-2 bg-gray-900 text-white rounded-lg disabled:opacity-50"
-          >
-            {busy === 'login' ? 'Signing in…' : 'Sign in'}
-          </button>
-        </form>
+            <div>
+              <label className={labelClass}>Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                className={inputClass}
+                required
+              />
+            </div>
+            {message && <Message message={message} />}
+            <button
+              type="submit"
+              disabled={busy !== null}
+              className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-md bg-ink text-white text-sm font-medium tracking-tight hover:bg-ink-soft transition-smooth disabled:opacity-50"
+            >
+              {busy === 'login' ? (
+                <>
+                  <Spinner /> Signing in…
+                </>
+              ) : (
+                'Sign in'
+              )}
+            </button>
+          </form>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h2 className="text-xl font-semibold">Operations</h2>
+        <div>
+          <p className={sectionEyebrow}>Operations</p>
+          <h2 className="font-display text-2xl tracking-tightest mt-1">
+            Sandbox controls
+          </h2>
+        </div>
         <button
           type="button"
           onClick={logout}
-          className="text-sm text-gray-600 underline"
+          className="inline-flex items-center gap-2 px-3.5 py-2 text-sm rounded-md border border-neutral-200 hover:border-ink hover:bg-neutral-100 transition-smooth"
         >
           Log out
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </button>
       </div>
 
-      {message && (
-        <div
-          className={`text-sm p-3 rounded-lg ${
-            message.type === 'ok'
-              ? 'bg-green-50 text-green-900 border border-green-200'
-              : 'bg-red-50 text-red-900 border border-red-200'
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
+      {message && <Message message={message} />}
 
-      <section className="border rounded-xl p-6 space-y-3 bg-white">
-        <h3 className="font-semibold">Workers</h3>
-        <p className="text-sm text-gray-600">
-          Clear every worker record and worker index sets in Redis.
-        </p>
+      <Section
+        title="Workers"
+        description="Clear every worker record and worker index sets in Redis."
+        tone="danger"
+      >
         <button
           type="button"
           disabled={busy !== null}
@@ -223,26 +239,32 @@ export function AdminPanel() {
               runOperation('clear_all_workers')
             )
           }
-          className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-error text-white text-sm font-medium hover:opacity-90 transition-smooth disabled:opacity-50"
         >
-          Clear all workers
+          {busy === 'clear_all_workers' ? <><Spinner /> Clearing…</> : 'Clear all workers'}
         </button>
 
-        <div className="pt-4 border-t border-gray-100 mt-4">
-          <p className="text-sm text-gray-600 mb-2">Remove one worker</p>
-          <div className="flex flex-wrap gap-2 items-end">
-            <select
-              value={selectedWorkerId}
-              onChange={(e) => setSelectedWorkerId(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm min-w-[240px]"
-            >
-              <option value="">Select worker…</option>
-              {workers.map((w) => (
-                <option key={w.id} value={w.id}>
-                  {w.name} ({w.id.slice(0, 8)}…)
-                </option>
-              ))}
-            </select>
+        <div className="pt-5 mt-5 border-t border-neutral-150">
+          <p className="text-sm font-medium text-foreground mb-1">Remove one worker</p>
+          <p className="text-sm text-neutral-500 mb-3">
+            Targeted removal of a single worker by ID.
+          </p>
+          <div className="flex flex-wrap gap-3 items-end">
+            <div className="flex-1 min-w-[240px]">
+              <label className={labelClass}>Worker</label>
+              <select
+                value={selectedWorkerId}
+                onChange={(e) => setSelectedWorkerId(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">Select worker…</option>
+                {workers.map((w) => (
+                  <option key={w.id} value={w.id}>
+                    {w.name} ({w.id.slice(0, 8)}…)
+                  </option>
+                ))}
+              </select>
+            </div>
             <button
               type="button"
               disabled={busy !== null || !selectedWorkerId}
@@ -251,20 +273,18 @@ export function AdminPanel() {
                   runOperation('remove_worker', { workerId: selectedWorkerId })
                 )
               }
-              className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-warning text-white text-sm font-medium hover:opacity-90 transition-smooth disabled:opacity-50"
             >
-              Remove worker
+              {busy === 'remove_worker' ? <><Spinner /> Removing…</> : 'Remove worker'}
             </button>
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="border rounded-xl p-6 space-y-3 bg-white">
-        <h3 className="font-semibold">Session & transaction data</h3>
-        <p className="text-sm text-gray-600">
-          Clears restaurant user sessions and payout transaction history in Redis.
-          Does not remove restaurants or workers.
-        </p>
+      <Section
+        title="Sessions & transactions"
+        description="Clears restaurant user sessions and payout transaction history in Redis. Does not remove restaurants or workers."
+      >
         <button
           type="button"
           disabled={busy !== null}
@@ -274,18 +294,21 @@ export function AdminPanel() {
               () => runOperation('clear_sessions_and_transactions')
             )
           }
-          className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-warning text-white text-sm font-medium hover:opacity-90 transition-smooth disabled:opacity-50"
         >
-          Clear sessions & transactions
+          {busy === 'clear_sessions_and_transactions' ? <><Spinner /> Clearing…</> : 'Clear sessions & transactions'}
         </button>
-      </section>
+      </Section>
 
-      <section className="border rounded-xl p-6 space-y-3 bg-white">
-        <h3 className="font-semibold">Bank tokens (restaurants)</h3>
-        <p className="text-sm text-gray-600">
-          Removes <code className="text-xs">bankAccountToken</code> from each
-          restaurant record (does not call Root APIs).
-        </p>
+      <Section
+        title="Bank tokens (restaurants)"
+        description={
+          <>
+            Removes <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">bankAccountToken</code>{' '}
+            from each restaurant record (does not call Root APIs).
+          </>
+        }
+      >
         <button
           type="button"
           disabled={busy !== null}
@@ -294,28 +317,36 @@ export function AdminPanel() {
               runOperation('clear_bank_fields')
             )
           }
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-info text-white text-sm font-medium hover:opacity-90 transition-smooth disabled:opacity-50"
         >
-          Clear bank data
+          {busy === 'clear_bank_fields' ? <><Spinner /> Clearing…</> : 'Clear bank data'}
         </button>
-      </section>
+      </Section>
 
-      <section className="border rounded-xl p-6 space-y-3 bg-white">
-        <h3 className="font-semibold">Shared app login password</h3>
-        <p className="text-sm text-gray-600">
-          All restaurant accounts use one shared password (stored hashed in Redis).
-          Until you set one here, the default is{' '}
-          <code className="text-xs bg-gray-100 px-1 rounded">1234567890</code>.
-        </p>
-        <div className="flex flex-wrap gap-2 items-end">
-          <input
-            type="password"
-            value={newSharedPassword}
-            onChange={(e) => setNewSharedPassword(e.target.value)}
-            placeholder="New password (min 8 chars)"
-            minLength={8}
-            className="border rounded-lg px-3 py-2 flex-1 min-w-[200px]"
-          />
+      <Section
+        title="Shared app login password"
+        description={
+          <>
+            All restaurant accounts use one shared password (stored hashed in Redis).
+            Until you set one here, the default is{' '}
+            <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">
+              1234567890
+            </code>.
+          </>
+        }
+      >
+        <div className="flex flex-wrap gap-3 items-end">
+          <div className="flex-1 min-w-[220px]">
+            <label className={labelClass}>New shared password</label>
+            <input
+              type="password"
+              value={newSharedPassword}
+              onChange={(e) => setNewSharedPassword(e.target.value)}
+              placeholder="Min 8 characters"
+              minLength={8}
+              className={inputClass}
+            />
+          </div>
           <button
             type="button"
             disabled={busy !== null || newSharedPassword.length < 8}
@@ -326,12 +357,63 @@ export function AdminPanel() {
               });
               if (ok) setNewSharedPassword('');
             }}
-            className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-ink text-white text-sm font-medium hover:bg-ink-soft transition-smooth disabled:opacity-50"
           >
-            Save shared password
+            {busy === 'set_shared_login_password' ? <><Spinner /> Saving…</> : 'Save shared password'}
           </button>
         </div>
-      </section>
+      </Section>
     </div>
+  );
+}
+
+function Section({
+  title,
+  description,
+  tone,
+  children,
+}: {
+  title: string;
+  description: React.ReactNode;
+  tone?: 'danger';
+  children: React.ReactNode;
+}) {
+  return (
+    <section
+      className={`bg-surface border rounded-lg p-6 shadow-sm-custom ${
+        tone === 'danger' ? 'border-error/15' : 'border-neutral-200'
+      }`}
+    >
+      <h3 className="font-display text-lg tracking-tightest mb-1.5">{title}</h3>
+      <p className="text-sm text-neutral-500 mb-4 leading-relaxed">{description}</p>
+      {children}
+    </section>
+  );
+}
+
+function Message({
+  message,
+}: {
+  message: { type: 'ok' | 'err'; text: string };
+}) {
+  return (
+    <div
+      className={`px-4 py-3 rounded-md text-sm border ${
+        message.type === 'ok'
+          ? 'bg-success-soft border-success/20 text-success'
+          : 'bg-error-soft border-error/20 text-error'
+      }`}
+    >
+      {message.text}
+    </div>
+  );
+}
+
+function Spinner() {
+  return (
+    <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />
+      <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    </svg>
   );
 }

@@ -22,74 +22,114 @@ export default async function RestaurantSettingsPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <DashboardHeader email={session.adminEmail} />
 
-      <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-12">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-6 lg:px-10 py-12">
         {/* Header */}
-        <div className="mb-8">
-          <Link
-            href="/dashboard"
-            className="text-primary hover:underline text-sm mb-4 inline-block"
-          >
-            ← Back to Dashboard
-          </Link>
-          <h1 className="text-3xl font-bold">Restaurant Settings</h1>
-          <p className="text-gray-600 mt-2">Manage your restaurant profile and bank account</p>
+        <div className="mb-10">
+          <Crumbs />
+          <h1 className="font-display text-4xl md:text-5xl tracking-tightest mt-3">
+            Restaurant
+          </h1>
+          <p className="text-neutral-500 mt-2 max-w-md">
+            Your house profile and the funding source behind every payout.
+          </p>
         </div>
 
-        {/* Restaurant Info Card */}
-        <div className="bg-white border border-gray-200 rounded-lg p-8 mb-8">
-          <h2 className="text-xl font-semibold mb-6">Restaurant Information</h2>
-
-          <div className="space-y-4">
+        {/* Restaurant Info */}
+        <section className="bg-surface border border-neutral-200 rounded-lg p-8 mb-8 shadow-sm-custom">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <label className="text-sm text-gray-600">Restaurant Name</label>
-              <p className="text-lg font-semibold mt-1">{restaurant.restaurantName}</p>
+              <p className="text-eyebrow mb-1">Profile</p>
+              <h2 className="font-display text-xl tracking-tightest">Restaurant information</h2>
             </div>
-
-            <div>
-              <label className="text-sm text-gray-600">Email Address</label>
-              <p className="text-lg font-semibold mt-1">{restaurant.adminEmail}</p>
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">Phone Number</label>
-              <p className="text-lg font-semibold mt-1">{restaurant.phone}</p>
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">Root Customer ID</label>
-              <p className="text-sm font-mono mt-1 text-gray-700 break-all">{restaurant.rootCustomerId}</p>
-            </div>
-
             {restaurant.bankAccountToken && (
-              <div className="bg-green-50 border border-green-200 rounded p-4 mt-4">
-                <p className="text-sm text-green-800">
-                  ✓ Bank account linked and ready for payouts
-                </p>
-              </div>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border border-success/20 bg-success-soft text-success">
+                <span className="w-1.5 h-1.5 rounded-full bg-success" />
+                Bank linked
+              </span>
             )}
           </div>
-        </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+            <Field label="Restaurant name" value={restaurant.restaurantName} />
+            <Field label="Email address" value={restaurant.adminEmail} mono />
+            <Field label="Phone number" value={restaurant.phone} mono />
+            <Field label="Root customer ID" value={restaurant.rootCustomerId} mono small />
+          </div>
+        </section>
 
         {/* Bank Account Section */}
-        <div className="bg-white border border-gray-200 rounded-lg p-8">
-          <h2 className="text-xl font-semibold mb-6">Bank Account for ACH Transfers</h2>
-          <p className="text-gray-600 mb-6">
-            Link your restaurant&apos;s bank account to enable ACH debit pulls for funding your Roosterwise subaccount.
+        <section className="bg-surface border border-neutral-200 rounded-lg p-8 shadow-sm-custom">
+          <p className="text-eyebrow mb-1">Funding</p>
+          <h2 className="font-display text-xl tracking-tightest mb-2">
+            Bank account for ACH transfers
+          </h2>
+          <p className="text-sm text-neutral-500 mb-6 max-w-xl">
+            Link your restaurant&apos;s bank account to enable ACH debit pulls for funding
+            your Roosterwise subaccount.
           </p>
 
           <BankAccountForm restaurantId={session.restaurantId} />
 
-          <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h3 className="font-semibold text-blue-900 mb-2">Why link your bank account?</h3>
-            <ul className="text-sm text-blue-800 space-y-1">
-              <li>• Fund your Roosterwise subaccount via ACH debit</li>
-              <li>• Fast and secure transfers</li>
-              <li>• Support for checking and savings accounts</li>
-              <li>• Direct integration with Root&apos;s payment infrastructure</li>
+          <div className="mt-8 rounded-lg border border-neutral-200 bg-surface-2 p-5">
+            <p className="text-eyebrow mb-2">Why link your bank account?</p>
+            <ul className="text-sm text-neutral-600 space-y-1.5 leading-relaxed">
+              <li className="flex items-start gap-2.5">
+                <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
+                Fund your Roosterwise subaccount via ACH debit
+              </li>
+              <li className="flex items-start gap-2.5">
+                <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
+                Fast and secure transfers
+              </li>
+              <li className="flex items-start gap-2.5">
+                <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
+                Support for checking and savings accounts
+              </li>
+              <li className="flex items-start gap-2.5">
+                <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
+                Direct integration with Root&apos;s payment infrastructure
+              </li>
             </ul>
           </div>
-        </div>
+        </section>
       </main>
+    </div>
+  );
+}
+
+function Crumbs() {
+  return (
+    <nav className="text-[11px] tracking-[0.18em] uppercase text-neutral-400 flex items-center gap-2">
+      <Link href="/dashboard" className="hover:text-ink transition-smooth">
+        Console
+      </Link>
+      <span className="text-neutral-300">/</span>
+      <span className="text-ink">Restaurant</span>
+    </nav>
+  );
+}
+
+function Field({
+  label,
+  value,
+  mono,
+  small,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+  small?: boolean;
+}) {
+  return (
+    <div>
+      <div className="text-eyebrow mb-1.5">{label}</div>
+      <div
+        className={`${mono ? 'font-mono-tab' : 'font-medium'} ${
+          small ? 'text-xs break-all text-neutral-500' : 'text-base text-foreground'
+        }`}
+      >
+        {value}
+      </div>
     </div>
   );
 }

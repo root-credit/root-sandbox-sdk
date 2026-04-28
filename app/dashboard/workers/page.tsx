@@ -76,46 +76,61 @@ export default function WorkersPage() {
   }
 
   if (!session) {
-    return null; // Loading
+    return null;
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <DashboardHeader email={session.adminEmail} />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-12">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-6 lg:px-10 py-12">
         {/* Header */}
-        <div className="mb-8">
-          <Link
-            href="/dashboard"
-            className="text-primary hover:underline text-sm mb-4 inline-block"
-          >
-            ← Back to Dashboard
-          </Link>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Workers</h1>
-              <p className="text-gray-600 mt-2">Manage restaurant workers and their payment methods</p>
-            </div>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
-            >
-              {showForm ? '✕ Close' : '+ Add Worker'}
-            </button>
+        <div className="mb-8 flex items-end justify-between gap-6 flex-wrap">
+          <div>
+            <Crumbs />
+            <h1 className="font-display text-4xl md:text-5xl tracking-tightest mt-3">
+              Workers
+            </h1>
+            <p className="text-neutral-500 mt-2 max-w-md">
+              Manage your team and the payout rail attached to each member.
+            </p>
           </div>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium transition-smooth shadow-sm-custom ${
+              showForm
+                ? 'bg-neutral-100 text-ink border border-neutral-200 hover:bg-neutral-200'
+                : 'bg-ink text-white hover:bg-ink-soft'
+            }`}
+          >
+            {showForm ? (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M6 6l12 12M18 6l-12 12" strokeLinecap="round" />
+                </svg>
+                Close
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+                </svg>
+                Add worker
+              </>
+            )}
+          </button>
         </div>
 
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 mb-6">
+          <div className="px-4 py-3 bg-error-soft border border-error/20 rounded-md text-error text-sm mb-6">
             {error}
           </div>
         )}
 
-        {/* Add Worker Form */}
         {showForm && (
-          <div className="bg-white border border-gray-200 rounded-lg p-8 mb-8">
-            <h2 className="text-xl font-semibold mb-6">Add New Worker</h2>
+          <div className="bg-surface border border-neutral-200 rounded-lg p-8 mb-8 shadow-sm-custom">
+            <p className="text-eyebrow mb-1">New record</p>
+            <h2 className="font-display text-2xl tracking-tightest mb-6">Add a worker</h2>
             <WorkerForm
               restaurantId={session.restaurantId}
               onSuccess={() => {
@@ -126,16 +141,27 @@ export default function WorkersPage() {
           </div>
         )}
 
-        {/* Workers List */}
-        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        {/* Workers table */}
+        <div className="bg-surface border border-neutral-200 rounded-lg overflow-hidden shadow-sm-custom">
           {isLoadingWorkers ? (
-            <div className="p-8 text-center text-gray-600">Loading workers...</div>
+            <div className="p-12 text-center text-sm text-neutral-500">
+              Loading team…
+            </div>
           ) : workers.length === 0 ? (
-            <div className="p-8 text-center">
-              <p className="text-gray-600 mb-4">No workers added yet</p>
+            <div className="p-16 text-center">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-neutral-100 text-neutral-400 mb-4">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" strokeLinecap="round" />
+                  <circle cx="9" cy="7" r="4" />
+                </svg>
+              </div>
+              <h3 className="font-display text-xl tracking-tightest">No workers yet</h3>
+              <p className="text-neutral-500 mt-2 mb-6 text-sm">
+                Add your first team member to start running tip-outs.
+              </p>
               <button
                 onClick={() => setShowForm(true)}
-                className="text-primary hover:underline"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-ink text-white text-sm font-medium hover:bg-ink-soft transition-smooth"
               >
                 Add your first worker
               </button>
@@ -143,36 +169,37 @@ export default function WorkersPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="border-b border-gray-200 bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold">Name</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold">Email</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold">Phone</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold">Payment Method</th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold">Actions</th>
+                <thead>
+                  <tr className="text-[11px] tracking-[0.14em] uppercase text-neutral-500 bg-neutral-100/60 border-b border-neutral-200">
+                    <th className="px-6 py-3 text-left font-medium">Name</th>
+                    <th className="px-6 py-3 text-left font-medium">Email</th>
+                    <th className="px-6 py-3 text-left font-medium">Phone</th>
+                    <th className="px-6 py-3 text-left font-medium">Rail</th>
+                    <th className="px-6 py-3 text-right font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {workers.map((worker) => (
-                    <tr key={worker.id} className="border-b border-gray-200 hover:bg-gray-50">
+                    <tr
+                      key={worker.id}
+                      className="border-b border-neutral-150 last:border-b-0 hover:bg-neutral-50/60 transition-smooth"
+                    >
                       <td className="px-6 py-4 text-sm font-medium">{worker.name}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{worker.email}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{worker.phone}</td>
+                      <td className="px-6 py-4 text-sm text-neutral-500 font-mono-tab">
+                        {worker.email}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-neutral-500 font-mono-tab">
+                        {worker.phone}
+                      </td>
                       <td className="px-6 py-4 text-sm">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          worker.paymentMethodType === 'bank_account'
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-green-100 text-green-800'
-                        }`}>
-                          {worker.paymentMethodType === 'bank_account' ? 'Bank Account' : 'Debit Card'}
-                        </span>
+                        <RailBadge type={worker.paymentMethodType} />
                       </td>
                       <td className="px-6 py-4 text-right text-sm">
                         <button
                           onClick={() => deleteWorker(worker.id)}
-                          className="text-red-600 hover:text-red-800 font-medium"
+                          className="text-neutral-500 hover:text-error font-medium transition-smooth"
                         >
-                          Delete
+                          Remove
                         </button>
                       </td>
                     </tr>
@@ -184,5 +211,37 @@ export default function WorkersPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+function Crumbs() {
+  return (
+    <nav className="text-[11px] tracking-[0.18em] uppercase text-neutral-400 flex items-center gap-2">
+      <Link href="/dashboard" className="hover:text-ink transition-smooth">
+        Console
+      </Link>
+      <span className="text-neutral-300">/</span>
+      <span className="text-ink">Workers</span>
+    </nav>
+  );
+}
+
+function RailBadge({ type }: { type: 'bank_account' | 'debit_card' }) {
+  const isBank = type === 'bank_account';
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] tracking-[0.05em] font-medium border ${
+        isBank
+          ? 'bg-info-soft border-info/20 text-info'
+          : 'bg-success-soft border-success/20 text-success'
+      }`}
+    >
+      <span
+        className={`w-1.5 h-1.5 rounded-full ${
+          isBank ? 'bg-info' : 'bg-success'
+        }`}
+      />
+      {isBank ? 'Bank account' : 'Debit card'}
+    </span>
   );
 }
