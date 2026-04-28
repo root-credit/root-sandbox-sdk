@@ -6,7 +6,7 @@ import {
   setTransaction,
   getRestaurantTransactions,
 } from '@/lib/redis';
-import { createTipPayout } from '@/lib/root-api';
+import { createTipPayout, payoutRailForWorker } from '@/lib/root-api';
 import { getCurrentSession, sessionOwnsRestaurant } from '@/lib/session';
 
 export async function POST(request: NextRequest) {
@@ -50,24 +50,31 @@ export async function POST(request: NextRequest) {
     const transactionIds = [];
 
     for (const tip of tips) {
-      try {
-        const worker = await getWorker(tip.workerId);
-        if (!worker) {
-          console.error(`[v0] Worker not found: ${tip.workerId}`);
-          continue;
-        }
+      const worker = await getWorker(tip.workerId);
+      if (!worker) {
+        console.error(`[v0] Worker not found: ${tip.workerId}`);
+        results.push({
+          workerId: tip.workerId,
+          amount: tip.amount,
+          status: 'failed',
+          error: 'Worker not found',
+        });
+        continue;
+      }
 
+      const rail = payoutRailForWorker(worker);
+
+      try {
         // Convert amount to cents
         const amountCents = Math.round(tip.amount * 100);
 
-        // Process payout via Root API using the correct signature
         const payout = await createTipPayout(
           worker.rootPayeeId,
           amountCents,
-          'instant_card' // Use instant_card for faster settlements
+          rail
         );
 
-        console.log('[v0] Payout processed:', payout.id);
+        console.log('[v0] Payout processed:', payout.id, { rail });
 
         // Save transaction
         const transactionId = randomUUID();
@@ -93,6 +100,7 @@ export async function POST(request: NextRequest) {
           workerName: worker.name,
           amount: tip.amount,
           status: 'success',
+          rail,
           payoutId: payout.id,
           transactionId,
         });
@@ -102,6 +110,7 @@ export async function POST(request: NextRequest) {
           workerId: tip.workerId,
           amount: tip.amount,
           status: 'failed',
+          rail,
           error: err instanceof Error ? err.message : 'Unknown error',
         });
       }

@@ -12,6 +12,24 @@ export const rootAPI = new Root({
   baseUrl: ROOT_API_BASE,
 });
 
+type PayoutRail =
+  | "instant_bank"
+  | "instant_card"
+  | "same_day_ach"
+  | "standard_ach"
+  | "wire";
+
+/**
+ * Root payouts API rails depend on how the payee receives funds (bank RTP vs push-to-card).
+ */
+export function payoutRailForWorker(worker: {
+  paymentMethodType?: string;
+}): PayoutRail {
+  return worker.paymentMethodType === "debit_card"
+    ? "instant_card"
+    : "instant_bank";
+}
+
 /**
  * Create a payer (restaurant) in Root
  */
@@ -139,7 +157,7 @@ export async function attachPayeeDebitCard(
 export async function createTipPayout(
   payeeId: string,
   amountCents: number,
-  rail: PayoutRail = "instant_card"
+  rail: PayoutRail = "instant_bank"
 ) {
   try {
     const response = await rootAPI.payouts.create({
@@ -172,5 +190,3 @@ export async function getPayoutStatus(payoutId: string) {
     throw error;
   }
 }
-
-type PayoutRail = 'instant_bank' | 'instant_card' | 'same_day_ach' | 'standard_ach' | 'wire';
