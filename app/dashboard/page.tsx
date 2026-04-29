@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { getCurrentSession } from '@/lib/session';
 import { branding } from '@/lib/branding';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
@@ -86,26 +88,18 @@ function StatTile({
   accent?: boolean;
 }) {
   return (
-    <div className="relative bg-surface border border-neutral-200 rounded-lg p-5 overflow-hidden">
-      <div className="text-eyebrow">{label}</div>
-      <div
-        className={`font-display text-3xl mt-2 tracking-tightest ${
-          accent ? 'text-gold' : 'text-ink'
-        }`}
-      >
-        {value}
-      </div>
-      {accent && (
-        <div
-          aria-hidden
-          className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full"
-          style={{
-            background:
-              'radial-gradient(circle, rgba(212,160,23,0.18), transparent 70%)',
-          }}
-        />
-      )}
-    </div>
+    <Card className={accent ? 'border-amber-200 bg-amber-50 dark:bg-amber-950 dark:border-amber-800' : ''}>
+      <CardHeader className="pb-3">
+        <CardDescription className={accent ? 'text-amber-700 dark:text-amber-300' : ''}>{label}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className={`font-display text-3xl tracking-tightest ${
+          accent ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-slate-50'
+        }`}>
+          {value}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -125,48 +119,39 @@ function ModuleTile({
   primary?: boolean;
 }) {
   return (
-    <Link
-      href={href}
-      className={`group relative block rounded-lg border transition-smooth overflow-hidden p-5 hover:-translate-y-0.5 hover:shadow-lg-custom ${
+    <Link href={href}>
+      <Card className={`group cursor-pointer transition-all hover:shadow-lg hover:border-slate-400 ${
         primary
-          ? 'bg-ink text-white border-ink hover:bg-ink-soft'
-          : 'bg-surface text-foreground border-neutral-200 hover:border-ink'
-      }`}
-    >
-      <div className="flex items-start justify-between mb-6">
-        <span
-          className={`inline-flex items-center justify-center w-10 h-10 rounded-md ${
-            primary ? 'bg-white/10 text-gold-bright' : 'bg-neutral-100 text-ink'
-          }`}
-        >
-          {icon}
-        </span>
-        <span
-          className={`text-[10px] tracking-[0.18em] uppercase ${
-            primary ? 'text-white/50' : 'text-neutral-400'
-          }`}
-        >
-          {code}
-        </span>
-      </div>
-      <h3 className="font-display text-xl tracking-tightest mb-1.5">{title}</h3>
-      <p
-        className={`text-sm leading-relaxed ${
-          primary ? 'text-white/65' : 'text-neutral-500'
-        }`}
-      >
-        {desc}
-      </p>
-      <div
-        className={`mt-5 inline-flex items-center gap-1.5 text-[11px] tracking-[0.18em] uppercase ${
-          primary ? 'text-gold-bright' : 'text-neutral-500 group-hover:text-ink'
-        } transition-smooth`}
-      >
-        Open
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M5 12h14M13 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </div>
+          ? 'bg-slate-900 text-white border-slate-900 dark:bg-slate-800'
+          : 'hover:border-slate-400'
+      }`}>
+        <CardHeader>
+          <div className="flex items-start justify-between mb-2">
+            <span
+              className={`inline-flex items-center justify-center w-10 h-10 rounded-md ${
+                primary ? 'bg-white/10 text-amber-400' : 'bg-slate-100 text-slate-900 dark:bg-slate-800'
+              }`}
+            >
+              {icon}
+            </span>
+            <Badge variant="secondary" className={primary ? 'bg-white/10 text-white' : ''}>
+              {code}
+            </Badge>
+          </div>
+          <CardTitle className={primary ? 'text-white' : 'text-slate-900 dark:text-slate-50'}>{title}</CardTitle>
+          <CardDescription className={primary ? 'text-white/70' : ''}>{desc}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className={`inline-flex items-center gap-1.5 text-xs font-semibold ${
+            primary ? 'text-amber-400' : 'text-slate-600 dark:text-slate-400'
+          } group-hover:gap-2.5 transition-all`}>
+            Open
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M13 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        </CardContent>
+      </Card>
     </Link>
   );
 }
