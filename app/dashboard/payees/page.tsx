@@ -8,6 +8,7 @@ import { branding } from '@/lib/branding';
 import { useSession } from '@/lib/hooks/useSession';
 import { usePayees } from '@/lib/hooks/usePayees';
 import { useRemovePayee } from '@/lib/hooks/useCreatePayee';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -89,22 +90,27 @@ export default function PayeesPage() {
         )}
 
         {showForm && (
-          <div className="bg-surface border border-neutral-200 rounded-lg p-8 mb-8 shadow-sm-custom">
-            <p className="text-eyebrow mb-1">New record</p>
-            <h2 className="font-display text-2xl tracking-tightest mb-6">
-              Add a {branding.payeeSingular.toLowerCase()}
-            </h2>
-            <PayeeForm
-              payerId={session.payerId}
-              onSuccess={() => {
-                setShowForm(false);
-                refresh();
-              }}
-            />
-          </div>
+          <Card className="mb-8 gap-0 bg-surface py-0 shadow-sm-custom ring-neutral-200">
+            <CardHeader className="border-b border-neutral-200 pb-6">
+              <p className="text-eyebrow mb-1">New record</p>
+              <h2 className="font-display text-2xl tracking-tightest mb-0">
+                Add a {branding.payeeSingular.toLowerCase()}
+              </h2>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <PayeeForm
+                payerId={session.payerId}
+                onSuccess={() => {
+                  setShowForm(false);
+                  refresh();
+                }}
+              />
+            </CardContent>
+          </Card>
         )}
 
-        <div className="bg-surface border border-neutral-200 rounded-lg overflow-hidden shadow-sm-custom">
+        <Card className="gap-0 overflow-hidden bg-surface py-0 shadow-sm-custom ring-neutral-200">
+          <CardContent className="p-0">
           {isLoading ? (
             <div className="p-12 text-center text-sm text-neutral-500">
               Loading {branding.payeePlural.toLowerCase()}…
@@ -172,7 +178,8 @@ export default function PayeesPage() {
               </table>
             </div>
           )}
-        </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );

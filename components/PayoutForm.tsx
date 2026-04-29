@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 import { branding } from '@/lib/branding';
 import { useProcessPayout } from '@/lib/hooks/useProcessPayout';
 import {
@@ -8,6 +9,8 @@ import {
   type PayoutLineItem,
 } from '@/lib/types/payout';
 import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 /** Local UI-only schema: ensures at least one funded line item before we hit the action. */
 const localBatchSchema = z.object({
@@ -135,15 +138,15 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
                 <span className="font-medium truncate">{payee.name}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-neutral-400 font-mono-tab text-sm">$</span>
-                <input
+                <span className="text-muted-foreground font-mono-tab text-sm">$</span>
+                <Input
                   type="number"
                   step="0.01"
                   min="0"
                   placeholder="0.00"
                   value={amounts[payee.id] || ''}
                   onChange={(e) => handleAmountChange(payee.id, e.target.value)}
-                  className="w-28 px-3 py-2 text-right font-mono-tab text-sm bg-surface text-foreground rounded-md border border-neutral-200 placeholder:text-neutral-300 focus:outline-none focus:border-gold focus:ring-[3px] focus:ring-gold-bright/25 transition-smooth"
+                  className="w-28 text-right font-mono-tab text-sm tabular-nums"
                 />
               </div>
             </div>
@@ -172,24 +175,27 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
               {fundedCount} of {payees.length} {branding.payeePlural.toLowerCase()} · settles via Root rails
             </p>
           </div>
-          <button
+          <Button
             type="submit"
+            size="lg"
+            variant="secondary"
             disabled={isProcessing || totalAmount <= 0}
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-md bg-white text-ink text-sm font-medium tracking-tight hover:bg-gold-soft transition-smooth disabled:opacity-40 disabled:cursor-not-allowed shadow-md-custom"
+            className="inline-flex shrink-0 gap-2 bg-white text-primary hover:bg-amber-100 dark:bg-white dark:text-primary dark:hover:bg-amber-100"
           >
             {isProcessing ? (
               <>
-                <Spinner /> Settling…
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+                Settling…
               </>
             ) : (
               <>
                 Process payouts
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                   <path d="M5 12h14M13 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -197,14 +203,5 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
         Payouts are processed immediately via Root&apos;s payment infrastructure.
       </p>
     </form>
-  );
-}
-
-function Spinner() {
-  return (
-    <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />
-      <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </svg>
   );
 }

@@ -4,6 +4,7 @@ import { BankAccountForm } from '@/components/BankAccountForm';
 import { getCurrentSession } from '@/lib/session';
 import { getPayer } from '@/lib/redis';
 import { branding } from '@/lib/branding';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import Link from 'next/link';
 
 export default async function PayerSettingsPage() {
@@ -34,8 +35,8 @@ export default async function PayerSettingsPage() {
           </p>
         </div>
 
-        <section className="bg-surface border border-neutral-200 rounded-lg p-8 mb-8 shadow-sm-custom">
-          <div className="flex items-center justify-between mb-6">
+        <Card className="mb-8 gap-0 bg-surface py-0 shadow-sm-custom ring-neutral-200">
+          <CardHeader className="flex flex-row items-start justify-between gap-4 border-b border-neutral-200 pb-6">
             <div>
               <p className="text-eyebrow mb-1">Profile</p>
               <h2 className="font-display text-xl tracking-tightest">
@@ -43,55 +44,59 @@ export default async function PayerSettingsPage() {
               </h2>
             </div>
             {payer.bankAccountToken && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border border-success/20 bg-success-soft text-success">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border border-success/20 bg-success-soft text-success shrink-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-success" />
                 Bank linked
               </span>
             )}
-          </div>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+              <Field label={`${branding.payerSingular} name`} value={payer.payerName} />
+              <Field label="Email address" value={payer.payerEmail} mono />
+              <Field label="Phone number" value={payer.phone} mono />
+              <Field label="Root payer ID" value={payer.rootPayerId} mono small />
+            </div>
+          </CardContent>
+        </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
-            <Field label={`${branding.payerSingular} name`} value={payer.payerName} />
-            <Field label="Email address" value={payer.payerEmail} mono />
-            <Field label="Phone number" value={payer.phone} mono />
-            <Field label="Root payer ID" value={payer.rootPayerId} mono small />
-          </div>
-        </section>
+        <Card className="gap-0 bg-surface py-0 shadow-sm-custom ring-neutral-200">
+          <CardHeader className="border-b border-neutral-200 pb-6">
+            <p className="text-eyebrow mb-1">Funding</p>
+            <h2 className="font-display text-xl tracking-tightest mb-2">
+              Bank account for ACH transfers
+            </h2>
+            <p className="text-sm text-neutral-500 max-w-xl font-normal">
+              Link your {branding.payerPossessive} bank account to enable ACH debit pulls for funding
+              your {branding.productName} subaccount.
+            </p>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <BankAccountForm payerId={session.payerId} />
 
-        <section className="bg-surface border border-neutral-200 rounded-lg p-8 shadow-sm-custom">
-          <p className="text-eyebrow mb-1">Funding</p>
-          <h2 className="font-display text-xl tracking-tightest mb-2">
-            Bank account for ACH transfers
-          </h2>
-          <p className="text-sm text-neutral-500 mb-6 max-w-xl">
-            Link your {branding.payerPossessive} bank account to enable ACH debit pulls for funding
-            your {branding.productName} subaccount.
-          </p>
-
-          <BankAccountForm payerId={session.payerId} />
-
-          <div className="mt-8 rounded-lg border border-neutral-200 bg-surface-2 p-5">
-            <p className="text-eyebrow mb-2">Why link your bank account?</p>
-            <ul className="text-sm text-neutral-600 space-y-1.5 leading-relaxed">
-              <li className="flex items-start gap-2.5">
-                <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
-                Fund your {branding.productName} subaccount via ACH debit
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
-                Fast and secure transfers
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
-                Support for checking and savings accounts
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
-                Direct integration with Root&apos;s payment infrastructure
-              </li>
-            </ul>
-          </div>
-        </section>
+            <div className="mt-8 rounded-lg border border-neutral-200 bg-surface-2 p-5">
+              <p className="text-eyebrow mb-2">Why link your bank account?</p>
+              <ul className="text-sm text-neutral-600 space-y-1.5 leading-relaxed">
+                <li className="flex items-start gap-2.5">
+                  <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
+                  Fund your {branding.productName} subaccount via ACH debit
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
+                  Fast and secure transfers
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
+                  Support for checking and savings accounts
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
+                  Direct integration with Root&apos;s payment infrastructure
+                </li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );

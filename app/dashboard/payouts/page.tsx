@@ -6,6 +6,7 @@ import { PayoutForm } from '@/components/PayoutForm';
 import { branding } from '@/lib/branding';
 import { useSession } from '@/lib/hooks/useSession';
 import { usePayees } from '@/lib/hooks/usePayees';
+import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -50,19 +51,21 @@ export default function PayoutsPage() {
           </div>
         )}
 
-        <div className="bg-surface border border-neutral-200 rounded-lg p-8 mb-8 shadow-sm-custom">
-          {isLoading ? (
-            <div className="text-center text-sm text-neutral-500 py-8">
-              Loading {branding.payeePlural.toLowerCase()}…
-            </div>
-          ) : (
-            <PayoutForm
-              payerId={session.payerId}
-              payees={payees}
-              onSuccess={refresh}
-            />
-          )}
-        </div>
+        <Card className="mb-8 gap-0 bg-surface py-0 shadow-sm-custom ring-neutral-200">
+          <CardContent className="p-8">
+            {isLoading ? (
+              <div className="text-center text-sm text-neutral-500 py-8">
+                Loading {branding.payeePlural.toLowerCase()}…
+              </div>
+            ) : (
+              <PayoutForm
+                payerId={session.payerId}
+                payees={payees}
+                onSuccess={refresh}
+              />
+            )}
+          </CardContent>
+        </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InfoCard
@@ -116,30 +119,32 @@ function InfoCard({
   ordered?: boolean;
 }) {
   return (
-    <div className="bg-surface border border-neutral-200 rounded-lg p-6">
-      <p className="text-eyebrow mb-2">{eyebrow}</p>
-      <h3 className="font-display text-lg tracking-tightest mb-4">{title}</h3>
-      {ordered ? (
-        <ol className="space-y-2.5 text-sm text-neutral-600 leading-relaxed">
-          {items.map((it, i) => (
-            <li key={it} className="flex items-start gap-3">
-              <span className="font-mono-tab text-[11px] mt-0.5 text-gold tracking-tight">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span>{it}</span>
-            </li>
-          ))}
-        </ol>
-      ) : (
-        <ul className="space-y-2 text-sm text-neutral-600 leading-relaxed">
-          {items.map((it) => (
-            <li key={it} className="flex items-start gap-2.5">
-              <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
-              <span>{it}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <Card className="gap-0 bg-surface py-0 shadow-sm-custom ring-neutral-200">
+      <CardContent className="p-6">
+        <p className="text-eyebrow mb-2">{eyebrow}</p>
+        <h3 className="font-display text-lg tracking-tightest mb-4">{title}</h3>
+        {ordered ? (
+          <ol className="space-y-2.5 text-sm text-neutral-600 leading-relaxed">
+            {items.map((it, i) => (
+              <li key={it} className="flex items-start gap-3">
+                <span className="font-mono-tab text-[11px] mt-0.5 text-gold tracking-tight">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span>{it}</span>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <ul className="space-y-2 text-sm text-neutral-600 leading-relaxed">
+            {items.map((it) => (
+              <li key={it} className="flex items-start gap-2.5">
+                <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
+                <span>{it}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
   );
 }

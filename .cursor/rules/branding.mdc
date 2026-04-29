@@ -1,16 +1,20 @@
 ---
-description: Vertical labels (product name, payer/payee/payout nouns) live in lib/branding.ts. Auto-applied to any UI file.
+description: Copy nouns for the vertical come from lib/branding.ts. Layout, spacing, theme, and styling are unconstrained. Auto-applied to UI files.
 globs:
   - "app/**/*.{ts,tsx}"
   - "components/**/*.{ts,tsx}"
 alwaysApply: true
 ---
 
-# Branding rule
+# Branding rule (copy only — not visual design)
 
-All user-visible nouns for the active vertical live in [`lib/branding.ts`](mdc:lib/branding.ts).
+This rule governs **product-facing words** (nouns/labels tied to the vertical), not **look and feel**.
+
+**Unrestricted (encourage creativity):** layout, spacing, grids, breakpoints, typography scale, color, borders, shadows, motion, imagery, icons, dark/light theme, component composition, new pages/sections, Tailwind/shadcn patterns — as long as payments/API contracts in [`AGENTS.md`](mdc:AGENTS.md) and `.cursor/rules/payments.mdc` stay intact.
+
+**In scope here:** user-visible **nouns** for the active vertical live in [`lib/branding.ts`](mdc:lib/branding.ts).
 Pull them from there; do not hardcode "Restaurant", "Worker", "Tip", "Roosterwise",
-or any other vertical-specific word in component code.
+or any other vertical-specific word in **interactive/product chrome** (see below).
 
 ```ts
 import { branding } from '@/lib/branding';
@@ -26,18 +30,23 @@ import { branding } from '@/lib/branding';
 <button>Run tip-out</button>
 ```
 
-## When you may keep a literal
+## When you may keep a literal (copy freedom)
 
-- Marketing prose blocks (`app/page.tsx` hero, `Module Receipt` feature copy).
-  Reskinning a vertical includes rewriting the marketing copy; this is fine.
+- Long-form **marketing** prose on the landing page (`app/page.tsx` hero, feature sections).
+  Rewriting or extending marketing copy for a new vertical is encouraged.
+- Illustrative examples in comments or docs.
 - SVG monogram letters that follow `branding.productName.charAt(0)`.
 - Dev-only values in `e2e-test.js`.
 
-## When you must NOT keep a literal
+## When you must use `branding.*` (short UI chrome)
 
-- Form labels, table headers, page titles, breadcrumbs, button copy.
-- Toasts, error messages, success messages.
-- Email placeholder values (`branding.payerSingular.toLowerCase()` works fine).
+Use [`lib/branding.ts`](mdc:lib/branding.ts) for recurring **product nouns** in the app shell and flows:
+
+- Form labels, table headers, page titles, breadcrumbs, primary buttons that name the product/payer/payee/payout.
+- Toasts, error messages, success messages that reference those nouns.
+- Email placeholder hints (`branding.payerSingular.toLowerCase()` works fine).
+
+Do **not** interpret this rule as limiting CSS classes, component structure, or design refreshes — only avoid hardcoding **those nouns** outside `branding.ts` in chrome listed above.
 
 ## Reskinning checklist (one-file change)
 

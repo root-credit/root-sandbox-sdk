@@ -1,0 +1,18 @@
+---
+description: Prefer shared UI primitives from components/ui for layout and forms. Auto-applied to UI files.
+globs:
+  - "app/**/*.{ts,tsx}"
+  - "components/**/*.{ts,tsx}"
+alwaysApply: true
+---
+
+# UI primitives (shadcn / `@/components/ui`)
+
+When adding or editing presentation code:
+
+1. **Reach for `@/components/ui/*` first** — `Button`, `Input`, `Card`, `Label`, `Field` (+ `FieldLabel`, `FieldError`, `FieldGroup`, …), `Separator`, etc. Compose these before hand-rolling styled `div`/`button`/`input` stacks.
+2. **Do not weaken payments/API rules** — `.cursor/rules/payments.mdc` and `AGENTS.md` still govern hooks, actions, SDK usage, and money handling.
+3. **Copy/nouns** — keep following `.cursor/rules/branding.mdc` for vertical wording; UI primitives do not replace `lib/branding.ts`.
+4. **Forms** — use `react-hook-form` + Zod resolvers as today; pair inputs with `Field` / `FieldLabel` / `FieldError` and submit actions with `Button` (`type="submit"`).
+
+Place new shared primitives only under `components/ui/` (via `pnpm dlx shadcn@latest add …` when possible).

@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { DashboardHeader } from '@/components/DashboardHeader';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { getCurrentSession } from '@/lib/session';
 import { branding } from '@/lib/branding';
 import Link from 'next/link';
@@ -32,45 +33,49 @@ export default async function DashboardPage() {
           <StatTile label="Transactions" value="0" />
         </section>
 
-        <section>
-          <div className="flex items-end justify-between gap-4 mb-5">
-            <div>
-              <p className="text-eyebrow mb-2">Modules</p>
-              <h2 className="font-display text-2xl tracking-tightest">Run the house</h2>
+        <Card className="gap-0 bg-surface py-0 shadow-sm-custom ring-neutral-200">
+          <CardHeader className="border-b border-neutral-200 pb-5">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <p className="text-eyebrow mb-2">Modules</p>
+                <h2 className="font-display text-2xl tracking-tightest">Run the house</h2>
+              </div>
             </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <ModuleTile
-              href="/dashboard/payouts"
-              code="PAY"
-              title="Process payouts"
-              desc={`Run an end-of-shift ${branding.payoutNoun.toLowerCase()} and settle in seconds.`}
-              icon={<IconBolt />}
-              primary
-            />
-            <ModuleTile
-              href="/dashboard/payees"
-              code="TEAM"
-              title={branding.payeePlural}
-              desc={`Add ${branding.payeePlural.toLowerCase()} and link bank accounts or debit cards.`}
-              icon={<IconUsers />}
-            />
-            <ModuleTile
-              href="/dashboard/transactions"
-              code="LDG"
-              title="Transactions"
-              desc="Audit every payout: amounts, status, latency."
-              icon={<IconLedger />}
-            />
-            <ModuleTile
-              href="/dashboard/payer"
-              code="HSE"
-              title={branding.payerSingular}
-              desc={`${branding.payerSingular} profile and ACH funding source.`}
-              icon={<IconBuilding />}
-            />
-          </div>
-        </section>
+          </CardHeader>
+          <CardContent className="pb-6 pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <ModuleTile
+                href="/dashboard/payouts"
+                code="PAY"
+                title="Process payouts"
+                desc={`Run an end-of-shift ${branding.payoutNoun.toLowerCase()} and settle in seconds.`}
+                icon={<IconBolt />}
+                primary
+              />
+              <ModuleTile
+                href="/dashboard/payees"
+                code="TEAM"
+                title={branding.payeePlural}
+                desc={`Add ${branding.payeePlural.toLowerCase()} and link bank accounts or debit cards.`}
+                icon={<IconUsers />}
+              />
+              <ModuleTile
+                href="/dashboard/transactions"
+                code="LDG"
+                title="Transactions"
+                desc="Audit every payout: amounts, status, latency."
+                icon={<IconLedger />}
+              />
+              <ModuleTile
+                href="/dashboard/payer"
+                code="HSE"
+                title={branding.payerSingular}
+                desc={`${branding.payerSingular} profile and ACH funding source.`}
+                icon={<IconBuilding />}
+              />
+            </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
@@ -86,26 +91,28 @@ function StatTile({
   accent?: boolean;
 }) {
   return (
-    <div className="relative bg-surface border border-neutral-200 rounded-lg p-5 overflow-hidden">
-      <div className="text-eyebrow">{label}</div>
-      <div
-        className={`font-display text-3xl mt-2 tracking-tightest ${
-          accent ? 'text-gold' : 'text-ink'
-        }`}
-      >
-        {value}
-      </div>
-      {accent && (
+    <Card className="relative gap-0 overflow-hidden bg-surface py-0 shadow-sm-custom ring-neutral-200">
+      <CardContent className="relative overflow-hidden p-5">
+        <div className="text-eyebrow">{label}</div>
         <div
-          aria-hidden
-          className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full"
-          style={{
-            background:
-              'radial-gradient(circle, rgba(212,160,23,0.18), transparent 70%)',
-          }}
-        />
-      )}
-    </div>
+          className={`font-display text-3xl mt-2 tracking-tightest ${
+            accent ? 'text-gold' : 'text-ink'
+          }`}
+        >
+          {value}
+        </div>
+        {accent && (
+          <div
+            aria-hidden
+            className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full"
+            style={{
+              background:
+                'radial-gradient(circle, rgba(212,160,23,0.18), transparent 70%)',
+            }}
+          />
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

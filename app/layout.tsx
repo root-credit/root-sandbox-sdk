@@ -1,4 +1,8 @@
 import type { Metadata } from "next";
+/**
+ * Fonts (`next/font/google`) set `--font-geist-sans`, `--font-geist-mono`, `--font-fraunces` on `<html>`.
+ * Tailwind/shadcn map `--font-sans` / `--font-mono` in globals.css `@theme inline`.
+ */
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import { branding } from "@/lib/branding";
 import "./globals.css";

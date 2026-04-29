@@ -6,6 +6,7 @@ import { branding } from '@/lib/branding';
 import { useSession } from '@/lib/hooks/useSession';
 import { useTransactions } from '@/lib/hooks/useTransactions';
 import { centsToDollars, formatMoney } from '@/lib/types/payments';
+import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -60,7 +61,8 @@ export default function TransactionsPage() {
           <StatTile label="Total transactions" value={String(transactions.length)} />
         </div>
 
-        <div className="bg-surface border border-neutral-200 rounded-lg overflow-hidden shadow-sm-custom">
+        <Card className="gap-0 overflow-hidden bg-surface py-0 shadow-sm-custom ring-neutral-200">
+          <CardContent className="p-0">
           {isLoading ? (
             <div className="p-12 text-center text-sm text-neutral-500">
               Loading transactions…
@@ -129,7 +131,8 @@ export default function TransactionsPage() {
               </table>
             </div>
           )}
-        </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
@@ -164,22 +167,24 @@ function StatTile({
     ? 'text-success'
     : 'text-ink';
   return (
-    <div className="relative bg-surface border border-neutral-200 rounded-lg p-5 overflow-hidden">
-      <div className="text-eyebrow">{label}</div>
-      <div className={`font-display text-3xl mt-2 tracking-tightest ${valueColor}`}>
-        {value}
-      </div>
-      {accent && (
-        <div
-          aria-hidden
-          className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full"
-          style={{
-            background:
-              'radial-gradient(circle, rgba(212,160,23,0.18), transparent 70%)',
-          }}
-        />
-      )}
-    </div>
+    <Card className="relative gap-0 overflow-hidden bg-surface py-0 shadow-sm-custom ring-neutral-200">
+      <CardContent className="relative overflow-hidden p-5">
+        <div className="text-eyebrow">{label}</div>
+        <div className={`font-display text-3xl mt-2 tracking-tightest ${valueColor}`}>
+          {value}
+        </div>
+        {accent && (
+          <div
+            aria-hidden
+            className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full"
+            style={{
+              background:
+                'radial-gradient(circle, rgba(212,160,23,0.18), transparent 70%)',
+            }}
+          />
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
