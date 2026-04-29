@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-/**
- * Fonts (`next/font/google`) set `--font-geist-sans`, `--font-geist-mono`, `--font-fraunces` on `<html>`.
- * Tailwind/shadcn map `--font-sans` / `--font-mono` in globals.css `@theme inline`.
- */
-import { Geist, Geist_Mono, Fraunces } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
 import { branding } from "@/lib/branding";
 import "./globals.css";
 
@@ -17,22 +14,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-/** Editorial serif for headlines — pairs warm hospitality tone with Geist sans body. */
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  axes: ["opsz", "SOFT"],
-});
-
 export const metadata: Metadata = {
   title: `${branding.productName} — ${branding.tagline}`,
   description: branding.tagline,
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
 };
 
 export default function RootLayout({
@@ -43,10 +27,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased bg-background`}
+      className={`${geistSans.variable} ${geistMono.variable} bg-background`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-screen font-sans antialiased bg-background text-foreground">
         {children}
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

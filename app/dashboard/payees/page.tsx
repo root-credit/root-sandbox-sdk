@@ -1,14 +1,30 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { PayeeForm } from '@/components/PayeeForm';
 import { branding } from '@/lib/branding';
 import { useSession } from '@/lib/hooks/useSession';
 import { usePayees } from '@/lib/hooks/usePayees';
 import { useRemovePayee } from '@/lib/hooks/useCreatePayee';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Plus, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -18,16 +34,11 @@ export default function PayeesPage() {
   const payerId = session?.payerId ?? null;
   const { payees, isLoading, error: loadError, refresh, setPayees } = usePayees(payerId);
   const { removePayee } = useRemovePayee();
-  const [showForm, setShowForm] = useState(false);
-  const [error, setError] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     if (session === undefined) router.push('/login');
   }, [session, router]);
-
-  useEffect(() => {
-    if (loadError) setError(loadError);
-  }, [loadError]);
 
   async function handleDelete(payeeId: string) {
     if (!payerId) return;
@@ -35,8 +46,8 @@ export default function PayeesPage() {
     try {
       await removePayee(payerId, payeeId);
       setPayees(payees.filter((p) => p.id !== payeeId));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete');
+    } catch {
+      // error handled silently; toast could be added
     }
   }
 
@@ -46,169 +57,134 @@ export default function PayeesPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <DashboardHeader email={session.payerEmail} />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-6 lg:px-10 py-12">
-        <div className="mb-8 flex items-end justify-between gap-6 flex-wrap">
+      <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
+        <div className="mb-6 flex items-end justify-between gap-6 flex-wrap">
           <div>
-            <Crumbs />
-            <h1 className="font-display text-4xl md:text-5xl tracking-tightest mt-3">
-              {branding.payeePlural}
-            </h1>
-            <p className="text-neutral-500 mt-2 max-w-md">
+            <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
+              <Link href="/dashboard" className="hover:text-foreground transition-colors">Console</Link>
+              <span>/</span>
+              <span className="text-foreground">{branding.payeePlural}</span>
+            </nav>
+            <h1 className="text-2xl font-semibold tracking-tight">{branding.payeePlural}</h1>
+            <p className="text-sm text-muted-foreground mt-1">
               Manage the people you pay and the payout rail attached to each.
             </p>
           </div>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium transition-smooth shadow-sm-custom ${
-              showForm
-                ? 'bg-neutral-100 text-ink border border-neutral-200 hover:bg-neutral-200'
-                : 'bg-ink text-white hover:bg-ink-soft'
-            }`}
-          >
-            {showForm ? (
-              <>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 6l12 12M18 6l-12 12" strokeLinecap="round" />
-                </svg>
-                Close
-              </>
-            ) : (
-              <>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 5v14M5 12h14" strokeLinecap="round" />
-                </svg>
+
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <Plus className="h-4 w-4" />
                 Add {branding.payeeSingular.toLowerCase()}
-              </>
-            )}
-          </button>
-        </div>
-
-        {error && (
-          <div className="px-4 py-3 bg-error-soft border border-error/20 rounded-md text-error text-sm mb-6">
-            {error}
-          </div>
-        )}
-
-        {showForm && (
-          <Card className="mb-8 gap-0 bg-surface py-0 shadow-sm-custom ring-neutral-200">
-            <CardHeader className="border-b border-neutral-200 pb-6">
-              <p className="text-eyebrow mb-1">New record</p>
-              <h2 className="font-display text-2xl tracking-tightest mb-0">
-                Add a {branding.payeeSingular.toLowerCase()}
-              </h2>
-            </CardHeader>
-            <CardContent className="pt-6">
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Add {branding.payeeSingular.toLowerCase()}</DialogTitle>
+              </DialogHeader>
               <PayeeForm
                 payerId={session.payerId}
                 onSuccess={() => {
-                  setShowForm(false);
+                  setDialogOpen(false);
                   refresh();
                 }}
               />
-            </CardContent>
-          </Card>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {loadError && (
+          <div className="rounded-md border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm text-destructive mb-6">
+            {loadError}
+          </div>
         )}
 
-        <Card className="gap-0 overflow-hidden bg-surface py-0 shadow-sm-custom ring-neutral-200">
-          <CardContent className="p-0">
+        <div className="rounded-xl border bg-card overflow-hidden">
+          <div className="flex items-center justify-between gap-3 border-b px-5 py-4">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              <h2 className="font-semibold tracking-tight">{branding.payeePlural}</h2>
+              {!isLoading && (
+                <span className="text-xs text-muted-foreground">({payees.length})</span>
+              )}
+            </div>
+          </div>
+
           {isLoading ? (
-            <div className="p-12 text-center text-sm text-neutral-500">
+            <div className="p-12 text-center text-sm text-muted-foreground">
               Loading {branding.payeePlural.toLowerCase()}…
             </div>
           ) : payees.length === 0 ? (
-            <div className="p-16 text-center">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-neutral-100 text-neutral-400 mb-4">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" strokeLinecap="round" />
-                  <circle cx="9" cy="7" r="4" />
-                </svg>
+            <div className="p-16 flex flex-col items-center gap-3 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                <Users className="h-5 w-5 text-muted-foreground" />
               </div>
-              <h3 className="font-display text-xl tracking-tightest">
-                No {branding.payeePlural.toLowerCase()} yet
-              </h3>
-              <p className="text-neutral-500 mt-2 mb-6 text-sm">
-                Add your first {branding.payeeSingular.toLowerCase()} to start running {branding.payoutNounPlural.toLowerCase()}.
-              </p>
-              <button
-                onClick={() => setShowForm(true)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-ink text-white text-sm font-medium hover:bg-ink-soft transition-smooth"
-              >
-                Add your first {branding.payeeSingular.toLowerCase()}
-              </button>
+              <div>
+                <p className="font-medium">No {branding.payeePlural.toLowerCase()} yet</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Add your first {branding.payeeSingular.toLowerCase()} to start running {branding.payoutNounPlural.toLowerCase()}.
+                </p>
+              </div>
+              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="mt-1">
+                    <Plus className="h-4 w-4" />
+                    Add your first {branding.payeeSingular.toLowerCase()}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Add {branding.payeeSingular.toLowerCase()}</DialogTitle>
+                  </DialogHeader>
+                  <PayeeForm
+                    payerId={session.payerId}
+                    onSuccess={() => {
+                      setDialogOpen(false);
+                      refresh();
+                    }}
+                  />
+                </DialogContent>
+              </Dialog>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="text-[11px] tracking-[0.14em] uppercase text-neutral-500 bg-neutral-100/60 border-b border-neutral-200">
-                    <th className="px-6 py-3 text-left font-medium">Name</th>
-                    <th className="px-6 py-3 text-left font-medium">Email</th>
-                    <th className="px-6 py-3 text-left font-medium">Phone</th>
-                    <th className="px-6 py-3 text-left font-medium">Rail</th>
-                    <th className="px-6 py-3 text-right font-medium">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {payees.map((payee) => (
-                    <tr
-                      key={payee.id}
-                      className="border-b border-neutral-150 last:border-b-0 hover:bg-neutral-50/60 transition-smooth"
-                    >
-                      <td className="px-6 py-4 text-sm font-medium">{payee.name}</td>
-                      <td className="px-6 py-4 text-sm text-neutral-500 font-mono-tab">
-                        {payee.email}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-neutral-500 font-mono-tab">
-                        {payee.phone}
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        <RailBadge type={payee.paymentMethodType} />
-                      </td>
-                      <td className="px-6 py-4 text-right text-sm">
-                        <button
-                          onClick={() => handleDelete(payee.id)}
-                          className="text-neutral-500 hover:text-error font-medium transition-smooth"
-                        >
-                          Remove
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Rail</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {payees.map((payee) => (
+                  <TableRow key={payee.id}>
+                    <TableCell className="font-medium">{payee.name}</TableCell>
+                    <TableCell className="text-muted-foreground font-mono text-xs">{payee.email}</TableCell>
+                    <TableCell className="text-muted-foreground font-mono text-xs">{payee.phone}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={payee.paymentMethodType === 'bank_account' ? 'secondary' : 'success'}
+                      >
+                        {payee.paymentMethodType === 'bank_account' ? 'Bank account' : 'Debit card'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <button
+                        onClick={() => handleDelete(payee.id)}
+                        className="text-xs text-muted-foreground hover:text-destructive font-medium transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
-          </CardContent>
-        </Card>
+        </div>
       </main>
     </div>
-  );
-}
-
-function Crumbs() {
-  return (
-    <nav className="text-[11px] tracking-[0.18em] uppercase text-neutral-400 flex items-center gap-2">
-      <Link href="/dashboard" className="hover:text-ink transition-smooth">
-        Console
-      </Link>
-      <span className="text-neutral-300">/</span>
-      <span className="text-ink">{branding.payeePlural}</span>
-    </nav>
-  );
-}
-
-function RailBadge({ type }: { type: 'bank_account' | 'debit_card' }) {
-  const isBank = type === 'bank_account';
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] tracking-[0.05em] font-medium border ${
-        isBank
-          ? 'bg-info-soft border-info/20 text-info'
-          : 'bg-success-soft border-success/20 text-success'
-      }`}
-    >
-      <span className={`w-1.5 h-1.5 rounded-full ${isBank ? 'bg-info' : 'bg-success'}`} />
-      {isBank ? 'Bank account' : 'Debit card'}
-    </span>
   );
 }

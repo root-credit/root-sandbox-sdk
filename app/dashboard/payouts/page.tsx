@@ -26,50 +26,48 @@ export default function PayoutsPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <DashboardHeader email={session.payerEmail} />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-6 lg:px-10 py-12">
-        <div className="mb-10">
-          <Crumbs />
-          <div className="flex items-end justify-between gap-6 flex-wrap mt-3">
+      <main className="flex-1 mx-auto max-w-5xl w-full px-6 lg:px-10 py-8">
+        <div className="mb-8">
+          <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
+            <Link href="/dashboard" className="hover:text-foreground transition-colors">Console</Link>
+            <span>/</span>
+            <span className="text-foreground">{branding.payoutNounPlural}</span>
+          </nav>
+          <div className="flex items-end justify-between gap-6 flex-wrap">
             <div>
-              <h1 className="font-display text-4xl md:text-5xl tracking-tightest">
-                {branding.payoutNounPlural}
-              </h1>
-              <p className="text-neutral-500 mt-2 max-w-md">
+              <h1 className="text-2xl font-semibold tracking-tight">{branding.payoutNounPlural}</h1>
+              <p className="text-sm text-muted-foreground mt-1">
                 Run end-of-shift {branding.payoutNounPlural.toLowerCase()} and settle in seconds.
               </p>
             </div>
-            <span className="inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-success">
-              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+            <span className="inline-flex items-center gap-2 text-xs font-medium text-green-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
               Rail live
             </span>
           </div>
         </div>
 
         {error && (
-          <div className="px-4 py-3 bg-error-soft border border-error/20 rounded-md text-error text-sm mb-6">
+          <div className="rounded-md border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm text-destructive mb-6">
             {error}
           </div>
         )}
 
-        <Card className="mb-8 gap-0 bg-surface py-0 shadow-sm-custom ring-neutral-200">
-          <CardContent className="p-8">
+        <Card className="mb-6">
+          <CardContent className="pt-6">
             {isLoading ? (
-              <div className="text-center text-sm text-neutral-500 py-8">
+              <div className="text-center text-sm text-muted-foreground py-8">
                 Loading {branding.payeePlural.toLowerCase()}…
               </div>
             ) : (
-              <PayoutForm
-                payerId={session.payerId}
-                payees={payees}
-                onSuccess={refresh}
-              />
+              <PayoutForm payerId={session.payerId} payees={payees} onSuccess={refresh} />
             )}
           </CardContent>
         </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InfoCard
-            eyebrow="How it works"
+            label="How it works"
             title="From shift close to settled"
             items={[
               `Enter end-of-day amounts for your ${branding.payeePlural.toLowerCase()}`,
@@ -80,7 +78,7 @@ export default function PayoutsPage() {
             ordered
           />
           <InfoCard
-            eyebrow="Quick tips"
+            label="Quick tips"
             title={`Run a clean ${branding.payoutNoun.toLowerCase()}`}
             items={[
               `Settles in roughly 5 seconds per ${branding.payeeSingular.toLowerCase()}`,
@@ -95,39 +93,27 @@ export default function PayoutsPage() {
   );
 }
 
-function Crumbs() {
-  return (
-    <nav className="text-[11px] tracking-[0.18em] uppercase text-neutral-400 flex items-center gap-2">
-      <Link href="/dashboard" className="hover:text-ink transition-smooth">
-        Console
-      </Link>
-      <span className="text-neutral-300">/</span>
-      <span className="text-ink">Payouts</span>
-    </nav>
-  );
-}
-
 function InfoCard({
-  eyebrow,
+  label,
   title,
   items,
   ordered,
 }: {
-  eyebrow: string;
+  label: string;
   title: string;
   items: string[];
   ordered?: boolean;
 }) {
   return (
-    <Card className="gap-0 bg-surface py-0 shadow-sm-custom ring-neutral-200">
-      <CardContent className="p-6">
-        <p className="text-eyebrow mb-2">{eyebrow}</p>
-        <h3 className="font-display text-lg tracking-tightest mb-4">{title}</h3>
+    <Card>
+      <CardContent className="pt-6">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">{label}</p>
+        <h3 className="font-semibold tracking-tight mb-4">{title}</h3>
         {ordered ? (
-          <ol className="space-y-2.5 text-sm text-neutral-600 leading-relaxed">
+          <ol className="space-y-2.5 text-sm text-muted-foreground">
             {items.map((it, i) => (
               <li key={it} className="flex items-start gap-3">
-                <span className="font-mono-tab text-[11px] mt-0.5 text-gold tracking-tight">
+                <span className="font-mono text-xs mt-0.5 text-primary tabular-nums">
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <span>{it}</span>
@@ -135,10 +121,10 @@ function InfoCard({
             ))}
           </ol>
         ) : (
-          <ul className="space-y-2 text-sm text-neutral-600 leading-relaxed">
+          <ul className="space-y-2 text-sm text-muted-foreground">
             {items.map((it) => (
               <li key={it} className="flex items-start gap-2.5">
-                <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
+                <span className="mt-2 h-1 w-1 rounded-full bg-primary flex-none" />
                 <span>{it}</span>
               </li>
             ))}

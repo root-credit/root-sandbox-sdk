@@ -4,33 +4,22 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { branding } from '@/lib/branding';
 import { useLinkBank } from '@/lib/hooks/usePayer';
 import { linkBankInputSchema, type LinkBankInput } from '@/lib/types/payer';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  Field,
-  FieldContent,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface BankAccountFormProps {
   payerId: string;
   onSuccess?: () => void;
 }
 
-const labelTone = 'text-eyebrow normal-case tracking-[0.14em]';
-
-const selectTriggerClass =
-  'bg-transparent px-2.5 py-1 text-sm md:text-sm';
-
 export function BankAccountForm({ payerId, onSuccess }: BankAccountFormProps) {
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [linked, setLinked] = useState(false);
   const { linkBank, isSubmitting } = useLinkBank();
 
   const {
@@ -44,142 +33,99 @@ export function BankAccountForm({ payerId, onSuccess }: BankAccountFormProps) {
   });
 
   async function onSubmit(data: LinkBankInput) {
-    setError('');
-    setSuccess('');
     try {
       await linkBank(payerId, data);
-      setSuccess('Bank account linked successfully!');
+      toast.success('Bank account linked successfully');
+      setLinked(true);
       reset();
       if (onSuccess) onSuccess();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      toast.error(err instanceof Error ? err.message : 'An error occurred');
     }
   }
 
+  if (linked) {
+    return (
+      <div className="flex items-center gap-2 rounded-md border bg-green-50 px-4 py-3 text-sm text-green-700">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        Bank account linked successfully.
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-0">
-      <FieldGroup className="gap-5">
-        {error && (
-          <div
-            role="alert"
-            className="rounded-lg border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm text-destructive"
-          >
-            {error}
-          </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="accountHolderName">Account holder name</Label>
+        <Input
+          {...register('accountHolderName')}
+          type="text"
+          id="accountHolderName"
+          placeholder={`${branding.payerSingular} name`}
+        />
+        {errors.accountHolderName && (
+          <p className="text-xs text-destructive">{errors.accountHolderName.message}</p>
         )}
+      </div>
 
-        {success && (
-          <div className="rounded-lg border border-emerald-700/20 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
-            {success}
-          </div>
-        )}
-
-        <Field data-invalid={!!errors.accountHolderName}>
-          <FieldLabel htmlFor="accountHolderName" className={labelTone}>
-            Account holder name
-          </FieldLabel>
-          <FieldContent>
-            <Input
-              {...register('accountHolderName')}
-              type="text"
-              id="accountHolderName"
-              placeholder={`${branding.payerSingular} name`}
-              aria-invalid={!!errors.accountHolderName}
-            />
-            <FieldError errors={[errors.accountHolderName]} />
-          </FieldContent>
-        </Field>
-
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-4">
-          <Field data-invalid={!!errors.routingNumber}>
-            <FieldLabel htmlFor="routingNumber" className={labelTone}>
-              Routing number
-            </FieldLabel>
-            <FieldContent>
-              <Input
-                {...register('routingNumber')}
-                type="text"
-                id="routingNumber"
-                placeholder="123456789"
-                maxLength={9}
-                className="font-mono-tab"
-                aria-invalid={!!errors.routingNumber}
-              />
-              <FieldError errors={[errors.routingNumber]} />
-            </FieldContent>
-          </Field>
-
-          <Field data-invalid={!!errors.accountNumber}>
-            <FieldLabel htmlFor="accountNumber" className={labelTone}>
-              Account number
-            </FieldLabel>
-            <FieldContent>
-              <Input
-                {...register('accountNumber')}
-                type="password"
-                id="accountNumber"
-                placeholder="••••••••"
-                className="font-mono-tab"
-                aria-invalid={!!errors.accountNumber}
-              />
-              <FieldError errors={[errors.accountNumber]} />
-            </FieldContent>
-          </Field>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="routingNumber">Routing number</Label>
+          <Input
+            {...register('routingNumber')}
+            type="text"
+            id="routingNumber"
+            placeholder="123456789"
+            maxLength={9}
+            className="font-mono"
+          />
+          {errors.routingNumber && (
+            <p className="text-xs text-destructive">{errors.routingNumber.message}</p>
+          )}
         </div>
 
-        <Field>
-          <FieldLabel htmlFor="accountType" className={labelTone}>
-            Account type
-          </FieldLabel>
-          <FieldContent>
-            <select
-              {...register('accountType')}
-              id="accountType"
-              className={cn(
-                'flex h-8 w-full rounded-lg border border-input text-foreground outline-none transition-colors',
-                'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
-                selectTriggerClass,
-              )}
-            >
-              <option value="checking">Checking</option>
-              <option value="savings">Savings</option>
-            </select>
-          </FieldContent>
-        </Field>
-
-        <Button
-          type="submit"
-          size="lg"
-          className="h-11 w-full rounded-md shadow-sm-custom hover:shadow-md-custom"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-              Linking account…
-            </>
-          ) : (
-            <>
-              Link bank account
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden
-              >
-                <path
-                  d="M5 12h14M13 5l7 7-7 7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="accountNumber">Account number</Label>
+          <Input
+            {...register('accountNumber')}
+            type="password"
+            id="accountNumber"
+            placeholder="••••••••"
+            className="font-mono"
+          />
+          {errors.accountNumber && (
+            <p className="text-xs text-destructive">{errors.accountNumber.message}</p>
           )}
-        </Button>
-      </FieldGroup>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="accountType">Account type</Label>
+        <select
+          {...register('accountType')}
+          id="accountType"
+          className={cn(
+            'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors',
+            'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+          )}
+        >
+          <option value="checking">Checking</option>
+          <option value="savings">Savings</option>
+        </select>
+      </div>
+
+      <Button type="submit" disabled={isSubmitting} className="w-full">
+        {isSubmitting ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Linking account…
+          </>
+        ) : (
+          'Link bank account'
+        )}
+      </Button>
     </form>
   );
 }

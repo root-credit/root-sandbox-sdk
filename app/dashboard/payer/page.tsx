@@ -4,7 +4,8 @@ import { BankAccountForm } from '@/components/BankAccountForm';
 import { getCurrentSession } from '@/lib/session';
 import { getPayer } from '@/lib/redis';
 import { branding } from '@/lib/branding';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
 export default async function PayerSettingsPage() {
@@ -24,75 +25,68 @@ export default async function PayerSettingsPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <DashboardHeader email={session.payerEmail} />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-6 lg:px-10 py-12">
-        <div className="mb-10">
-          <Crumbs />
-          <h1 className="font-display text-4xl md:text-5xl tracking-tightest mt-3">
-            {branding.payerSingular}
-          </h1>
-          <p className="text-neutral-500 mt-2 max-w-md">
-            Your house profile and the funding source behind every payout.
+      <main className="flex-1 mx-auto max-w-5xl w-full px-6 lg:px-10 py-8">
+        <div className="mb-8">
+          <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
+            <Link href="/dashboard" className="hover:text-foreground transition-colors">Console</Link>
+            <span>/</span>
+            <span className="text-foreground">{branding.payerSingular}</span>
+          </nav>
+          <h1 className="text-2xl font-semibold tracking-tight">{branding.payerSingular}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Your organization profile and the funding source behind every payout.
           </p>
         </div>
 
-        <Card className="mb-8 gap-0 bg-surface py-0 shadow-sm-custom ring-neutral-200">
-          <CardHeader className="flex flex-row items-start justify-between gap-4 border-b border-neutral-200 pb-6">
+        {/* Profile card */}
+        <Card className="mb-6">
+          <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div>
-              <p className="text-eyebrow mb-1">Profile</p>
-              <h2 className="font-display text-xl tracking-tightest">
-                {branding.payerSingular} information
-              </h2>
+              <CardTitle>{branding.payerSingular} information</CardTitle>
+              <CardDescription className="mt-1">Your operator account details.</CardDescription>
             </div>
             {payer.bankAccountToken && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border border-success/20 bg-success-soft text-success shrink-0">
-                <span className="w-1.5 h-1.5 rounded-full bg-success" />
-                Bank linked
-              </span>
+              <Badge variant="success" className="shrink-0">Bank linked</Badge>
             )}
           </CardHeader>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
-              <Field label={`${branding.payerSingular} name`} value={payer.payerName} />
-              <Field label="Email address" value={payer.payerEmail} mono />
-              <Field label="Phone number" value={payer.phone} mono />
-              <Field label="Root payer ID" value={payer.rootPayerId} mono small />
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5">
+              <ProfileField label={`${branding.payerSingular} name`} value={payer.payerName} />
+              <ProfileField label="Email address" value={payer.payerEmail} mono />
+              <ProfileField label="Phone number" value={payer.phone} mono />
+              <ProfileField label="Root payer ID" value={payer.rootPayerId} mono small />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="gap-0 bg-surface py-0 shadow-sm-custom ring-neutral-200">
-          <CardHeader className="border-b border-neutral-200 pb-6">
-            <p className="text-eyebrow mb-1">Funding</p>
-            <h2 className="font-display text-xl tracking-tightest mb-2">
-              Bank account for ACH transfers
-            </h2>
-            <p className="text-sm text-neutral-500 max-w-xl font-normal">
-              Link your {branding.payerPossessive} bank account to enable ACH debit pulls for funding
-              your {branding.productName} subaccount.
-            </p>
+        {/* Bank account card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Bank account</CardTitle>
+            <CardDescription>
+              Link your {branding.payerPossessive} bank account to enable ACH debit pulls for
+              funding your {branding.productName} subaccount.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent className="flex flex-col gap-6">
             <BankAccountForm payerId={session.payerId} />
 
-            <div className="mt-8 rounded-lg border border-neutral-200 bg-surface-2 p-5">
-              <p className="text-eyebrow mb-2">Why link your bank account?</p>
-              <ul className="text-sm text-neutral-600 space-y-1.5 leading-relaxed">
-                <li className="flex items-start gap-2.5">
-                  <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
-                  Fund your {branding.productName} subaccount via ACH debit
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
-                  Fast and secure transfers
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
-                  Support for checking and savings accounts
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
-                  Direct integration with Root&apos;s payment infrastructure
-                </li>
+            <div className="rounded-lg border bg-muted/30 p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-3">
+                Why link your bank account?
+              </p>
+              <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
+                {[
+                  `Fund your ${branding.productName} subaccount via ACH debit`,
+                  'Fast and secure transfers',
+                  'Support for checking and savings accounts',
+                  `Direct integration with Root's payment infrastructure`,
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5">
+                    <span className="mt-2 h-1 w-1 rounded-full bg-primary flex-none" />
+                    {item}
+                  </li>
+                ))}
               </ul>
             </div>
           </CardContent>
@@ -102,19 +96,7 @@ export default async function PayerSettingsPage() {
   );
 }
 
-function Crumbs() {
-  return (
-    <nav className="text-[11px] tracking-[0.18em] uppercase text-neutral-400 flex items-center gap-2">
-      <Link href="/dashboard" className="hover:text-ink transition-smooth">
-        Console
-      </Link>
-      <span className="text-neutral-300">/</span>
-      <span className="text-ink">{branding.payerSingular}</span>
-    </nav>
-  );
-}
-
-function Field({
+function ProfileField({
   label,
   value,
   mono,
@@ -127,14 +109,14 @@ function Field({
 }) {
   return (
     <div>
-      <div className="text-eyebrow mb-1.5">{label}</div>
-      <div
-        className={`${mono ? 'font-mono-tab' : 'font-medium'} ${
-          small ? 'text-xs break-all text-neutral-500' : 'text-base text-foreground'
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">{label}</p>
+      <p
+        className={`${mono ? 'font-mono' : 'font-medium'} ${
+          small ? 'text-xs break-all text-muted-foreground' : 'text-sm'
         }`}
       >
         {value}
-      </div>
+      </p>
     </div>
   );
 }

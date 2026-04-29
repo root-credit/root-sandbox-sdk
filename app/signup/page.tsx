@@ -3,119 +3,81 @@ import { SignupForm } from '@/components/SignupForm';
 import { branding } from '@/lib/branding';
 
 export default function SignupPage() {
-  const monogram = branding.productName.charAt(0);
-
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-[1fr_1.05fr] bg-background">
-      <aside className="relative hidden lg:flex flex-col justify-between bg-ink text-white p-12 overflow-hidden lg:order-2">
-        <div
-          aria-hidden
-          className="absolute inset-0 -z-10"
-          style={{
-            background:
-              'radial-gradient(ellipse at 20% -10%, rgba(212,160,23,0.22), transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(180,83,9,0.18), transparent 60%), #0A0A0A',
-          }}
-        />
-        <div
-          aria-hidden
-          className="absolute inset-0 -z-10 opacity-[0.05]"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)',
-            backgroundSize: '64px 64px',
-          }}
-        />
-
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-white/10 text-gold-bright font-display border border-white/15">
-            {monogram}
-          </span>
-          <span className="font-display text-lg tracking-tightest">{branding.productName}</span>
-        </Link>
-
-        <div className="max-w-md">
-          <p className="text-[11px] tracking-[0.18em] uppercase text-white/50 mb-5">
-            New account
-          </p>
-          <h2 className="font-display text-4xl xl:text-5xl tracking-tightest leading-[1.05] text-balance">
-            Open a console for <em className="not-italic text-gold-bright">your house.</em>
-          </h2>
-          <p className="mt-5 text-white/60 leading-relaxed">
-            Spin up an operator account in under two minutes. We&apos;ll provision your Root
-            payer, your {branding.payerSingular.toLowerCase()} subaccount, and a clean ledger —
-            wired to the team you add next.
-          </p>
-
-          <ul className="mt-10 space-y-3 text-sm text-white/70">
-            <Bullet>Same-day onboarding, sandbox-safe</Bullet>
-            <Bullet>Bank or debit card payouts per {branding.payeeSingular.toLowerCase()}</Bullet>
-            <Bullet>One ledger, every payout, every time</Bullet>
-          </ul>
-        </div>
-
-        <p className="text-[11px] tracking-[0.18em] uppercase text-white/40">
-          Powered by Root &middot; Bank-grade security
-        </p>
-      </aside>
-
-      <main className="flex flex-col lg:order-1">
-        <div className="lg:hidden border-b border-neutral-200 bg-surface px-6 py-5">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            <span className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-ink text-gold-bright font-display border border-neutral-200">
-              {monogram}
-            </span>
-            <span className="font-display text-lg tracking-tightest">{branding.productName}</span>
+    <main className="min-h-screen flex flex-col">
+      <header className="border-b bg-card">
+        <div className="mx-auto max-w-6xl px-6 py-4 flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-sm font-semibold">
+              {branding.productName.charAt(0)}
+            </div>
+            <span className="font-semibold tracking-tight">{branding.productName}</span>
           </Link>
         </div>
+      </header>
 
-        <div className="flex-1 flex items-center justify-center px-6 py-12 lg:py-20">
-          <div className="w-full max-w-md">
-            <p className="text-eyebrow mb-3">Get started</p>
-            <h1 className="font-display text-4xl tracking-tightest mb-3">Create your account</h1>
-            <p className="text-sm text-neutral-500 leading-relaxed mb-10">
-              Tell us about your {branding.payerSingular.toLowerCase()}. We&apos;ll set up your
-              operator console and provision the payment rails behind it.
+      <section className="flex-1 flex items-center">
+        <div className="mx-auto w-full max-w-6xl px-6 py-16 grid gap-12 md:grid-cols-2 items-center">
+          <div className="flex flex-col gap-6">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              New account
+            </span>
+            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-balance leading-[1.1]">
+              Open your console.
+            </h1>
+            <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
+              Spin up an operator account in under two minutes. We&apos;ll provision your Root
+              payer, your {branding.payerSingular.toLowerCase()} subaccount, and a clean ledger —
+              wired to the team you add next.
             </p>
+            <ul className="flex flex-col gap-3 text-sm text-muted-foreground">
+              <li className="flex items-center gap-3">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary flex-none" />
+                Same-day onboarding, sandbox-safe
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary flex-none" />
+                Bank or debit card payouts per {branding.payeeSingular.toLowerCase()}
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary flex-none" />
+                One ledger, every payout, every time
+              </li>
+            </ul>
+          </div>
 
-            <SignupForm />
-
-            <div className="my-8 flex items-center gap-4">
-              <div className="h-px flex-1 bg-neutral-200" />
-              <span className="text-[11px] tracking-[0.18em] uppercase text-neutral-400">
-                Already onboarded?
-              </span>
-              <div className="h-px flex-1 bg-neutral-200" />
+          <div className="rounded-xl border bg-card p-6 shadow-sm">
+            <div className="mb-6">
+              <h2 className="font-semibold tracking-tight text-lg">Create your account</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Tell us about your {branding.payerSingular.toLowerCase()}.
+              </p>
             </div>
-
+            <SignupForm />
+            <div className="relative my-5">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Already onboarded?</span>
+              </div>
+            </div>
             <Link
               href="/login"
-              className="block w-full text-center px-4 py-3 rounded-md border border-neutral-300 hover:border-ink hover:bg-neutral-50 transition-smooth text-sm font-medium"
+              className="flex w-full items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
             >
               Sign in to an existing console
             </Link>
           </div>
         </div>
-      </main>
-    </div>
-  );
-}
+      </section>
 
-function Bullet({ children }: { children: React.ReactNode }) {
-  return (
-    <li className="flex items-start gap-2.5">
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        className="mt-0.5 flex-none text-gold-bright"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      >
-        <circle cx="8" cy="8" r="6.5" />
-        <path d="M5.5 8.2l1.8 1.8 3.2-3.6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-      <span>{children}</span>
-    </li>
+      <footer className="border-t">
+        <div className="mx-auto max-w-6xl px-6 py-6 text-xs text-muted-foreground">
+          Sandbox environment — no real money is moved.
+        </div>
+      </footer>
+    </main>
   );
 }

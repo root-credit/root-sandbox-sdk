@@ -9,15 +9,15 @@ import {
 } from '@/lib/hooks/useAdmin';
 
 const inputClass =
-  'w-full px-3.5 py-2.5 bg-surface text-foreground rounded-md border border-neutral-200 ' +
-  'placeholder:text-neutral-400 transition-smooth ' +
-  'focus:outline-none focus:border-gold focus:ring-[3px] focus:ring-gold-bright/25';
+  'w-full px-3.5 py-2.5 bg-background text-foreground rounded-md border border-input ' +
+  'placeholder:text-muted-foreground ' +
+  'focus:outline-none focus:border-primary focus:ring-[3px] focus:ring-primary/20 transition-colors';
 
 const labelClass =
-  'block text-[11px] tracking-[0.14em] uppercase text-neutral-500 mb-2';
+  'block text-[11px] tracking-[0.14em] uppercase text-muted-foreground mb-2';
 
 const sectionEyebrow =
-  'text-[11px] tracking-[0.18em] uppercase text-neutral-500 font-medium';
+  'text-[11px] tracking-[0.18em] uppercase text-muted-foreground font-medium';
 
 export function AdminPanel() {
   const auth = useAdminAuth();
@@ -87,7 +87,7 @@ export function AdminPanel() {
 
   if (authorized === null) {
     return (
-      <div className="min-h-[40vh] flex items-center justify-center text-sm text-neutral-500">
+      <div className="min-h-[40vh] flex items-center justify-center text-sm text-muted-foreground">
         <Spinner /> <span className="ml-2">Checking admin session…</span>
       </div>
     );
@@ -96,19 +96,19 @@ export function AdminPanel() {
   if (!authorized) {
     return (
       <div className="max-w-md">
-        <div className="bg-surface border border-neutral-200 rounded-lg p-8 shadow-sm-custom">
-          <p className="text-eyebrow mb-1">Admin sign-in</p>
-          <h2 className="font-display text-2xl tracking-tightest mb-3">
+        <div className="bg-card border rounded-lg p-8 shadow-sm">
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">Admin sign-in</p>
+          <h2 className="font-semibold tracking-tight text-2xl mb-3">
             Operator credentials
           </h2>
-          <p className="text-sm text-neutral-500 mb-6 leading-relaxed">
+          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
             Uses fixed admin credentials (hardcoded — nothing stored in Redis).
             Email{' '}
-            <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">
+            <code className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded">
               admin@root.credit
             </code>{' '}
             / password in{' '}
-            <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">
+            <code className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded">
               lib/admin-session.ts
             </code>
             .
@@ -142,7 +142,7 @@ export function AdminPanel() {
             <button
               type="submit"
               disabled={busy !== null}
-              className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-md bg-ink text-white text-sm font-medium tracking-tight hover:bg-ink-soft transition-smooth disabled:opacity-50"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-md bg-primary text-primary-foreground text-sm font-medium tracking-tight hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
               {busy === 'login' ? (
                 <>
@@ -163,14 +163,14 @@ export function AdminPanel() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className={sectionEyebrow}>Operations</p>
-          <h2 className="font-display text-2xl tracking-tightest mt-1">
+          <h2 className="font-semibold tracking-tight text-2xl mt-1">
             Sandbox controls
           </h2>
         </div>
         <button
           type="button"
           onClick={logout}
-          className="inline-flex items-center gap-2 px-3.5 py-2 text-sm rounded-md border border-neutral-200 hover:border-ink hover:bg-neutral-100 transition-smooth"
+          className="inline-flex items-center gap-2 px-3.5 py-2 text-sm rounded-md border hover:border-foreground hover:bg-muted transition-colors"
         >
           Log out
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -195,16 +195,16 @@ export function AdminPanel() {
               () => runOperation('clear_all_payees')
             )
           }
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-error text-white text-sm font-medium hover:opacity-90 transition-smooth disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-destructive text-destructive-foreground text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50"
         >
           {busy === 'clear_all_payees' ? <><Spinner /> Clearing…</> : `Clear all ${branding.payeePlural.toLowerCase()}`}
         </button>
 
-        <div className="pt-5 mt-5 border-t border-neutral-150">
+        <div className="pt-5 mt-5 border-t">
           <p className="text-sm font-medium text-foreground mb-1">
             Remove one {branding.payeeSingular.toLowerCase()}
           </p>
-          <p className="text-sm text-neutral-500 mb-3">
+          <p className="text-sm text-muted-foreground mb-3">
             Targeted removal of a single {branding.payeeSingular.toLowerCase()} by ID.
           </p>
           <div className="flex flex-wrap gap-3 items-end">
@@ -232,7 +232,7 @@ export function AdminPanel() {
                   () => runOperation('remove_payee', { payeeId: selectedPayeeId })
                 )
               }
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-warning text-white text-sm font-medium hover:opacity-90 transition-smooth disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition-colors disabled:opacity-50"
             >
               {busy === 'remove_payee' ? <><Spinner /> Removing…</> : `Remove ${branding.payeeSingular.toLowerCase()}`}
             </button>
@@ -253,7 +253,7 @@ export function AdminPanel() {
               () => runOperation('clear_sessions_and_transactions')
             )
           }
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-warning text-white text-sm font-medium hover:opacity-90 transition-smooth disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition-colors disabled:opacity-50"
         >
           {busy === 'clear_sessions_and_transactions' ? <><Spinner /> Clearing…</> : 'Clear sessions & transactions'}
         </button>
@@ -263,7 +263,7 @@ export function AdminPanel() {
         title={`Bank tokens (${branding.payerPlural.toLowerCase()})`}
         description={
           <>
-            Removes <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">bankAccountToken</code>{' '}
+            Removes <code className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded">bankAccountToken</code>{' '}
             from each {branding.payerSingular.toLowerCase()} record (does not call Root APIs).
           </>
         }
@@ -276,7 +276,7 @@ export function AdminPanel() {
               runOperation('clear_bank_fields')
             )
           }
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-info text-white text-sm font-medium hover:opacity-90 transition-smooth disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
         >
           {busy === 'clear_bank_fields' ? <><Spinner /> Clearing…</> : 'Clear bank data'}
         </button>
@@ -288,7 +288,7 @@ export function AdminPanel() {
           <>
             All {branding.payerSingular.toLowerCase()} accounts use one shared password (stored hashed in Redis).
             Until you set one here, the default is{' '}
-            <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">
+            <code className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded">
               1234567890
             </code>.
           </>
@@ -316,7 +316,7 @@ export function AdminPanel() {
               });
               if (ok) setNewSharedPassword('');
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-ink text-white text-sm font-medium hover:bg-ink-soft transition-smooth disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
             {busy === 'set_shared_login_password' ? <><Spinner /> Saving…</> : 'Save shared password'}
           </button>
@@ -339,12 +339,12 @@ function Section({
 }) {
   return (
     <section
-      className={`bg-surface border rounded-lg p-6 shadow-sm-custom ${
-        tone === 'danger' ? 'border-error/15' : 'border-neutral-200'
+      className={`bg-card border rounded-lg p-6 shadow-sm ${
+        tone === 'danger' ? 'border-destructive/20' : 'border-border'
       }`}
     >
-      <h3 className="font-display text-lg tracking-tightest mb-1.5">{title}</h3>
-      <p className="text-sm text-neutral-500 mb-4 leading-relaxed">{description}</p>
+      <h3 className="font-semibold tracking-tight text-lg mb-1.5">{title}</h3>
+      <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{description}</p>
       {children}
     </section>
   );
@@ -359,8 +359,8 @@ function Message({
     <div
       className={`px-4 py-3 rounded-md text-sm border ${
         message.type === 'ok'
-          ? 'bg-success-soft border-success/20 text-success'
-          : 'bg-error-soft border-error/20 text-error'
+          ? 'bg-green-50 border-green-200 text-green-700'
+          : 'bg-red-50 border-red-200 text-red-700'
       }`}
     >
       {message.text}
