@@ -6,30 +6,30 @@
 
 :root {
   /* Surfaces */
-  --color-background: #FAF8F2;
+  --color-background: #F8FAFB;
   --color-surface: #FFFFFF;
-  --color-surface-2: #F4F1E7;
-  --color-foreground: #0A0A0A;
+  --color-surface-2: #F0F4F8;
+  --color-foreground: #0F172A;
 
-  /* Brand palette — charcoal & gold (hospitality/enterprise tone) */
-  --color-ink: #0A0A0A;          /* dark hero / primary buttons */
-  --color-ink-soft: #1F1F1F;
-  --color-ink-2: #262626;
-  --color-gold: #A16207;          /* deep gold for accents/borders */
-  --color-gold-bright: #D4A017;   /* highlight gold */
-  --color-gold-soft: #F4E5B7;     /* gold tint backgrounds */
+  /* Brand palette — Deep Navy & Teal (enterprise/HCM tone) */
+  --color-ink: #0F172A;          /* deep navy / primary buttons */
+  --color-ink-soft: #1E293B;
+  --color-ink-2: #334155;
+  --color-gold: #0891B2;          /* teal for accents/borders */
+  --color-gold-bright: #06B6D4;   /* bright cyan teal */
+  --color-gold-soft: #CFFAFE;     /* teal tint backgrounds */
 
   /* Neutrals */
-  --color-neutral-50: #FAFAF7;
-  --color-neutral-100: #F5F4EE;
-  --color-neutral-150: #ECEAE0;
-  --color-neutral-200: #E5E2D5;
-  --color-neutral-300: #C8C3B0;
-  --color-neutral-400: #9A9583;
-  --color-neutral-500: #6B6655;
-  --color-neutral-600: #494538;
-  --color-neutral-700: #2E2B22;
-  --color-neutral-800: #18170F;
+  --color-neutral-50: #F8FAFC;
+  --color-neutral-100: #F1F5F9;
+  --color-neutral-150: #E2E8F0;
+  --color-neutral-200: #CBD5E1;
+  --color-neutral-300: #94A3B8;
+  --color-neutral-400: #64748B;
+  --color-neutral-500: #475569;
+  --color-neutral-600: #334155;
+  --color-neutral-700: #1E293B;
+  --color-neutral-800: #0F172A;
 
   /* Status */
   --color-success: #15803D;

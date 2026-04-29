@@ -15,13 +15,13 @@ export default function LandingPage() {
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Hero — nav lives inside the dark surface so it can never overlap content */}
       <header className="relative isolate overflow-hidden bg-ink text-white">
-        {/* warm gradient backdrop */}
+        {/* deep navy with teal accent gradient backdrop */}
         <div
           aria-hidden
           className="absolute inset-0 -z-10"
           style={{
             background:
-              'radial-gradient(ellipse at 80% -10%, rgba(212,160,23,0.22), transparent 55%), radial-gradient(ellipse at 0% 110%, rgba(180,83,9,0.18), transparent 60%), #0A0A0A',
+              'radial-gradient(ellipse at 80% -10%, rgba(6,182,212,0.15), transparent 55%), radial-gradient(ellipse at 0% 110%, rgba(8,145,178,0.12), transparent 60%), #0F172A',
           }}
         />
         {/* subtle grid */}
@@ -43,9 +43,9 @@ export default function LandingPage() {
               <span className="font-display text-lg tracking-tightest">{branding.productName}</span>
             </Link>
             <div className="hidden md:flex items-center gap-8 text-[13px] text-white/65">
-              <a href="#stack" className="hover:text-white transition-smooth">The Stack</a>
+              <a href="#stack" className="hover:text-white transition-smooth">Modules</a>
               <a href="#how" className="hover:text-white transition-smooth">How it works</a>
-              <a href="#trust" className="hover:text-white transition-smooth">Trust</a>
+              <a href="#trust" className="hover:text-white transition-smooth">Enterprise ready</a>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
               <Link
@@ -56,7 +56,7 @@ export default function LandingPage() {
               </Link>
               <Link
                 href="/signup"
-                className="px-3 sm:px-4 py-2 text-sm font-medium rounded-md bg-white text-ink hover:bg-gold-soft transition-smooth"
+                className="px-3 sm:px-4 py-2 text-sm font-medium rounded-md bg-cyan-500 text-ink hover:bg-cyan-400 transition-smooth"
               >
                 Get started
               </Link>
@@ -74,31 +74,29 @@ export default function LandingPage() {
             {/* Copy column */}
             <div className="lg:col-span-7 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 bg-white/5 backdrop-blur">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold-bright" />
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
                 <span className="text-[11px] tracking-[0.18em] uppercase text-white/80">
-                  Gratuity Management · Live
+                  Workforce Operations · Enterprise-Ready
                 </span>
               </div>
 
               <h1 className="mt-7 font-display tracking-tightest text-[2.75rem] sm:text-6xl lg:text-7xl leading-[1.02] text-balance">
                 {branding.tagline.split(' ').slice(0, -1).join(' ')}{' '}
-                <em className="not-italic text-gold-bright">
+                <em className="not-italic text-cyan-400">
                   {branding.tagline.split(' ').slice(-1)[0]}
                 </em>
               </h1>
 
               <p className="mt-6 text-base sm:text-lg text-white/65 leading-relaxed max-w-xl">
-                {branding.productName} unifies {branding.payoutNounPlural.toLowerCase()}, payroll,
-                and payments into one controlled platform — so your team gets paid in seconds and
-                your books reconcile themselves.
+                {branding.productName} unifies payroll, workforce management, and real-time employee disbursements into one secure platform — so your team stays engaged and your operations run seamlessly.
               </p>
 
               <div className="mt-8 flex flex-col sm:flex-row gap-3">
                 <Link
                   href="/signup"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-white text-ink font-medium text-sm tracking-tight hover:bg-gold-soft transition-smooth shadow-lg-custom"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-white text-ink font-medium text-sm tracking-tight hover:bg-neutral-100 transition-smooth shadow-lg-custom"
                 >
-                  Open an account
+                  Launch your command center
                   <ArrowRight />
                 </Link>
                 <Link
@@ -118,62 +116,61 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Live ticket column — properly positioned in the grid, hidden on mobile */}
+            {/* Live operations card column — properly positioned in the grid, hidden on mobile */}
             <div className="hidden lg:block lg:col-span-5">
-              <LiveTicketCard />
+              <LiveOperationsCard />
             </div>
           </div>
         </div>
       </header>
 
-      {/* Module receipts */}
+      {/* Modules section */}
       <section id="stack" className="relative py-24 lg:py-28">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end mb-12 lg:mb-16">
             <div className="lg:col-span-8">
-              <p className="text-eyebrow mb-3">The Stack</p>
+              <p className="text-eyebrow mb-3">Workforce Operations</p>
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tightest leading-[1.05] text-balance">
-                Everything you need for end-of-shift money movement.
+                Everything you need for integrated workforce management.
               </h2>
             </div>
             <p className="lg:col-span-4 text-sm text-neutral-500 max-w-sm leading-relaxed">
-              Three core modules. One ledger. Wired to your bank, your team, and the Root
-              payment rails.
+              Three core modules. One unified ledger. Connected to your payroll, your team, and the payment rails.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
             <ModuleReceipt
-              code="TIP"
-              title="Gratuity Management"
+              code="PAY"
+              title="Payroll Management"
               status="Active · Live"
               features={[
-                'Instant tip distribution',
-                'Tip pooling protocol',
-                'Per-shift run sheets',
+                'Real-time wage processing',
+                'Multi-payout method support',
+                'Automated reconciliation',
                 'Full audit trails',
               ]}
             />
             <ModuleReceipt
-              code="PAY"
-              title={`${branding.payeeSingular} Payouts`}
+              code="EMP"
+              title={`${branding.payeeSingular} Hub`}
               status="Active · Live"
               features={[
-                'Real-time wage access',
-                'Bank account or debit card',
-                'Same-day ACH fallback',
-                'No credit check required',
+                'Workforce directory',
+                'Self-service portals',
+                'Direct deposit management',
+                'Tax document management',
               ]}
             />
             <ModuleReceipt
               code="OPS"
-              title="Treasury & Reconciliation"
+              title="Operations Console"
               status="Active · Live"
               features={[
-                'Subaccount funding via ACH',
-                'One-page transaction ledger',
+                'Organizational dashboard',
+                'Advanced reporting',
                 'Webhook event streaming',
-                'Roles & shared passwords',
+                'Role-based access control',
               ]}
             />
           </div>
@@ -187,27 +184,27 @@ export default function LandingPage() {
       >
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
           <div className="max-w-2xl mb-12 lg:mb-16">
-            <p className="text-eyebrow mb-3">How it works</p>
+            <p className="text-eyebrow mb-3">Implementation</p>
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tightest leading-[1.05] text-balance">
-              From shift close to settled tips — in three movements.
+              From setup to settled — in three movements.
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12">
             <Step
               n="01"
-              title="Onboard your house"
-              body={`Create a ${branding.payerSingular.toLowerCase()}, link an ACH-funding bank account, and add your team with their preferred payout rail.`}
+              title={`Configure your ${branding.payerSingular.toLowerCase()}`}
+              body={`Set up your organization, link your corporate funding account, and add your workforce with their preferred payment methods.`}
             />
             <Step
               n="02"
-              title={`Enter the ${branding.payoutNoun.toLowerCase()}`}
-              body={`At shift close, key in the run sheet. ${branding.productName} validates totals against the team and your liquidity in real time.`}
+              title="Sync your directory"
+              body={`Connect your HRIS or manually manage your employee roster. ${branding.productName} validates everything in real time.`}
             />
             <Step
               n="03"
-              title="One click. Funds land."
-              body="Press process — payouts settle to bank or card in seconds. Receipts and webhooks stream into your ledger."
+              title="Process & settle"
+              body="Execute payroll or disbursements — funds settle to bank or card instantly. Full visibility, every step of the way."
             />
           </div>
         </div>
@@ -216,13 +213,12 @@ export default function LandingPage() {
       {/* Trust */}
       <section id="trust" className="py-24 lg:py-28">
         <div className="max-w-3xl mx-auto px-5 sm:px-8 lg:px-10 text-center">
-          <p className="text-eyebrow mb-4">Built for hospitality at scale</p>
+          <p className="text-eyebrow mb-4">Built for enterprise</p>
           <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tightest leading-[1.05] text-balance">
-            Enterprise rails, with the warmth of an independent house.
+            Workforce technology that scales with you.
           </h2>
           <p className="mt-6 text-neutral-500 leading-relaxed max-w-xl mx-auto">
-            {branding.productName} rides on Root&apos;s secure payment infrastructure — wrapped in
-            a console designed for a host stand, not a CFO suite.
+            {branding.productName} rides on Root&apos;s secure payment infrastructure — wrapped in a command center built for HR teams at any scale.
           </p>
 
           <div className="mt-10">
@@ -245,7 +241,7 @@ export default function LandingPage() {
             <span className="font-display text-base tracking-tightest">{branding.productName}</span>
           </div>
           <p className="text-xs text-neutral-500 text-center sm:text-right">
-            © {new Date().getFullYear()} {branding.productName} · Modern payouts infrastructure.{' '}
+            © {new Date().getFullYear()} {branding.productName} · Enterprise workforce operations.{' '}
             <Link
               href="/admin"
               className="text-neutral-400 hover:text-neutral-600 underline-offset-2 ml-2"
@@ -266,8 +262,8 @@ function Monogram({ dark = false }: { dark?: boolean }) {
     <span
       className={`inline-flex items-center justify-center w-8 h-8 rounded-md font-display text-base ${
         dark
-          ? 'bg-ink text-gold-bright border border-neutral-200'
-          : 'bg-white/10 text-gold-bright border border-white/15'
+          ? 'bg-ink text-cyan-500 border border-neutral-200'
+          : 'bg-white/10 text-cyan-400 border border-white/15'
       }`}
       aria-hidden
     >
@@ -310,14 +306,14 @@ function ModuleReceipt({
       <ul className="space-y-1.5 mb-6">
         {features.map((f) => (
           <li key={f} className="flex items-start gap-2 text-sm text-neutral-600">
-            <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
+            <span className="mt-2 w-1 h-1 rounded-full bg-cyan-500 flex-none" />
             <span>{f}</span>
           </li>
         ))}
       </ul>
 
-      <div className="inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-gold">
-        <span className="w-1.5 h-1.5 rounded-full bg-gold-bright" />
+      <div className="inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-cyan-600">
+        <span className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
         {status}
       </div>
     </div>
@@ -327,7 +323,7 @@ function ModuleReceipt({
 function Step({ n, title, body }: { n: string; title: string; body: string }) {
   return (
     <div>
-      <div className="font-display text-3xl text-gold tracking-tightest">{n}</div>
+      <div className="font-display text-3xl text-cyan-600 tracking-tightest">{n}</div>
       <div className="mt-2 mb-4 h-px bg-neutral-300/60" />
       <h3 className="text-lg font-medium tracking-tight mb-2">{title}</h3>
       <p className="text-sm text-neutral-600 leading-relaxed">{body}</p>
@@ -335,12 +331,12 @@ function Step({ n, title, body }: { n: string; title: string; body: string }) {
   );
 }
 
-function LiveTicketCard() {
+function LiveOperationsCard() {
   return (
     <div className="relative">
       <div className="rounded-xl bg-white text-ink shadow-lg-custom border border-white/10 overflow-hidden">
         <div className="px-5 py-4 flex items-center justify-between border-b border-neutral-200">
-          <span className="font-display text-sm">{branding.productName} Console</span>
+          <span className="font-display text-sm">{branding.productName} Operations</span>
           <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.18em] uppercase text-success">
             <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
             Live
@@ -348,26 +344,26 @@ function LiveTicketCard() {
         </div>
 
         <div className="grid grid-cols-2 gap-px bg-neutral-100">
-          <Stat label="Tonight's tip pool" value="$1,482.50" />
-          <Stat label="Avg per server" value="$74.12" accent />
+          <Stat label="Active employees" value="2,847" />
+          <Stat label="Payroll processed" value="$892K" accent />
           <Stat label="Settled" value="18 / 20" />
-          <Stat label="Median latency" value="4.2s" />
+          <Stat label="Avg processing" value="2.3s" />
         </div>
 
         <div className="px-5 py-4 border-t border-neutral-200 space-y-2">
-          <Row name="Maria L." amount="+ $84.50" status="paid" />
-          <Row name="Devon T." amount="+ $72.00" status="paid" />
-          <Row name="Sasha P." amount="+ $61.25" status="processing" />
+          <Row name="Sarah Mitchell" amount="+ $2,450.00" status="paid" />
+          <Row name="James Chen" amount="+ $1,875.50" status="paid" />
+          <Row name="Priya Patel" amount="+ $2,120.25" status="processing" />
         </div>
       </div>
 
-      {/* faux glow */}
+      {/* faux glow with teal */}
       <div
         aria-hidden
         className="absolute -inset-6 -z-10 rounded-2xl"
         style={{
           background:
-            'radial-gradient(ellipse at 50% 0%, rgba(212,160,23,0.25), transparent 60%)',
+            'radial-gradient(ellipse at 50% 0%, rgba(6,182,212,0.20), transparent 60%)',
         }}
       />
     </div>
@@ -390,7 +386,7 @@ function Stat({
       </div>
       <div
         className={`font-display text-xl mt-1 tracking-tightest ${
-          accent ? 'text-gold' : 'text-ink'
+          accent ? 'text-cyan-600' : 'text-ink'
         }`}
       >
         {value}

@@ -18,7 +18,7 @@ export default async function DashboardPage() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 lg:px-10 py-12">
         <section className="mb-12">
-          <p className="text-eyebrow mb-3">Operator console</p>
+          <p className="text-eyebrow mb-3">Workforce Operations Dashboard</p>
           <h1 className="font-display text-4xl md:text-5xl tracking-tightest text-balance">
             {branding.consoleHeading}
           </h1>
@@ -29,7 +29,7 @@ export default async function DashboardPage() {
 
         <section className="mb-12 grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatTile label={`Active ${branding.payeePlural.toLowerCase()}`} value="0" />
-          <StatTile label="Total paid out" value="$0.00" accent />
+          <StatTile label="Total processed" value="$0.00" accent />
           <StatTile label="Transactions" value="0" />
         </section>
 
@@ -38,7 +38,7 @@ export default async function DashboardPage() {
             <div className="flex items-end justify-between gap-4">
               <div>
                 <p className="text-eyebrow mb-2">Modules</p>
-                <h2 className="font-display text-2xl tracking-tightest">Run the house</h2>
+                <h2 className="font-display text-2xl tracking-tightest">Manage your operations</h2>
               </div>
             </div>
           </CardHeader>
@@ -47,8 +47,8 @@ export default async function DashboardPage() {
               <ModuleTile
                 href="/dashboard/payouts"
                 code="PAY"
-                title="Process payouts"
-                desc={`Run an end-of-shift ${branding.payoutNoun.toLowerCase()} and settle in seconds.`}
+                title="Process Payouts"
+                desc={`Execute ${branding.payoutNounPlural.toLowerCase()} and settle in real time.`}
                 icon={<IconBolt />}
                 primary
               />
@@ -56,21 +56,21 @@ export default async function DashboardPage() {
                 href="/dashboard/payees"
                 code="TEAM"
                 title={branding.payeePlural}
-                desc={`Add ${branding.payeePlural.toLowerCase()} and link bank accounts or debit cards.`}
+                desc={`Manage ${branding.payeePlural.toLowerCase()} and payment methods.`}
                 icon={<IconUsers />}
               />
               <ModuleTile
                 href="/dashboard/transactions"
                 code="LDG"
                 title="Transactions"
-                desc="Audit every payout: amounts, status, latency."
+                desc="Audit every payout with full visibility and reporting."
                 icon={<IconLedger />}
               />
               <ModuleTile
                 href="/dashboard/payer"
-                code="HSE"
+                code="ORG"
                 title={branding.payerSingular}
-                desc={`${branding.payerSingular} profile and ACH funding source.`}
+                desc={`${branding.payerSingular} profile and funding settings.`}
                 icon={<IconBuilding />}
               />
             </div>
@@ -96,7 +96,7 @@ function StatTile({
         <div className="text-eyebrow">{label}</div>
         <div
           className={`font-display text-3xl mt-2 tracking-tightest ${
-            accent ? 'text-gold' : 'text-ink'
+            accent ? 'text-cyan-600' : 'text-ink'
           }`}
         >
           {value}
@@ -107,7 +107,7 @@ function StatTile({
             className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full"
             style={{
               background:
-                'radial-gradient(circle, rgba(212,160,23,0.18), transparent 70%)',
+                'radial-gradient(circle, rgba(6,182,212,0.15), transparent 70%)',
             }}
           />
         )}
@@ -143,7 +143,7 @@ function ModuleTile({
       <div className="flex items-start justify-between mb-6">
         <span
           className={`inline-flex items-center justify-center w-10 h-10 rounded-md ${
-            primary ? 'bg-white/10 text-gold-bright' : 'bg-neutral-100 text-ink'
+            primary ? 'bg-white/10 text-cyan-400' : 'bg-neutral-100 text-ink'
           }`}
         >
           {icon}
@@ -166,7 +166,7 @@ function ModuleTile({
       </p>
       <div
         className={`mt-5 inline-flex items-center gap-1.5 text-[11px] tracking-[0.18em] uppercase ${
-          primary ? 'text-gold-bright' : 'text-neutral-500 group-hover:text-ink'
+          primary ? 'text-cyan-400' : 'text-neutral-500 group-hover:text-ink'
         } transition-smooth`}
       >
         Open

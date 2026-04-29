@@ -13,28 +13,28 @@
  */
 export const branding = {
   /** Top-level product name shown in nav, footer, browser title. */
-  productName: "Roosterwise",
+  productName: "Workforce Connect",
   /** One-line tagline used on landing + auth panels. */
-  tagline: "Tips paid the moment the shift ends.",
+  tagline: "Connecting the front office to the front line.",
   /** Payer entity (the operator who logs in and funds payouts). */
-  payerSingular: "Restaurant",
-  payerPlural: "Restaurants",
-  /** Used in possessive contexts: e.g. "your restaurant's bank account". */
-  payerPossessive: "restaurant's",
+  payerSingular: "Organization",
+  payerPlural: "Enterprises",
+  /** Used in possessive contexts: e.g. "your organization's bank account". */
+  payerPossessive: "organization's",
   /** Payee entity (the person being paid). */
-  payeeSingular: "Worker",
-  payeePlural: "Workers",
+  payeeSingular: "Employee",
+  payeePlural: "Workforce",
   /** Payout terminology. */
-  payoutVerb: "Tip out",
-  payoutNoun: "Tip payout",
-  payoutNounPlural: "Tip payouts",
+  payoutVerb: "Disburse",
+  payoutNoun: "Earnings Disbursement",
+  payoutNounPlural: "Payroll Cycles",
   /** Funding source label on the payer settings screen. */
-  funderLabel: "Restaurant bank account",
-  funderShortLabel: "Bank account",
+  funderLabel: "Corporate Funding Account",
+  funderShortLabel: "Funding Account",
   /** Console heading displayed on the dashboard home. */
-  consoleHeading: "Welcome back. Let's settle the night.",
+  consoleHeading: "Empowering every employee, in any moment.",
   consoleSubheading:
-    "Manage your house, your team, and tonight's tip-out from a single console.",
+    "Unifying payroll, insights, and frontline empowerment into one command center.",
 } as const;
 
 export type Branding = typeof branding;
