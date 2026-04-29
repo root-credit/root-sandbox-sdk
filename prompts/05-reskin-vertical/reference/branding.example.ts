@@ -7,9 +7,9 @@
 export const branding = {
   productName: "Pencil",
   tagline: "Pay your freelancers the moment the project ships.",
-  merchantSingular: "Studio",
-  merchantPlural: "Studios",
-  merchantPossessive: "studio's",
+  payerSingular: "Studio",
+  payerPlural: "Studios",
+  payerPossessive: "studio's",
   payeeSingular: "Freelancer",
   payeePlural: "Freelancers",
   payoutVerb: "Settle",

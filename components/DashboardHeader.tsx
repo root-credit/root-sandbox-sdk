@@ -10,7 +10,7 @@ const NAV: { href: string; label: string }[] = [
   { href: '/dashboard/payouts', label: 'Payouts' },
   { href: '/dashboard/payees', label: branding.payeePlural },
   { href: '/dashboard/transactions', label: 'Transactions' },
-  { href: '/dashboard/merchant', label: branding.merchantSingular },
+  { href: '/dashboard/payer', label: branding.payerSingular },
 ];
 
 export function DashboardHeader({ email }: { email: string }) {

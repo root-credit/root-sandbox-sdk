@@ -9,10 +9,10 @@
 2. **Inventing status values.** The pill renderer must only know about the
    status strings present in `PayoutStatus`. Treat anything else as
    `unknown` / neutral.
-3. **Sorting in the component.** `getMerchantTransactions` already sorts newest
+3. **Sorting in the component.** `getPayerTransactions` already sorts newest
    first; don't double-sort or reverse the array.
-4. **Adding a search across all merchants.** Transactions are scoped to the
-   calling merchant via `sessionOwnsMerchant`. There is no "search all" by
+4. **Adding a search across all payers.** Transactions are scoped to the
+   calling payer via `sessionOwnsPayer`. There is no "search all" by
    design.
 
 ## How the contract prevents drift

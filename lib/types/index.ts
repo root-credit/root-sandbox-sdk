@@ -12,4 +12,4 @@
 export * from './payments';
 export * from './payee';
 export * from './payout';
-export * from './merchant';
+export * from './payer';

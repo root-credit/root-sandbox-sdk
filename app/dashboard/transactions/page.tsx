@@ -12,8 +12,8 @@ import { useRouter } from 'next/navigation';
 export default function TransactionsPage() {
   const router = useRouter();
   const { session } = useSession();
-  const merchantId = session?.merchantId ?? null;
-  const { transactions, isLoading, error } = useTransactions(merchantId);
+  const payerId = session?.payerId ?? null;
+  const { transactions, isLoading, error } = useTransactions(payerId);
 
   useEffect(() => {
     if (session === undefined) router.push('/login');
@@ -31,7 +31,7 @@ export default function TransactionsPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <DashboardHeader email={session.merchantEmail} />
+      <DashboardHeader email={session.payerEmail} />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 lg:px-10 py-12">
         <div className="mb-10">

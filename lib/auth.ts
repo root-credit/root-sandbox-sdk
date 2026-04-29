@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import CryptoJS from "crypto-js";
-import { getMerchantByEmail, setMerchant } from "./redis";
+import { getPayerByEmail, setPayer } from "./redis";
 import { getOrCreateRootPayer } from "./root-api";
 
 const AUTH_SECRET = process.env.AUTH_SECRET || "dev-secret-key-change-in-production";
@@ -22,36 +22,35 @@ export function validateEmail(email: string): boolean {
 }
 
 /**
- * Register a new merchant (creates the Root payer or links to an existing one,
- * then writes the merchant record to Redis).
+ * Register a new payer (creates the Root payer or links to an existing one,
+ * then writes the payer record to Redis).
  */
-export async function registerMerchant(input: {
+export async function registerPayer(input: {
   email: string;
-  merchantName: string;
+  payerName: string;
   phone: string;
 }) {
   if (!validateEmail(input.email)) {
     throw new Error("Invalid email format");
   }
 
-  const existing = await getMerchantByEmail(input.email);
+  const existing = await getPayerByEmail(input.email);
   if (existing) {
-    throw new Error("A merchant account with this email already exists");
+    throw new Error("A payer account with this email already exists");
   }
 
-  // Resolve Root payer: create or reuse if sandbox already has this email (Redis cleared).
   const rootPayer = await getOrCreateRootPayer({
     email: input.email,
-    name: input.merchantName,
+    name: input.payerName,
     phone: input.phone,
   });
 
-  const merchantId = randomUUID();
+  const payerId = randomUUID();
 
-  await setMerchant(merchantId, {
-    id: merchantId,
-    merchantEmail: input.email,
-    merchantName: input.merchantName,
+  await setPayer(payerId, {
+    id: payerId,
+    payerEmail: input.email,
+    payerName: input.payerName,
     phone: input.phone,
     rootPayerId: rootPayer.id,
     createdAt: Date.now(),
@@ -59,7 +58,7 @@ export async function registerMerchant(input: {
   });
 
   return {
-    merchantId,
+    payerId,
     rootPayerId: rootPayer.id,
   };
 }

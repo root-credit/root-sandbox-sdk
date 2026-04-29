@@ -183,7 +183,7 @@ export function AdminPanel() {
 
       <Section
         title={branding.payeePlural}
-        description={`Clear every payee record and ${branding.merchantSingular.toLowerCase()} index sets in Redis.`}
+        description={`Clear every payee record and ${branding.payerSingular.toLowerCase()} index sets in Redis.`}
         tone="danger"
       >
         <button
@@ -191,7 +191,7 @@ export function AdminPanel() {
           disabled={busy !== null}
           onClick={() =>
             confirmThen(
-              `This deletes ALL ${branding.payeePlural.toLowerCase()} for ALL ${branding.merchantPlural.toLowerCase()}.`,
+              `This deletes ALL ${branding.payeePlural.toLowerCase()} for ALL ${branding.payerPlural.toLowerCase()}.`,
               () => runOperation('clear_all_payees')
             )
           }
@@ -242,7 +242,7 @@ export function AdminPanel() {
 
       <Section
         title="Sessions & transactions"
-        description={`Clears ${branding.merchantSingular.toLowerCase()} user sessions and payout transaction history in Redis. Does not remove ${branding.merchantPlural.toLowerCase()} or ${branding.payeePlural.toLowerCase()}.`}
+        description={`Clears ${branding.payerSingular.toLowerCase()} user sessions and payout transaction history in Redis. Does not remove ${branding.payerPlural.toLowerCase()} or ${branding.payeePlural.toLowerCase()}.`}
       >
         <button
           type="button"
@@ -260,11 +260,11 @@ export function AdminPanel() {
       </Section>
 
       <Section
-        title={`Bank tokens (${branding.merchantPlural.toLowerCase()})`}
+        title={`Bank tokens (${branding.payerPlural.toLowerCase()})`}
         description={
           <>
             Removes <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">bankAccountToken</code>{' '}
-            from each {branding.merchantSingular.toLowerCase()} record (does not call Root APIs).
+            from each {branding.payerSingular.toLowerCase()} record (does not call Root APIs).
           </>
         }
       >
@@ -286,7 +286,7 @@ export function AdminPanel() {
         title="Shared app login password"
         description={
           <>
-            All {branding.merchantSingular.toLowerCase()} accounts use one shared password (stored hashed in Redis).
+            All {branding.payerSingular.toLowerCase()} accounts use one shared password (stored hashed in Redis).
             Until you set one here, the default is{' '}
             <code className="font-mono-tab text-[11px] bg-neutral-100 px-1.5 py-0.5 rounded">
               1234567890

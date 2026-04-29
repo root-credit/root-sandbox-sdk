@@ -21,7 +21,7 @@ contract layer.
 ## Hard rules
 
 - NEVER call `fetch('/api/...')`.
-- Use `useCreatePayee()` for the mutation; `useSession()` for the merchant id.
+- Use `useCreatePayee()` for the mutation; `useSession()` for the payer id.
 - Use `PaymentMethodType.BankAccount` / `PaymentMethodType.DebitCard` from
   `lib/types/payments` — NEVER hardcode the strings.
 - Use `branding.payeeSingular` everywhere a label would say "Worker" / "Driver".
@@ -40,7 +40,7 @@ Create a form component (or add a route at `app/dashboard/<feature>/page.tsx`) t
    monospace), `accountType` (`checking` | `savings`).
 4. If `paymentMethodType === PaymentMethodType.DebitCard`: render
    `cardholderName`, `cardNumber`, `expiryMonth`, `expiryYear`, `cvv`.
-5. On submit, call `createPayee(merchantId, input)` and show success/error.
+5. On submit, call `createPayee(payerId, input)` and show success/error.
 
 The reference uses a discriminated union internally — copy that pattern. If the
 LLM tries to hand-roll a flat object with optional fields and runtime branching,

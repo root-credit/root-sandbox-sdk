@@ -17,7 +17,7 @@ import {
 /** Stored Payee record (mirrors the shape persisted in Redis). */
 export const payeeSchema = z.object({
   id: z.string().uuid(),
-  merchantId: z.string().uuid(),
+  payerId: z.string().uuid(),
   name: z.string().min(2),
   email: z.string().email(),
   phone: z.string().min(7),

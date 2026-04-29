@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { branding } from '@/lib/branding';
 import { useLogin } from '@/lib/hooks/useAuth';
-import { loginInputSchema, type LoginInput } from '@/lib/types/merchant';
+import { loginInputSchema, type LoginInput } from '@/lib/types/payer';
 
 const inputClass =
   'w-full px-3.5 py-2.5 bg-surface text-foreground rounded-md border border-neutral-200 ' +
@@ -56,7 +56,7 @@ export function LoginForm() {
           type="email"
           id="email"
           autoComplete="username"
-          placeholder={`you@${branding.merchantSingular.toLowerCase()}.com`}
+          placeholder={`you@${branding.payerSingular.toLowerCase()}.com`}
           className={inputClass}
         />
         {errors.email && (

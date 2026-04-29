@@ -197,7 +197,7 @@ export default function LandingPage() {
             <Step
               n="01"
               title="Onboard your house"
-              body={`Create a ${branding.merchantSingular.toLowerCase()}, link an ACH-funding bank account, and add your team with their preferred payout rail.`}
+              body={`Create a ${branding.payerSingular.toLowerCase()}, link an ACH-funding bank account, and add your team with their preferred payout rail.`}
             />
             <Step
               n="02"

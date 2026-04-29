@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { branding } from '@/lib/branding';
-import { useLinkBank } from '@/lib/hooks/useMerchant';
-import { linkBankInputSchema, type LinkBankInput } from '@/lib/types/merchant';
+import { useLinkBank } from '@/lib/hooks/usePayer';
+import { linkBankInputSchema, type LinkBankInput } from '@/lib/types/payer';
 
 interface BankAccountFormProps {
-  merchantId: string;
+  payerId: string;
   onSuccess?: () => void;
 }
 
@@ -20,7 +20,7 @@ const inputClass =
 const labelClass =
   'block text-[11px] tracking-[0.14em] uppercase text-neutral-500 mb-2';
 
-export function BankAccountForm({ merchantId, onSuccess }: BankAccountFormProps) {
+export function BankAccountForm({ payerId, onSuccess }: BankAccountFormProps) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const { linkBank, isSubmitting } = useLinkBank();
@@ -39,7 +39,7 @@ export function BankAccountForm({ merchantId, onSuccess }: BankAccountFormProps)
     setError('');
     setSuccess('');
     try {
-      await linkBank(merchantId, data);
+      await linkBank(payerId, data);
       setSuccess('Bank account linked successfully!');
       reset();
       if (onSuccess) onSuccess();
@@ -70,7 +70,7 @@ export function BankAccountForm({ merchantId, onSuccess }: BankAccountFormProps)
           {...register('accountHolderName')}
           type="text"
           id="accountHolderName"
-          placeholder={`${branding.merchantSingular} name`}
+          placeholder={`${branding.payerSingular} name`}
           className={inputClass}
         />
         {errors.accountHolderName && (

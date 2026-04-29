@@ -42,7 +42,7 @@ export default function LoginPage() {
           </h2>
           <p className="mt-5 text-white/60 leading-relaxed">
             Sign in with the email you used at signup. {branding.productName} routes you to your{' '}
-            {branding.merchantPossessive} console — {branding.payeePlural.toLowerCase()}, payouts, treasury,
+            {branding.payerPossessive} console — {branding.payeePlural.toLowerCase()}, payouts, treasury,
             all in one place.
           </p>
 
@@ -73,7 +73,7 @@ export default function LoginPage() {
             <h1 className="font-display text-4xl tracking-tightest mb-3">Operator login</h1>
             <p className="text-sm text-neutral-500 leading-relaxed mb-10">
               Sign in with the email used at signup. Each email maps to a single{' '}
-              {branding.merchantSingular.toLowerCase()} account in your console.
+              {branding.payerSingular.toLowerCase()} account in your console.
             </p>
 
             <LoginForm />

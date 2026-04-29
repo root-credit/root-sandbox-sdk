@@ -9,7 +9,7 @@
  */
 import { z } from 'zod';
 
-/** Rails Root currently exposes for both pay-in (merchant funding) and pay-out. */
+/** Rails Root currently exposes for both pay-in (payer funding) and pay-out. */
 export const PaymentRail = {
   InstantBank: 'instant_bank',
   InstantCard: 'instant_card',

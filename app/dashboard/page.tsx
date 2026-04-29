@@ -13,7 +13,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <DashboardHeader email={session.merchantEmail} />
+      <DashboardHeader email={session.payerEmail} />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 lg:px-10 py-12">
         <section className="mb-12">
@@ -63,10 +63,10 @@ export default async function DashboardPage() {
               icon={<IconLedger />}
             />
             <ModuleTile
-              href="/dashboard/merchant"
+              href="/dashboard/payer"
               code="HSE"
-              title={branding.merchantSingular}
-              desc={`${branding.merchantSingular} profile and ACH funding source.`}
+              title={branding.payerSingular}
+              desc={`${branding.payerSingular} profile and ACH funding source.`}
               icon={<IconBuilding />}
             />
           </div>

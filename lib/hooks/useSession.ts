@@ -11,8 +11,8 @@
 import { useEffect, useState } from 'react';
 
 export interface OperatorSession {
-  merchantId: string;
-  merchantEmail: string;
+  payerId: string;
+  payerEmail: string;
 }
 
 export function useSession(): {

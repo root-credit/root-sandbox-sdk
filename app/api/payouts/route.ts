@@ -15,8 +15,8 @@ function errorResponse(error: unknown, defaultStatus: number) {
     if (error.message === 'Unauthorized') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    if (error.message === 'Merchant not found') {
-      return NextResponse.json({ error: 'Merchant not found' }, { status: 404 });
+    if (error.message === 'Payer not found') {
+      return NextResponse.json({ error: 'Payer not found' }, { status: 404 });
     }
     return NextResponse.json({ error: error.message }, { status: defaultStatus });
   }
@@ -36,11 +36,11 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const merchantId = request.nextUrl.searchParams.get('merchantId');
-    if (!merchantId) {
-      return NextResponse.json({ error: 'Missing merchantId' }, { status: 400 });
+    const payerId = request.nextUrl.searchParams.get('payerId');
+    if (!payerId) {
+      return NextResponse.json({ error: 'Missing payerId' }, { status: 400 });
     }
-    const transactions = await listTransactions(merchantId);
+    const transactions = await listTransactions(payerId);
     return NextResponse.json({ transactions }, { status: 200 });
   } catch (error) {
     return errorResponse(error, 500);

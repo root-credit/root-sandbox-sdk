@@ -7,9 +7,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { branding } from '@/lib/branding';
 import { useSignup } from '@/lib/hooks/useAuth';
 import {
-  signupMerchantInputSchema,
-  type SignupMerchantInput,
-} from '@/lib/types/merchant';
+  signupPayerInputSchema,
+  type SignupPayerInput,
+} from '@/lib/types/payer';
 
 const inputClass =
   'w-full px-3.5 py-2.5 bg-surface text-foreground rounded-md border border-neutral-200 ' +
@@ -28,11 +28,11 @@ export function SignupForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignupMerchantInput>({
-    resolver: zodResolver(signupMerchantInputSchema),
+  } = useForm<SignupPayerInput>({
+    resolver: zodResolver(signupPayerInputSchema),
   });
 
-  async function onSubmit(data: SignupMerchantInput) {
+  async function onSubmit(data: SignupPayerInput) {
     setError('');
     try {
       await signup(data);
@@ -58,7 +58,7 @@ export function SignupForm() {
           {...register('email')}
           type="email"
           id="email"
-          placeholder={`admin@${branding.merchantSingular.toLowerCase()}.com`}
+          placeholder={`admin@${branding.payerSingular.toLowerCase()}.com`}
           className={inputClass}
         />
         {errors.email && (
@@ -67,18 +67,18 @@ export function SignupForm() {
       </div>
 
       <div>
-        <label htmlFor="merchantName" className={labelClass}>
-          {branding.merchantSingular} name
+        <label htmlFor="payerName" className={labelClass}>
+          {branding.payerSingular} name
         </label>
         <input
-          {...register('merchantName')}
+          {...register('payerName')}
           type="text"
-          id="merchantName"
-          placeholder={`My ${branding.merchantSingular}`}
+          id="payerName"
+          placeholder={`My ${branding.payerSingular}`}
           className={inputClass}
         />
-        {errors.merchantName && (
-          <p className="text-error text-xs mt-1.5">{errors.merchantName.message}</p>
+        {errors.payerName && (
+          <p className="text-error text-xs mt-1.5">{errors.payerName.message}</p>
         )}
       </div>
 

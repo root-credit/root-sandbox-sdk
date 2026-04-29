@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { registerMerchant, generateSessionToken } from '@/lib/auth';
+import { registerPayer, generateSessionToken } from '@/lib/auth';
 import { setSession } from '@/lib/redis';
 import { verifySharedAppPassword } from '@/lib/app-settings';
 import { HARDCODED_ADMIN_EMAIL } from '@/lib/admin-session';
@@ -8,9 +8,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { email, merchantName, phone, password } = body;
+    const { email, payerName, phone, password } = body;
 
-    if (!email || !merchantName || !phone) {
+    if (!email || !payerName || !phone) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            'This email is reserved for the admin console. Use a different email to create a merchant account.',
+            'This email is reserved for the admin console. Use a different email to create a payer account.',
         },
         { status: 400 }
       );
@@ -45,25 +45,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { merchantId, rootPayerId } = await registerMerchant({
+    const { payerId, rootPayerId } = await registerPayer({
       email,
-      merchantName,
+      payerName,
       phone,
     });
 
-    console.log('[v0] Registered merchant:', merchantId);
+    console.log('[v0] Registered payer:', payerId);
 
     const sessionToken = generateSessionToken();
 
     await setSession(sessionToken, {
-      merchantEmail: email,
-      merchantId,
+      payerEmail: email,
+      payerId,
     });
 
     return NextResponse.json(
       {
         sessionToken,
-        merchantId,
+        payerId,
         rootPayerId,
       },
       { status: 201 }

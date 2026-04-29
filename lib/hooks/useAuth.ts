@@ -1,22 +1,22 @@
 'use client';
 
 /**
- * useAuth — login, signup, logout for operator (merchant) accounts.
+ * useAuth — login, signup, logout for operator (payer) accounts.
  *
  * v0 / LLM contract:
  *   - Use these hooks in any auth UI; do NOT `fetch('/api/auth/*')` from components.
- *   - `useLogin` handles both merchant and admin emails (the route distinguishes server-side).
+ *   - `useLogin` handles both payer and admin emails (the route distinguishes server-side).
  *   - On success, the session cookie is already set by the server; just navigate.
  */
 
 import { useState } from 'react';
-import type { LoginInput, SignupMerchantInput } from '@/lib/types/merchant';
+import type { LoginInput, SignupPayerInput } from '@/lib/types/payer';
 
 export interface LoginOutcome {
   isAdmin: boolean;
   redirectTo: string;
   sessionToken?: string;
-  merchantId?: string;
+  payerId?: string;
 }
 
 export function useLogin() {
@@ -46,11 +46,9 @@ export function useLogin() {
         sessionToken?: string;
         isAdmin?: boolean;
         redirectTo?: string;
-        merchantId?: string;
+        payerId?: string;
       };
 
-      // Merchant path: server returns sessionToken in body; mirror it as a cookie
-      // so client-side reads (e.g. useSession) work immediately.
       if (data.sessionToken) {
         document.cookie = `session=${data.sessionToken}; path=/; max-age=86400; SameSite=Strict`;
       }
@@ -59,7 +57,7 @@ export function useLogin() {
         isAdmin: !!data.isAdmin,
         redirectTo: data.redirectTo || '/dashboard',
         sessionToken: data.sessionToken,
-        merchantId: data.merchantId,
+        payerId: data.payerId,
       };
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Login failed';
@@ -77,7 +75,7 @@ export function useSignup() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function submit(input: SignupMerchantInput) {
+  async function submit(input: SignupPayerInput) {
     setIsSubmitting(true);
     setError(null);
     try {
@@ -92,7 +90,7 @@ export function useSignup() {
       }
       const data = (await res.json()) as {
         sessionToken?: string;
-        merchantId: string;
+        payerId: string;
         rootPayerId: string;
       };
       if (data.sessionToken) {

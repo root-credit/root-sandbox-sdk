@@ -5,7 +5,7 @@ import {
   removePayeeById,
   clearAllOperatorSessions,
   clearAllTransactions,
-  clearAllMerchantBankFields,
+  clearAllPayerBankFields,
 } from "@/lib/redis-admin";
 import { setStoredLoginPassword } from "@/lib/app-settings";
 
@@ -76,10 +76,10 @@ export async function POST(request: NextRequest) {
         });
       }
       case "clear_bank_fields": {
-        const r = await clearAllMerchantBankFields();
+        const r = await clearAllPayerBankFields();
         return NextResponse.json({
           ok: true,
-          message: "Bank tokens removed from merchant records.",
+          message: "Bank tokens removed from payer records.",
           updated: r.updated,
         });
       }
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           ok: true,
           message:
-            "Shared app login password updated. All merchant users must use this password.",
+            "Shared app login password updated. All payer users must use this password.",
         });
       }
       default:

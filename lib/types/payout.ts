@@ -1,7 +1,7 @@
 /**
  * Payout domain types.
  *
- * A `Payout` represents a single transfer of money from a merchant's funded balance to
+ * A `Payout` represents a single transfer of money from a payer's funded balance to
  * a payee. Multiple payouts can be batched together into one server action call
  * via `ProcessPayoutInput.lineItems`.
  *
@@ -30,7 +30,7 @@ export type PayoutLineItem = z.infer<typeof payoutLineItemSchema>;
 
 /** Body shape for `processPayout` server action / POST /api/payouts. */
 export const processPayoutInputSchema = z.object({
-  merchantId: z.string().uuid(),
+  payerId: z.string().uuid(),
   totalAmount: z.number().nonnegative(),
   lineItems: z
     .array(payoutLineItemSchema)
@@ -66,7 +66,7 @@ export type ProcessPayoutResult = z.infer<typeof processPayoutResultSchema>;
 /** Stored transaction record (mirrors what `lib/redis.setTransaction` persists). */
 export const transactionSchema = z.object({
   id: z.string().uuid(),
-  merchantId: z.string().uuid(),
+  payerId: z.string().uuid(),
   payeeId: z.string().uuid(),
   payeeName: z.string(),
   payeeEmail: z.string().email(),

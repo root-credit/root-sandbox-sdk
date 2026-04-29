@@ -2,32 +2,32 @@ import { redirect } from 'next/navigation';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { BankAccountForm } from '@/components/BankAccountForm';
 import { getCurrentSession } from '@/lib/session';
-import { getMerchant } from '@/lib/redis';
+import { getPayer } from '@/lib/redis';
 import { branding } from '@/lib/branding';
 import Link from 'next/link';
 
-export default async function MerchantSettingsPage() {
+export default async function PayerSettingsPage() {
   const session = await getCurrentSession();
 
   if (!session) {
     redirect('/login');
   }
 
-  const merchant = await getMerchant(session.merchantId);
+  const payer = await getPayer(session.payerId);
 
-  if (!merchant) {
+  if (!payer) {
     redirect('/login');
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <DashboardHeader email={session.merchantEmail} />
+      <DashboardHeader email={session.payerEmail} />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-6 lg:px-10 py-12">
         <div className="mb-10">
           <Crumbs />
           <h1 className="font-display text-4xl md:text-5xl tracking-tightest mt-3">
-            {branding.merchantSingular}
+            {branding.payerSingular}
           </h1>
           <p className="text-neutral-500 mt-2 max-w-md">
             Your house profile and the funding source behind every payout.
@@ -39,10 +39,10 @@ export default async function MerchantSettingsPage() {
             <div>
               <p className="text-eyebrow mb-1">Profile</p>
               <h2 className="font-display text-xl tracking-tightest">
-                {branding.merchantSingular} information
+                {branding.payerSingular} information
               </h2>
             </div>
-            {merchant.bankAccountToken && (
+            {payer.bankAccountToken && (
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border border-success/20 bg-success-soft text-success">
                 <span className="w-1.5 h-1.5 rounded-full bg-success" />
                 Bank linked
@@ -51,10 +51,10 @@ export default async function MerchantSettingsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
-            <Field label={`${branding.merchantSingular} name`} value={merchant.merchantName} />
-            <Field label="Email address" value={merchant.merchantEmail} mono />
-            <Field label="Phone number" value={merchant.phone} mono />
-            <Field label="Root payer ID" value={merchant.rootPayerId} mono small />
+            <Field label={`${branding.payerSingular} name`} value={payer.payerName} />
+            <Field label="Email address" value={payer.payerEmail} mono />
+            <Field label="Phone number" value={payer.phone} mono />
+            <Field label="Root payer ID" value={payer.rootPayerId} mono small />
           </div>
         </section>
 
@@ -64,11 +64,11 @@ export default async function MerchantSettingsPage() {
             Bank account for ACH transfers
           </h2>
           <p className="text-sm text-neutral-500 mb-6 max-w-xl">
-            Link your {branding.merchantPossessive} bank account to enable ACH debit pulls for funding
+            Link your {branding.payerPossessive} bank account to enable ACH debit pulls for funding
             your {branding.productName} subaccount.
           </p>
 
-          <BankAccountForm merchantId={session.merchantId} />
+          <BankAccountForm payerId={session.payerId} />
 
           <div className="mt-8 rounded-lg border border-neutral-200 bg-surface-2 p-5">
             <p className="text-eyebrow mb-2">Why link your bank account?</p>
@@ -104,7 +104,7 @@ function Crumbs() {
         Console
       </Link>
       <span className="text-neutral-300">/</span>
-      <span className="text-ink">{branding.merchantSingular}</span>
+      <span className="text-ink">{branding.payerSingular}</span>
     </nav>
   );
 }

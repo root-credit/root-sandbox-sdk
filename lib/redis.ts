@@ -26,7 +26,7 @@ function parseStoredJson<T = any>(data: unknown): T | null {
 // ---------- Sessions ----------
 export async function setSession(
   sessionId: string,
-  data: { merchantEmail: string; merchantId: string }
+  data: { payerEmail: string; payerId: string }
 ) {
   await redis.setex(
     `session:${sessionId}`,
@@ -37,18 +37,18 @@ export async function setSession(
 
 export async function getSession(sessionId: string) {
   const data = await redis.get(`session:${sessionId}`);
-  return parseStoredJson<{ merchantEmail: string; merchantId: string }>(data);
+  return parseStoredJson<{ payerEmail: string; payerId: string }>(data);
 }
 
 export async function deleteSession(sessionId: string) {
   await redis.del(`session:${sessionId}`);
 }
 
-// ---------- Merchants ----------
-export interface MerchantRecord {
+// ---------- Payers (funding party / operator record) ----------
+export interface PayerRecord {
   id: string;
-  merchantEmail: string;
-  merchantName: string;
+  payerEmail: string;
+  payerName: string;
   phone: string;
   rootPayerId: string;
   bankAccountToken?: string;
@@ -56,24 +56,24 @@ export interface MerchantRecord {
   updatedAt: number;
 }
 
-export async function setMerchant(merchantId: string, data: MerchantRecord) {
-  await redis.set(`merchant:${merchantId}`, JSON.stringify(data));
+export async function setPayer(payerId: string, data: PayerRecord) {
+  await redis.set(`payer:${payerId}`, JSON.stringify(data));
 }
 
-export async function getMerchant(merchantId: string) {
-  const data = await redis.get(`merchant:${merchantId}`);
-  return parseStoredJson<MerchantRecord>(data);
+export async function getPayer(payerId: string) {
+  const data = await redis.get(`payer:${payerId}`);
+  return parseStoredJson<PayerRecord>(data);
 }
 
-export async function getMerchantByEmail(merchantEmail: string) {
-  const keys = await redis.keys(`merchant:*`);
+export async function getPayerByEmail(payerEmail: string) {
+  const keys = await redis.keys(`payer:*`);
   for (const key of keys) {
-    // Skip nested index keys like "merchant:{id}:payees"
+    // Skip nested index keys like "payer:{id}:payees"
     if (key.split(":").length !== 2) continue;
     const data = await redis.get(key);
-    const merchant = parseStoredJson<MerchantRecord>(data);
-    if (merchant && merchant.merchantEmail === merchantEmail) {
-      return merchant;
+    const payer = parseStoredJson<PayerRecord>(data);
+    if (payer && payer.payerEmail === payerEmail) {
+      return payer;
     }
   }
   return null;
@@ -82,7 +82,7 @@ export async function getMerchantByEmail(merchantEmail: string) {
 // ---------- Payees ----------
 export interface PayeeRecord {
   id: string;
-  merchantId: string;
+  payerId: string;
   name: string;
   email: string;
   phone: string;
@@ -95,7 +95,7 @@ export interface PayeeRecord {
 
 export async function setPayee(payeeId: string, data: PayeeRecord) {
   await redis.set(`payee:${payeeId}`, JSON.stringify(data));
-  await redis.sadd(`merchant:${data.merchantId}:payees`, payeeId);
+  await redis.sadd(`payer:${data.payerId}:payees`, payeeId);
 }
 
 export async function getPayee(payeeId: string) {
@@ -103,8 +103,8 @@ export async function getPayee(payeeId: string) {
   return parseStoredJson<PayeeRecord>(data);
 }
 
-export async function getMerchantPayees(merchantId: string) {
-  const payeeIds = await redis.smembers(`merchant:${merchantId}:payees`);
+export async function getPayerPayees(payerId: string) {
+  const payeeIds = await redis.smembers(`payer:${payerId}:payees`);
   const payees: PayeeRecord[] = [];
   for (const payeeId of payeeIds) {
     const payee = await getPayee(payeeId);
@@ -113,15 +113,15 @@ export async function getMerchantPayees(merchantId: string) {
   return payees;
 }
 
-export async function deletePayee(payeeId: string, merchantId: string) {
+export async function deletePayee(payeeId: string, payerId: string) {
   await redis.del(`payee:${payeeId}`);
-  await redis.srem(`merchant:${merchantId}:payees`, payeeId);
+  await redis.srem(`payer:${payerId}:payees`, payeeId);
 }
 
 // ---------- Transactions ----------
 export interface TransactionRecord {
   id: string;
-  merchantId: string;
+  payerId: string;
   payeeId: string;
   payeeName: string;
   payeeEmail: string;
@@ -136,7 +136,7 @@ export interface TransactionRecord {
 
 export async function setTransaction(transactionId: string, data: TransactionRecord) {
   await redis.set(`transaction:${transactionId}`, JSON.stringify(data));
-  await redis.sadd(`merchant:${data.merchantId}:transactions`, transactionId);
+  await redis.sadd(`payer:${data.payerId}:transactions`, transactionId);
 }
 
 export async function getTransaction(transactionId: string) {
@@ -144,9 +144,9 @@ export async function getTransaction(transactionId: string) {
   return parseStoredJson<TransactionRecord>(data);
 }
 
-export async function getMerchantTransactions(merchantId: string) {
+export async function getPayerTransactions(payerId: string) {
   const transactionIds = await redis.smembers(
-    `merchant:${merchantId}:transactions`
+    `payer:${payerId}:transactions`
   );
   const transactions: TransactionRecord[] = [];
   for (const transactionId of transactionIds) {

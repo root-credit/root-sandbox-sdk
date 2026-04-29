@@ -14,7 +14,7 @@ Most Root payments demos start the same way: scaffold a Next.js app, copy-paste 
 This template flips that:
 
 - **The payments contract is locked behind a typed surface.** v0 only ever imports from `lib/hooks`, `app/actions`, `lib/types`, and `lib/branding` — never the SDK directly, never `fetch('/api/...')` from a component.
-- **The vertical is just labels.** The data model uses generic terms (`Merchant`, `Payee`, `Payout`). All user-visible copy lives in `lib/branding.ts`. Reskin from "restaurant tipping" to marketplace settlements / payroll / freelance / refunds by editing one file.
+- **The vertical is just labels.** The data model uses generic terms (`Payer`, `Payee`, `Payout`). All user-visible copy lives in `lib/branding.ts`. Reskin from "restaurant tipping" to marketplace settlements / payroll / freelance / refunds by editing one file.
 - **There's a prompt library.** Six paste-ready prompts (`prompts/01-…` through `prompts/06-…`) generate the most common screens correctly on the first try.
 - **There's an `AGENTS.md`.** A single doc Cursor / v0 / Claude / Codex read at session start that encodes the hard rules and contract surface.
 
@@ -87,7 +87,7 @@ flowchart TB
 2. Paste any prompt from [`prompts/`](prompts):
    - [`01-payouts-screen`](prompts/01-payouts-screen) — batch payout grid
    - [`02-payee-onboarding`](prompts/02-payee-onboarding) — add-a-payee form (bank or debit card)
-   - [`03-merchant-bank-link`](prompts/03-merchant-bank-link) — link the merchant funding bank
+   - [`03-payer-bank-link`](prompts/03-payer-bank-link) — link the payer funding bank
    - [`04-transactions-table`](prompts/04-transactions-table) — payout history with status pills
    - [`05-reskin-vertical`](prompts/05-reskin-vertical) — re-skin to a new vertical (one file change)
    - [`06-webhook-listener`](prompts/06-webhook-listener) — `payout.completed` / `payout.failed` listener
@@ -101,7 +101,7 @@ flowchart TB
 | Variable | Purpose |
 | --- | --- |
 | `ROOT_API_KEY` | Full sandbox token (`test_<uuid>_<secret>`). A bare UUID will fail. |
-| `UPSTASH_REDIS_REST_URL` | Upstash Redis REST URL for sessions, merchants, payees, transactions. |
+| `UPSTASH_REDIS_REST_URL` | Upstash Redis REST URL for sessions, payers, payees, transactions. |
 | `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST token. |
 | `AUTH_SECRET` | Random ≥32-char string used to HMAC-sign session cookies (`openssl rand -hex 32`). |
 
@@ -116,7 +116,7 @@ See [`.env.example`](.env.example) for the full annotated template (acquisition 
 ├── app/                # Next.js App Router (pages, route handlers, actions)
 │   ├── actions/        # Typed Server Actions (the LLM-callable contract)
 │   ├── api/            # Thin route handlers that delegate to actions
-│   └── dashboard/      # Authenticated console (per-merchant)
+│   └── dashboard/      # Authenticated console (per payer)
 ├── components/         # UI components — call hooks, never fetch
 ├── lib/
 │   ├── branding.ts     # The ONLY file with vertical copy

@@ -1,5 +1,5 @@
 ---
-description: Vertical labels (product name, merchant/payee/payout nouns) live in lib/branding.ts. Auto-applied to any UI file.
+description: Vertical labels (product name, payer/payee/payout nouns) live in lib/branding.ts. Auto-applied to any UI file.
 globs:
   - "app/**/*.{ts,tsx}"
   - "components/**/*.{ts,tsx}"
@@ -37,14 +37,14 @@ import { branding } from '@/lib/branding';
 
 - Form labels, table headers, page titles, breadcrumbs, button copy.
 - Toasts, error messages, success messages.
-- Email placeholder values (`branding.merchantSingular.toLowerCase()` works fine).
+- Email placeholder values (`branding.payerSingular.toLowerCase()` works fine).
 
 ## Reskinning checklist (one-file change)
 
 When asked to "reskin to <vertical>":
 
 1. Open `lib/branding.ts`.
-2. Edit `productName`, `merchantSingular/Plural`, `payeeSingular/Plural`,
+2. Edit `productName`, `payerSingular/Plural`, `payeeSingular/Plural`,
    `payoutNoun/Plural`, `funderLabel`, `tagline`, `consoleHeading`,
    `consoleSubheading`.
 3. Optional: update the marketing copy on `app/page.tsx`.

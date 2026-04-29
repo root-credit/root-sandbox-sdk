@@ -1,5 +1,5 @@
 ---
-description: Hard rules for any code that touches payments, payees, or merchant data. Auto-applied to UI, hooks, and route handlers.
+description: Hard rules for any code that touches payments, payees, or payer data. Auto-applied to UI, hooks, and route handlers.
 globs:
   - "app/**/*.{ts,tsx}"
   - "components/**/*.{ts,tsx}"
@@ -26,11 +26,11 @@ import { Root } from '@root-credit/root-sdk';  // in a 'use client' file
 // ✅ Mutations from a client component → use the hook
 import { useProcessPayout } from '@/lib/hooks/useProcessPayout';
 const { processPayout, isProcessing } = useProcessPayout();
-await processPayout({ merchantId, lineItems, totalAmount });
+await processPayout({ payerId, lineItems, totalAmount });
 
 // ✅ Server-side reads → use the server action
 import { listPayees } from '@/app/actions/payees';
-const payees = await listPayees(merchantId);
+const payees = await listPayees(payerId);
 
 // ✅ Money handling
 import { dollarsToCents, formatMoney, type Money } from '@/lib/types/payments';
@@ -44,11 +44,11 @@ if (rail === PaymentRail.InstantBank) { … }
 
 ## Domain identifiers
 
-- Use `Merchant` for the funder, `Payee` for the recipient, `Payout` for the
+- Use `Payer` for the funder, `Payee` for the recipient, `Payout` for the
   individual transfer, `Transaction` for the persisted ledger entry.
-- IDs: `merchantId`, `payeeId`, `transactionId`, `rootPayerId`, `rootPayeeId`.
+- IDs: `payerId`, `payeeId`, `transactionId`, `rootPayerId`, `rootPayeeId`.
 - Never reintroduce `restaurantId`, `workerId`, or `tipPayout`.
-- Email field on a merchant is `merchantEmail`, not `adminEmail` or `email`.
+- Email field on a payer is `payerEmail`, not `adminEmail` or `email`.
 
 ## Adding new payment functionality
 

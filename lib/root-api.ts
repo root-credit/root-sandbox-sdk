@@ -44,21 +44,21 @@ function isDuplicatePayerConflict(error: unknown): boolean {
  * Create a payer in Root, or if one already exists for this email (e.g. Redis was cleared),
  * resolve and return the existing payer via list/findByEmail.
  */
-export async function getOrCreateRootPayer(merchantData: {
+export async function getOrCreateRootPayer(payerData: {
   email: string;
   name: string;
   phone?: string;
 }) {
   try {
     const response = await rootAPI.payers.create({
-      email: merchantData.email,
-      name: merchantData.name,
+      email: payerData.email,
+      name: payerData.name,
       metadata: {
-        type: "merchant",
+        type: "payer",
         onboardingDate: new Date().toISOString(),
       },
     });
-    console.log("[v0] Created Root payer (merchant):", response.id);
+    console.log("[v0] Created Root payer:", response.id);
     return response;
   } catch (error) {
     if (!isDuplicatePayerConflict(error)) {
@@ -68,7 +68,7 @@ export async function getOrCreateRootPayer(merchantData: {
     console.warn(
       "[v0] Root payer already exists for this email; reusing existing payer (typical after Redis clear)."
     );
-    const existing = await rootAPI.payers.findByEmail(merchantData.email);
+    const existing = await rootAPI.payers.findByEmail(payerData.email);
     if (existing) {
       console.log("[v0] Linked existing Root payer:", existing.id);
       return existing;

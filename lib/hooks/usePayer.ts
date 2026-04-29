@@ -1,0 +1,55 @@
+'use client';
+
+/**
+ * usePayer — read the current payer record + link funding bank.
+ *
+ * v0 / LLM contract:
+ *   - Use this hook for any payer-settings UI; do NOT call `fetch('/api/payer/...')`.
+ */
+
+import { useCallback, useState } from 'react';
+import { getCurrentPayer, linkPayerBank } from '@/app/actions/payer';
+import type { Payer, LinkBankInput } from '@/lib/types/payer';
+
+export function usePayer() {
+  const [payer, setPayer] = useState<Payer | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const refresh = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const p = await getCurrentPayer();
+      setPayer(p);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load payer');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  return { payer, isLoading, error, refresh, setPayer };
+}
+
+export function useLinkBank() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(payerId: string, input: LinkBankInput) {
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const result = await linkPayerBank(payerId, input);
+      return result;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to link bank account';
+      setError(msg);
+      throw err;
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return { linkBank: submit, isSubmitting, error };
+}

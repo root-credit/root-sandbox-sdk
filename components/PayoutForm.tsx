@@ -20,12 +20,12 @@ interface Payee {
 }
 
 interface PayoutFormProps {
-  merchantId: string;
+  payerId: string;
   payees: Payee[];
   onSuccess?: () => void;
 }
 
-export function PayoutForm({ merchantId, payees, onSuccess }: PayoutFormProps) {
+export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [totalAmount, setTotalAmount] = useState(0);
@@ -61,7 +61,7 @@ export function PayoutForm({ merchantId, payees, onSuccess }: PayoutFormProps) {
 
     try {
       await processPayout({
-        merchantId,
+        payerId,
         lineItems: parsed.data.lineItems,
         totalAmount,
       });

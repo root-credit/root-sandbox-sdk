@@ -24,7 +24,7 @@ NEVER import `@/lib/root-api` (or `lib/root-api`) from a client component.
   → Same reason; this module instantiates the SDK with secrets.
 
 NEVER rename a type from `lib/types/*` to fit a new vertical.
-  → Reskin via `lib/branding.ts` only. Type names (`Merchant`, `Payee`, `Payout`,
+  → Reskin via `lib/branding.ts` only. Type names (`Payer`, `Payee`, `Payout`,
     `PaymentRail`, `PayoutStatus`) are stable across verticals.
 
 NEVER represent money in dollars.
@@ -76,8 +76,8 @@ The full list of "things v0 may import". Anything else is implementation detail.
 
 | Symbol | Kind | Purpose |
 | --- | --- | --- |
-| `Merchant` | type | Persisted merchant record |
-| `signupMerchantInputSchema` / `SignupMerchantInput` | zod + type | Signup form |
+| `Payer` | type | Persisted payer record (funding party) |
+| `signupPayerInputSchema` / `SignupPayerInput` | zod + type | Signup form |
 | `loginInputSchema` / `LoginInput` | zod + type | Login form |
 | `linkBankInputSchema` / `LinkBankInput` | zod + type | Bank-linking form |
 | `Payee` | type | Persisted payee record |
@@ -97,28 +97,28 @@ The full list of "things v0 may import". Anything else is implementation detail.
 
 | Action | Module | Purpose |
 | --- | --- | --- |
-| `signIn(input)` | `app/actions/auth.ts` | Merchant login (sets cookie) |
-| `signUp(input)` | `app/actions/auth.ts` | Merchant signup (sets cookie) |
+| `signIn(input)` | `app/actions/auth.ts` | Payer login (sets cookie) |
+| `signUp(input)` | `app/actions/auth.ts` | Payer signup (sets cookie) |
 | `signOut()` | `app/actions/auth.ts` | Clears the session cookie |
-| `getCurrentMerchant()` | `app/actions/merchant.ts` | Read current merchant record |
-| `linkMerchantBank(merchantId, input)` | `app/actions/merchant.ts` | Attach funding bank |
-| `listPayees(merchantId)` | `app/actions/payees.ts` | List payees |
-| `createPayee(merchantId, input)` | `app/actions/payees.ts` | Onboard a payee |
-| `removePayee(merchantId, input)` | `app/actions/payees.ts` | Remove a payee |
+| `getCurrentPayer()` | `app/actions/payer.ts` | Read current payer record |
+| `linkPayerBank(payerId, input)` | `app/actions/payer.ts` | Attach funding bank |
+| `listPayees(payerId)` | `app/actions/payees.ts` | List payees |
+| `createPayee(payerId, input)` | `app/actions/payees.ts` | Onboard a payee |
+| `removePayee(payerId, input)` | `app/actions/payees.ts` | Remove a payee |
 | `processPayout(input)` | `app/actions/payouts.ts` | Batch payout |
-| `listTransactions(merchantId)` | `app/actions/transactions.ts` | Read ledger |
+| `listTransactions(payerId)` | `app/actions/transactions.ts` | Read ledger |
 
 ### Hooks (`lib/hooks/*` — `import { … } from '@/lib/hooks'`)
 
 | Hook | Returns | Use in |
 | --- | --- | --- |
-| `useSession()` | `{ session, isLoading, error }` | Any client component needing the merchant id/email |
-| `useMerchant()` | `{ merchant, isLoading, error, refresh }` | Merchant settings / profile |
+| `useSession()` | `{ session, isLoading, error }` | Any client component needing the payer id/email |
+| `usePayer()` | `{ payer, isLoading, error, refresh }` | Payer settings / profile |
 | `useLinkBank()` | `{ linkBank, isSubmitting, error }` | Bank-link form |
-| `usePayees(merchantId)` | `{ payees, isLoading, error, refresh, setPayees }` | Payee list / payout form |
+| `usePayees(payerId)` | `{ payees, isLoading, error, refresh, setPayees }` | Payee list / payout form |
 | `useCreatePayee()` | `{ createPayee, isSubmitting, error }` | Add-payee form |
 | `useRemovePayee()` | `{ removePayee, isSubmitting, error }` | Payee row "remove" button |
-| `useTransactions(merchantId)` | `{ transactions, isLoading, error, refresh }` | Transactions table |
+| `useTransactions(payerId)` | `{ transactions, isLoading, error, refresh }` | Transactions table |
 | `useProcessPayout()` | `{ processPayout, isProcessing, error, lastResult }` | Payout form |
 | `useLogin()` | `{ login, isSubmitting, error }` | Login form |
 | `useSignup()` | `{ signup, isSubmitting, error }` | Signup form |
@@ -131,14 +131,14 @@ The full list of "things v0 may import". Anything else is implementation detail.
 
 Single source of vertical-facing copy. To re-skin from "restaurant tipping" to a
 new vertical (marketplace settlements, payroll, freelance, refunds), edit ONLY this
-file. Do not rename Merchant/Payee/Payout symbols anywhere else.
+file. Do not rename Payer/Payee/Payout symbols anywhere else.
 
 ```ts
 import { branding } from '@/lib/branding';
 
 branding.productName          // e.g. "Roosterwise"
-branding.merchantSingular     // e.g. "Restaurant"
-branding.merchantPlural
+branding.payerSingular        // e.g. "Restaurant"
+branding.payerPlural
 branding.payeeSingular        // e.g. "Worker"
 branding.payeePlural
 branding.payoutNoun           // e.g. "Tip payout"
@@ -168,7 +168,7 @@ Reference implementations: `app/dashboard/payouts/page.tsx`,
 
 Goal: make this app feel like "freelance marketplace" instead of "restaurant tipping".
 
-1. **Edit `lib/branding.ts`** only. Update `productName`, `merchantSingular/Plural`,
+1. **Edit `lib/branding.ts`** only. Update `productName`, `payerSingular/Plural`,
    `payeeSingular/Plural`, `payoutNoun/Plural`, `funderLabel`, `tagline`,
    `consoleHeading`, `consoleSubheading`.
 2. **Optional**: rewrite the marketing copy on `app/page.tsx` (landing). The
@@ -202,6 +202,9 @@ Goal: react to payout completion / failure events from Root.
 
 ## Operational notes
 
+- Redis keys for operators use prefixes `payer:*`, `payee:*`, `transaction:*`,
+  `session:*`. Changing prefixes invalidates existing Upstash data; flush Redis when
+  renaming migrations aren’t applied.
 - The dev server auto-reloads on changes to `app/`, `components/`, `lib/`.
 - Server actions that mutate Redis MUST call `revalidatePath` for the relevant
   dashboard segment(s). The included actions already do this.

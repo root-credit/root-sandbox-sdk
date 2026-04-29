@@ -10,13 +10,13 @@
 
 import { randomUUID } from 'crypto';
 import { revalidatePath } from 'next/cache';
-import { setPayee, getMerchantPayees, getMerchant, deletePayee } from '@/lib/redis';
+import { setPayee, getPayerPayees, getPayer, deletePayee } from '@/lib/redis';
 import {
   createRootPayee,
   attachPayeeBankAccount,
   attachPayeeDebitCard,
 } from '@/lib/root-api';
-import { getCurrentSession, sessionOwnsMerchant } from '@/lib/session';
+import { getCurrentSession, sessionOwnsPayer } from '@/lib/session';
 import {
   createPayeeInputSchema,
   deletePayeeInputSchema,
@@ -32,31 +32,31 @@ export type CreatePayeeResult = {
   paymentMethodId: string;
 };
 
-/** List all payees that belong to the calling merchant. */
-export async function listPayees(merchantId: string): Promise<Payee[]> {
+/** List all payees that belong to the calling payer. */
+export async function listPayees(payerId: string): Promise<Payee[]> {
   const session = await getCurrentSession();
-  if (!sessionOwnsMerchant(session, merchantId)) {
+  if (!sessionOwnsPayer(session, payerId)) {
     throw new Error('Unauthorized');
   }
-  const payees = (await getMerchantPayees(merchantId)) as Payee[];
+  const payees = (await getPayerPayees(payerId)) as Payee[];
   return payees;
 }
 
-/** Create a payee in Root + persist a Redis record. Caller must own the merchant. */
+/** Create a payee in Root + persist a Redis record. Caller must own the payer. */
 export async function createPayee(
-  merchantId: string,
+  payerId: string,
   input: CreatePayeeInput
 ): Promise<CreatePayeeResult> {
   const parsed = createPayeeInputSchema.parse(input);
 
   const session = await getCurrentSession();
-  if (!sessionOwnsMerchant(session, merchantId)) {
+  if (!sessionOwnsPayer(session, payerId)) {
     throw new Error('Unauthorized');
   }
 
-  const merchant = await getMerchant(merchantId);
-  if (!merchant) {
-    throw new Error('Merchant not found');
+  const payer = await getPayer(payerId);
+  if (!payer) {
+    throw new Error('Payer not found');
   }
 
   const rootPayee = await createRootPayee({
@@ -86,7 +86,7 @@ export async function createPayee(
   const payeeId = randomUUID();
   await setPayee(payeeId, {
     id: payeeId,
-    merchantId,
+    payerId,
     name: parsed.name,
     email: parsed.email,
     phone: parsed.phone,
@@ -103,19 +103,19 @@ export async function createPayee(
   return { success: true, payeeId, paymentMethodId };
 }
 
-/** Remove a payee from the calling merchant's roster. */
+/** Remove a payee from the calling payer's roster. */
 export async function removePayee(
-  merchantId: string,
+  payerId: string,
   input: DeletePayeeInput
 ): Promise<{ success: true }> {
   const parsed = deletePayeeInputSchema.parse(input);
 
   const session = await getCurrentSession();
-  if (!sessionOwnsMerchant(session, merchantId)) {
+  if (!sessionOwnsPayer(session, payerId)) {
     throw new Error('Unauthorized');
   }
 
-  await deletePayee(parsed.payeeId, merchantId);
+  await deletePayee(parsed.payeeId, payerId);
 
   revalidatePath('/dashboard/payees');
   revalidatePath('/dashboard/payouts');

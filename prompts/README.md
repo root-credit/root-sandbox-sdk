@@ -17,7 +17,7 @@ features against this template. Each numbered directory has:
 | --- | --- | --- |
 | 01 | Build a payouts screen | [`01-payouts-screen/`](01-payouts-screen) |
 | 02 | Build a payee onboarding form | [`02-payee-onboarding/`](02-payee-onboarding) |
-| 03 | Build a merchant bank-link screen | [`03-merchant-bank-link/`](03-merchant-bank-link) |
+| 03 | Build a payer bank-link screen | [`03-payer-bank-link/`](03-payer-bank-link) |
 | 04 | Build a transactions table | [`04-transactions-table/`](04-transactions-table) |
 | 05 | Reskin the vertical | [`05-reskin-vertical/`](05-reskin-vertical) |
 | 06 | Add a Root webhook listener | [`06-webhook-listener/`](06-webhook-listener) |

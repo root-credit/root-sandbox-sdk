@@ -14,8 +14,8 @@ import { useRouter } from 'next/navigation';
 export default function PayeesPage() {
   const router = useRouter();
   const { session } = useSession();
-  const merchantId = session?.merchantId ?? null;
-  const { payees, isLoading, error: loadError, refresh, setPayees } = usePayees(merchantId);
+  const payerId = session?.payerId ?? null;
+  const { payees, isLoading, error: loadError, refresh, setPayees } = usePayees(payerId);
   const { removePayee } = useRemovePayee();
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState('');
@@ -29,10 +29,10 @@ export default function PayeesPage() {
   }, [loadError]);
 
   async function handleDelete(payeeId: string) {
-    if (!merchantId) return;
+    if (!payerId) return;
     if (!confirm(`Are you sure you want to delete this ${branding.payeeSingular.toLowerCase()}?`)) return;
     try {
-      await removePayee(merchantId, payeeId);
+      await removePayee(payerId, payeeId);
       setPayees(payees.filter((p) => p.id !== payeeId));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete');
@@ -43,7 +43,7 @@ export default function PayeesPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <DashboardHeader email={session.merchantEmail} />
+      <DashboardHeader email={session.payerEmail} />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 lg:px-10 py-12">
         <div className="mb-8 flex items-end justify-between gap-6 flex-wrap">
@@ -95,7 +95,7 @@ export default function PayeesPage() {
               Add a {branding.payeeSingular.toLowerCase()}
             </h2>
             <PayeeForm
-              merchantId={session.merchantId}
+              payerId={session.payerId}
               onSuccess={() => {
                 setShowForm(false);
                 refresh();

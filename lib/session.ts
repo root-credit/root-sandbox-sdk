@@ -1,14 +1,14 @@
 import { cookies } from 'next/headers';
 import { getSession } from './redis';
 
-/** Compare session merchant id with id from URL/body (handles casing / stray whitespace). */
-export function sessionOwnsMerchant(
-  session: { merchantId: string } | null | undefined,
-  merchantId: string | null | undefined,
+/** Compare session payer id with id from URL/body (handles casing / stray whitespace). */
+export function sessionOwnsPayer(
+  session: { payerId: string } | null | undefined,
+  payerId: string | null | undefined,
 ): boolean {
-  if (!session?.merchantId || merchantId == null) return false;
+  if (!session?.payerId || payerId == null) return false;
   return (
-    session.merchantId.trim().toLowerCase() === merchantId.trim().toLowerCase()
+    session.payerId.trim().toLowerCase() === payerId.trim().toLowerCase()
   );
 }
 
@@ -24,12 +24,12 @@ export async function getCurrentSession() {
   return session;
 }
 
-/** Convenience: minimal merchant identity (just IDs); fetch full record from Redis when needed. */
-export async function getCurrentMerchantIdentity() {
+/** Convenience: minimal payer identity (just IDs); fetch full record from Redis when needed. */
+export async function getCurrentPayerIdentity() {
   const session = await getCurrentSession();
   if (!session) return null;
   return {
-    id: session.merchantId,
-    merchantEmail: session.merchantEmail,
+    id: session.payerId,
+    payerEmail: session.payerEmail,
   };
 }

@@ -1,21 +1,22 @@
 /**
- * Merchant domain types.
+ * Payer domain types.
  *
- * A `Merchant` is the entity that funds payouts. UI labels for the active vertical
- * (e.g. "Restaurant", "Marketplace", "Studio") live in {@link import('@/lib/branding').branding}.
+ * A `Payer` is the entity that funds payouts (aligned with Root payer IDs).
+ * UI labels for the active vertical (e.g. "Restaurant", "Marketplace", "Studio")
+ * live in {@link import('@/lib/branding').branding}.
  *
  * v0 / LLM contract:
- *   - Use `signupMerchantInputSchema` for signup forms.
+ *   - Use `signupPayerInputSchema` for signup forms.
  *   - Use `linkBankInputSchema` for the bank-link form.
- *   - Do NOT define ad-hoc merchant schemas in component files.
+ *   - Do NOT define ad-hoc payer schemas in component files.
  */
 import { z } from 'zod';
 
-/** Stored Merchant record (mirrors the shape persisted in Redis). */
-export const merchantSchema = z.object({
+/** Stored Payer record (mirrors the shape persisted in Redis). */
+export const payerSchema = z.object({
   id: z.string().uuid(),
-  merchantEmail: z.string().email(),
-  merchantName: z.string().min(2),
+  payerEmail: z.string().email(),
+  payerName: z.string().min(2),
   phone: z.string().min(7),
   rootPayerId: z.string(),
   bankAccountToken: z.string().optional(),
@@ -23,16 +24,16 @@ export const merchantSchema = z.object({
   updatedAt: z.number().int(),
 });
 
-export type Merchant = z.infer<typeof merchantSchema>;
+export type Payer = z.infer<typeof payerSchema>;
 
-export const signupMerchantInputSchema = z.object({
+export const signupPayerInputSchema = z.object({
   email: z.string().email('Invalid email address'),
-  merchantName: z.string().min(2, 'Name must be at least 2 characters'),
+  payerName: z.string().min(2, 'Name must be at least 2 characters'),
   phone: z.string().min(10, 'Phone must be at least 10 digits'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
-export type SignupMerchantInput = z.infer<typeof signupMerchantInputSchema>;
+export type SignupPayerInput = z.infer<typeof signupPayerInputSchema>;
 
 export const loginInputSchema = z.object({
   email: z.string().email('Invalid email address'),

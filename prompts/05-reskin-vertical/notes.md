@@ -2,9 +2,9 @@
 
 ## Common mistakes
 
-1. **Renaming code symbols.** The temptation is to rename `Merchant` → `Studio`
+1. **Renaming code symbols.** The temptation is to rename `Payer` → `Studio`
    in TypeScript. Don't. The whole point of `lib/branding.ts` is that you don't.
-2. **Changing Redis keys.** `merchant:*` and `payee:*` stay as-is. Renaming them
+2. **Changing Redis keys.** `payer:*` and `payee:*` stay as-is. Renaming them
    would orphan all existing data and break `redis-admin.ts`.
 3. **Swapping product name in `package.json`.** Optional and isolated; it does
    not affect the running app. If you do, keep `name` as the npm package name

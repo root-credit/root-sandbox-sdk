@@ -4,8 +4,8 @@
  * Generic Root Payouts End-to-End Test Script
  *
  * Walks through the full payout flow against a running dev server:
- *   1. Create merchant account (signup)
- *   2. Link merchant funding bank account
+ *   1. Create payer account (signup)
+ *   2. Link payer funding bank account
  *   3. Add two payees (one debit card, one bank account)
  *   4. Process a payout batch
  *   5. Read transaction history
@@ -19,10 +19,10 @@ console.log('[e2e] Starting payouts E2E test');
 console.log(`[e2e] Base URL: ${BASE_URL}`);
 console.log('[e2e] ============================================\n');
 
-const testMerchant = {
-  email: `merchant-${Date.now()}@example.com`,
+const testPayer = {
+  email: `payer-${Date.now()}@example.com`,
   password: '1234567890',
-  merchantName: 'Test Merchant',
+  payerName: 'Test Payer',
   phone: '555-123-4567',
 };
 
@@ -80,24 +80,24 @@ async function fetchWithLogging(url, options = {}) {
 
 async function runTests() {
   try {
-    console.log('\n[e2e] TEST 1: Merchant signup');
+    console.log('\n[e2e] TEST 1: Payer signup');
     console.log('------');
     const signupRes = await fetchWithLogging(`${BASE_URL}/api/auth/signup`, {
       method: 'POST',
-      body: JSON.stringify(testMerchant),
+      body: JSON.stringify(testPayer),
     });
     if (!signupRes) throw new Error('Signup failed');
 
-    const { merchantId, sessionToken } = signupRes.data;
-    console.log(`[e2e] ✓ Signup successful. Merchant ID: ${merchantId}`);
+    const { payerId, sessionToken } = signupRes.data;
+    console.log(`[e2e] ✓ Signup successful. Payer ID: ${payerId}`);
 
     const headers = { Cookie: `session=${sessionToken}` };
 
-    console.log('\n[e2e] TEST 2: Link merchant bank account');
+    console.log('\n[e2e] TEST 2: Link payer bank account');
     console.log('------');
-    const bankRes = await fetchWithLogging(`${BASE_URL}/api/merchant/bank-account`, {
+    const bankRes = await fetchWithLogging(`${BASE_URL}/api/payer/bank-account`, {
       method: 'POST',
-      body: JSON.stringify({ ...testBankAccount, merchantId }),
+      body: JSON.stringify({ ...testBankAccount, payerId }),
       headers,
     });
     if (!bankRes) throw new Error('Bank account linking failed');
@@ -107,7 +107,7 @@ async function runTests() {
     console.log('------');
     const payee1Res = await fetchWithLogging(`${BASE_URL}/api/payees`, {
       method: 'POST',
-      body: JSON.stringify({ ...testPayee1, merchantId }),
+      body: JSON.stringify({ ...testPayee1, payerId }),
       headers,
     });
     if (!payee1Res) throw new Error('Payee 1 creation failed');
@@ -118,7 +118,7 @@ async function runTests() {
     console.log('------');
     const payee2Res = await fetchWithLogging(`${BASE_URL}/api/payees`, {
       method: 'POST',
-      body: JSON.stringify({ ...testPayee2, merchantId }),
+      body: JSON.stringify({ ...testPayee2, payerId }),
       headers,
     });
     if (!payee2Res) throw new Error('Payee 2 creation failed');
@@ -128,7 +128,7 @@ async function runTests() {
     console.log('\n[e2e] TEST 5: Process payout batch');
     console.log('------');
     const payoutsData = {
-      merchantId,
+      payerId,
       lineItems: [
         { payeeId: payeeId1, amount: testAmounts[testPayee1.email] },
         { payeeId: payeeId2, amount: testAmounts[testPayee2.email] },
@@ -148,7 +148,7 @@ async function runTests() {
     console.log('\n[e2e] TEST 6: Read transaction history');
     console.log('------');
     const transactionsRes = await fetchWithLogging(
-      `${BASE_URL}/api/payouts?merchantId=${merchantId}`,
+      `${BASE_URL}/api/payouts?payerId=${payerId}`,
       { headers }
     );
     if (!transactionsRes) throw new Error('Failed to fetch transactions');
@@ -168,7 +168,7 @@ async function runTests() {
     console.log('[e2e] ============================================\n');
 
     console.log('[e2e] Summary:');
-    console.log(`[e2e] • Merchant created: ${testMerchant.email}`);
+    console.log(`[e2e] • Payer created: ${testPayer.email}`);
     console.log(`[e2e] • Bank account linked`);
     console.log(`[e2e] • 2 payees added (1 card, 1 bank)`);
     console.log(`[e2e] • Payouts executed: $${payoutsData.totalAmount.toFixed(2)}`);

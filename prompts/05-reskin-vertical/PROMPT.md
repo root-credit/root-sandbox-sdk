@@ -5,7 +5,7 @@ Paste the block below into v0.
 ---
 
 I want to reskin this app from "restaurant tipping" to "<your vertical>" — for
-example a freelance marketplace where {merchantSingular} is "Studio" and
+example a freelance marketplace where {payerSingular} is "Studio" and
 {payeeSingular} is "Freelancer", or a payroll app where they are "Employer" and
 "Employee".
 
@@ -22,16 +22,16 @@ example a freelance marketplace where {merchantSingular} is "Studio" and
 - Edit ONLY `lib/branding.ts`.
 - Optional: rewrite the marketing copy on `app/page.tsx` (hero headline,
   Module Receipt feature lists, How-it-works steps).
-- Do NOT rename `Merchant` / `Payee` / `Payout` / `PaymentRail` / `Transaction`
+- Do NOT rename `Payer` / `Payee` / `Payout` / `PaymentRail` / `Transaction`
   in code.
-- Do NOT change Redis key prefixes (`merchant:*`, `payee:*`, `transaction:*`).
+- Do NOT change Redis key prefixes (`payer:*`, `payee:*`, `transaction:*`).
 - Do NOT touch `lib/types/*`, `lib/hooks/*`, `app/actions/*`, route handlers.
 
 ## Build
 
 1. Open `lib/branding.ts`.
-2. Replace the values for `productName`, `tagline`, `merchantSingular`,
-   `merchantPlural`, `merchantPossessive`, `payeeSingular`, `payeePlural`,
+2. Replace the values for `productName`, `tagline`, `payerSingular`,
+   `payerPlural`, `payerPossessive`, `payeeSingular`, `payeePlural`,
    `payoutNoun`, `payoutNounPlural`, `funderLabel`, `funderShortLabel`,
    `consoleHeading`, `consoleSubheading`.
 3. Optional: rewrite the marketing prose on `app/page.tsx`. Keep the structural

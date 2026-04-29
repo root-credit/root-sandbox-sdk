@@ -42,7 +42,7 @@ export default function SignupPage() {
           </h2>
           <p className="mt-5 text-white/60 leading-relaxed">
             Spin up an operator account in under two minutes. We&apos;ll provision your Root
-            payer, your {branding.merchantSingular.toLowerCase()} subaccount, and a clean ledger —
+            payer, your {branding.payerSingular.toLowerCase()} subaccount, and a clean ledger —
             wired to the team you add next.
           </p>
 
@@ -73,7 +73,7 @@ export default function SignupPage() {
             <p className="text-eyebrow mb-3">Get started</p>
             <h1 className="font-display text-4xl tracking-tightest mb-3">Create your account</h1>
             <p className="text-sm text-neutral-500 leading-relaxed mb-10">
-              Tell us about your {branding.merchantSingular.toLowerCase()}. We&apos;ll set up your
+              Tell us about your {branding.payerSingular.toLowerCase()}. We&apos;ll set up your
               operator console and provision the payment rails behind it.
             </p>
 

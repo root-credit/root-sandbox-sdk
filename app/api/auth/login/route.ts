@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateSessionToken, validateEmail } from '@/lib/auth';
-import { setSession, getMerchantByEmail } from '@/lib/redis';
+import { setSession, getPayerByEmail } from '@/lib/redis';
 import { verifySharedAppPassword } from '@/lib/app-settings';
 import {
   HARDCODED_ADMIN_EMAIL,
@@ -14,7 +14,7 @@ import {
  *
  * Special-case: the hardcoded admin email (admin@root.credit) is recognised here so
  * the admin can sign in from this single login screen without ever touching Redis.
- * Real merchant users go through the shared-password gate and a Redis merchant lookup.
+ * Real payer users go through the shared-password gate and a Redis payer lookup.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -76,13 +76,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const merchant = await getMerchantByEmail(trimmedEmail);
-    if (!merchant) {
+    const payer = await getPayerByEmail(trimmedEmail);
+    if (!payer) {
       return NextResponse.json(
         {
           error:
             'No account exists for this email. Sign up first, then sign in with the same email and password.',
-          code: 'MERCHANT_ACCOUNT_NOT_FOUND',
+          code: 'PAYER_ACCOUNT_NOT_FOUND',
         },
         { status: 404 }
       );
@@ -93,14 +93,14 @@ export async function POST(request: NextRequest) {
     const sessionToken = generateSessionToken();
 
     await setSession(sessionToken, {
-      merchantEmail: merchant.merchantEmail,
-      merchantId: merchant.id,
+      payerEmail: payer.payerEmail,
+      payerId: payer.id,
     });
 
     return NextResponse.json(
       {
         sessionToken,
-        merchantId: merchant.id,
+        payerId: payer.id,
       },
       { status: 200 }
     );

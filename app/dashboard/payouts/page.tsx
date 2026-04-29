@@ -12,8 +12,8 @@ import { useRouter } from 'next/navigation';
 export default function PayoutsPage() {
   const router = useRouter();
   const { session } = useSession();
-  const merchantId = session?.merchantId ?? null;
-  const { payees, isLoading, error, refresh } = usePayees(merchantId);
+  const payerId = session?.payerId ?? null;
+  const { payees, isLoading, error, refresh } = usePayees(payerId);
 
   useEffect(() => {
     if (session === undefined) router.push('/login');
@@ -23,7 +23,7 @@ export default function PayoutsPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <DashboardHeader email={session.merchantEmail} />
+      <DashboardHeader email={session.payerEmail} />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-6 lg:px-10 py-12">
         <div className="mb-10">
@@ -57,7 +57,7 @@ export default function PayoutsPage() {
             </div>
           ) : (
             <PayoutForm
-              merchantId={session.merchantId}
+              payerId={session.payerId}
               payees={payees}
               onSuccess={refresh}
             />
@@ -82,7 +82,7 @@ export default function PayoutsPage() {
             items={[
               `Settles in roughly 5 seconds per ${branding.payeeSingular.toLowerCase()}`,
               `${branding.payeeSingular} payment methods must be linked first`,
-              `Funds pull from your linked ${branding.merchantSingular.toLowerCase()} bank`,
+              `Funds pull from your linked ${branding.payerSingular.toLowerCase()} bank`,
               'Audit everything in Transactions',
             ]}
           />

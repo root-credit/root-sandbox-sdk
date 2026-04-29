@@ -5,7 +5,7 @@ Paste the block below into v0.
 ---
 
 I want a paginated, filterable transactions ledger that shows every payout the
-merchant has made. Use the existing contract layer.
+payer has made. Use the existing contract layer.
 
 ## Files to read first
 
@@ -18,8 +18,8 @@ merchant has made. Use the existing contract layer.
 
 ## Hard rules
 
-- NEVER call `fetch('/api/payouts?merchantId=...')`.
-- Use `useTransactions(merchantId)`.
+- NEVER call `fetch('/api/payouts?payerId=...')`.
+- Use `useTransactions(payerId)`.
 - Render money via `formatMoney(transaction.amountCents)`. Do not divide by 100
   inline; use `centsToDollars` only when arithmetic in dollars is needed.
 - Status pill colors come from a small `statusVariant` map; do not invent new
@@ -30,7 +30,7 @@ merchant has made. Use the existing contract layer.
 Page at `app/dashboard/<feature>/page.tsx`:
 
 1. `useSession()` → redirect if unauthenticated.
-2. `useTransactions(merchantId)` for the data.
+2. `useTransactions(payerId)` for the data.
 3. Stats strip on top: total paid out (formatted), successful count, total count.
 4. Table with columns: Payee, Email, Amount (right-aligned, monospace), Status
    (pill), Date.

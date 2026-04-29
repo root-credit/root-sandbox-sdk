@@ -12,12 +12,12 @@
 import { randomUUID } from 'crypto';
 import { revalidatePath } from 'next/cache';
 import {
-  getMerchant,
+  getPayer,
   getPayee,
   setTransaction,
 } from '@/lib/redis';
 import { createPayout, payoutRailForPayee } from '@/lib/root-api';
-import { getCurrentSession, sessionOwnsMerchant } from '@/lib/session';
+import { getCurrentSession, sessionOwnsPayer } from '@/lib/session';
 import { dollarsToCents } from '@/lib/types/payments';
 import {
   processPayoutInputSchema,
@@ -29,7 +29,7 @@ import {
  * Process one or more payouts in a single batch. Returns per-line results so the UI
  * can render success/failure for each row independently.
  *
- * Throws if the caller is not signed in as the merchant in `input.merchantId`.
+ * Throws if the caller is not signed in as the payer in `input.payerId`.
  */
 export async function processPayout(
   input: ProcessPayoutInput
@@ -37,13 +37,13 @@ export async function processPayout(
   const parsed = processPayoutInputSchema.parse(input);
 
   const session = await getCurrentSession();
-  if (!sessionOwnsMerchant(session, parsed.merchantId)) {
+  if (!sessionOwnsPayer(session, parsed.payerId)) {
     throw new Error('Unauthorized');
   }
 
-  const merchant = await getMerchant(parsed.merchantId);
-  if (!merchant) {
-    throw new Error('Merchant not found');
+  const payer = await getPayer(parsed.payerId);
+  if (!payer) {
+    throw new Error('Payer not found');
   }
 
   const results: ProcessPayoutResult['results'] = [];
@@ -70,7 +70,7 @@ export async function processPayout(
       const transactionId = randomUUID();
       await setTransaction(transactionId, {
         id: transactionId,
-        merchantId: parsed.merchantId,
+        payerId: parsed.payerId,
         payeeId: payee.id,
         payeeName: payee.name,
         payeeEmail: payee.email,
@@ -99,7 +99,6 @@ export async function processPayout(
         payeeId: item.payeeId,
         amount: item.amount,
         status: 'failed',
-        rail,
         error: err instanceof Error ? err.message : 'Unknown error',
       });
     }

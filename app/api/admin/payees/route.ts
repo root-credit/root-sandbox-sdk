@@ -12,7 +12,7 @@ export async function GET() {
   const payees: Array<{
     id: string;
     name: string;
-    merchantId: string;
+    payerId: string;
     paymentMethodType?: string;
   }> = [];
 
@@ -23,7 +23,7 @@ export async function GET() {
       payees.push({
         id: p.id,
         name: p.name,
-        merchantId: p.merchantId,
+        payerId: p.payerId,
         paymentMethodType: p.paymentMethodType,
       });
     }

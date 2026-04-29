@@ -1,11 +1,7 @@
 'use client';
 
 /**
- * useCreatePayee — onboard a new payee + payment method.
- *
- * v0 / LLM contract:
- *   - Use this hook in any add-payee form. Do NOT call `fetch('/api/payees')` directly.
- *   - Submit the form with `createPayeeInputSchema`-shaped data; server re-validates.
+ * useCreatePayee / useRemovePayee — mutate payee roster via server actions.
  */
 
 import { useState } from 'react';
@@ -16,14 +12,14 @@ export function useCreatePayee() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function submit(merchantId: string, input: CreatePayeeInput) {
+  async function submit(payerId: string, input: CreatePayeeInput) {
     setIsSubmitting(true);
     setError(null);
     try {
-      const result = await createPayee(merchantId, input);
+      const result = await createPayee(payerId, input);
       return result;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to add payee';
+      const msg = err instanceof Error ? err.message : 'Failed to create payee';
       setError(msg);
       throw err;
     } finally {
@@ -38,11 +34,11 @@ export function useRemovePayee() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function submit(merchantId: string, payeeId: string) {
+  async function submit(payerId: string, payeeId: string) {
     setIsSubmitting(true);
     setError(null);
     try {
-      const result = await removePayee(merchantId, { payeeId });
+      const result = await removePayee(payerId, { payeeId });
       return result;
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to remove payee';

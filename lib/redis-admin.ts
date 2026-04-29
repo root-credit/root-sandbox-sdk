@@ -12,10 +12,10 @@ async function delKeys(keys: string[]): Promise<number> {
   return n;
 }
 
-/** Delete every `payee:*` key and every `merchant:*:payees` set. */
+/** Delete every `payee:*` key and every `payer:*:payees` set. */
 export async function clearAllPayeesData(): Promise<{ deletedKeys: number }> {
   const payeeKeys = await redis.keys("payee:*");
-  const payeeSetKeys = await redis.keys("merchant:*:payees");
+  const payeeSetKeys = await redis.keys("payer:*:payees");
   const n = (await delKeys(payeeKeys)) + (await delKeys(payeeSetKeys));
   return { deletedKeys: n };
 }
@@ -23,8 +23,8 @@ export async function clearAllPayeesData(): Promise<{ deletedKeys: number }> {
 /** Remove one payee and its membership set entry. */
 export async function removePayeeById(payeeId: string): Promise<boolean> {
   const p = await getPayee(payeeId);
-  if (!p?.merchantId) return false;
-  await deletePayee(payeeId, p.merchantId);
+  if (!p?.payerId) return false;
+  await deletePayee(payeeId, p.payerId);
   return true;
 }
 
@@ -34,17 +34,17 @@ export async function clearAllOperatorSessions(): Promise<{ deletedKeys: number 
   return { deletedKeys: await delKeys(keys) };
 }
 
-/** All transactions and per-merchant transaction index sets. */
+/** All transactions and per-payer transaction index sets. */
 export async function clearAllTransactions(): Promise<{ deletedKeys: number }> {
   const txKeys = await redis.keys("transaction:*");
-  const idxKeys = await redis.keys("merchant:*:transactions");
+  const idxKeys = await redis.keys("payer:*:transactions");
   const n = (await delKeys(txKeys)) + (await delKeys(idxKeys));
   return { deletedKeys: n };
 }
 
-/** Strip bankAccountToken from each `merchant:{uuid}` record (root keys only). */
-export async function clearAllMerchantBankFields(): Promise<{ updated: number }> {
-  const keys = await redis.keys("merchant:*");
+/** Strip bankAccountToken from each `payer:{uuid}` record (root keys only). */
+export async function clearAllPayerBankFields(): Promise<{ updated: number }> {
+  const keys = await redis.keys("payer:*");
   const rootKeys = keys.filter((k) => k.split(":").length === 2);
   let updated = 0;
   for (const key of rootKeys) {

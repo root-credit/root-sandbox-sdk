@@ -51,7 +51,7 @@ const formSchema = z
 type FormData = z.infer<typeof formSchema>;
 
 interface PayeeFormProps {
-  merchantId: string;
+  payerId: string;
   onSuccess?: () => void;
 }
 
@@ -66,7 +66,7 @@ const labelClass =
 const sectionEyebrow =
   'text-[11px] tracking-[0.18em] uppercase text-neutral-500 font-medium';
 
-export function PayeeForm({ merchantId, onSuccess }: PayeeFormProps) {
+export function PayeeForm({ payerId, onSuccess }: PayeeFormProps) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const { createPayee, isSubmitting } = useCreatePayee();
@@ -115,7 +115,7 @@ export function PayeeForm({ merchantId, onSuccess }: PayeeFormProps) {
           };
 
     try {
-      await createPayee(merchantId, input);
+      await createPayee(payerId, input);
       setSuccess(`${branding.payeeSingular} added successfully!`);
       reset();
       if (onSuccess) onSuccess();

@@ -15,7 +15,7 @@ import { useCallback, useState } from 'react';
 export type AdminPayeeRow = {
   id: string;
   name: string;
-  merchantId: string;
+  payerId: string;
   paymentMethodType?: string;
 };
 

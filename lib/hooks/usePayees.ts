@@ -1,41 +1,39 @@
 'use client';
 
 /**
- * usePayees — list payees for a merchant.
+ * usePayees — list payees for a payer.
  *
  * v0 / LLM contract:
- *   - Use this hook in any client component that lists payees.
- *   - Do NOT call `fetch('/api/payees')` directly.
- *   - Pass `null` for `merchantId` while the session is loading; the hook will idle.
+ *   - Pass `null` for `payerId` while the session is loading; the hook will idle.
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import type { Payee } from '@/lib/types/payee';
 import { listPayees } from '@/app/actions/payees';
+import type { Payee } from '@/lib/types/payee';
 
-export function usePayees(merchantId: string | null | undefined) {
+export function usePayees(payerId: string | null | undefined) {
   const [payees, setPayees] = useState<Payee[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
-    if (!merchantId) return;
+    if (!payerId) return;
     setIsLoading(true);
     setError(null);
     try {
-      const data = await listPayees(merchantId);
+      const data = await listPayees(payerId);
       setPayees(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load payees');
     } finally {
       setIsLoading(false);
     }
-  }, [merchantId]);
+  }, [payerId]);
 
   useEffect(() => {
-    if (!merchantId) return;
+    if (!payerId) return;
     refresh();
-  }, [merchantId, refresh]);
+  }, [payerId, refresh]);
 
   return { payees, isLoading, error, refresh, setPayees };
 }
