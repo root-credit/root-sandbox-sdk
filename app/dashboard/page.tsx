@@ -27,47 +27,47 @@ export default async function DashboardPage() {
         </section>
 
         <section className="mb-12 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <StatTile label={`Active ${branding.payeePlural.toLowerCase()}`} value="0" />
-          <StatTile label="Total paid out" value="$0.00" accent />
+          <StatTile label="Active Locations" value="0" />
+          <StatTile label="Total Settled" value="$0.00" accent />
           <StatTile label="Transactions" value="0" />
         </section>
 
         <section>
           <div className="flex items-end justify-between gap-4 mb-5">
             <div>
-              <p className="text-eyebrow mb-2">Modules</p>
-              <h2 className="font-display text-2xl tracking-tightest">Run the house</h2>
+              <p className="text-eyebrow mb-2">Core Operations</p>
+              <h2 className="font-display text-2xl tracking-tightest">Manage multi-location payouts</h2>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <ModuleTile
               href="/dashboard/payouts"
-              code="PAY"
-              title="Process payouts"
-              desc={`Run an end-of-shift ${branding.payoutNoun.toLowerCase()} and settle in seconds.`}
-              icon={<IconBolt />}
+              code="TIP"
+              title="Tip Settlements"
+              desc="Distribute and settle tips across all locations in real time."
+              icon={<IconCoins />}
               primary
             />
             <ModuleTile
               href="/dashboard/payees"
-              code="TEAM"
-              title={branding.payeePlural}
-              desc={`Add ${branding.payeePlural.toLowerCase()} and link bank accounts or debit cards.`}
-              icon={<IconUsers />}
+              code="STAFF"
+              title="Service Staff"
+              desc="Manage payout details for all staff across your venues."
+              icon={<IconUtensils />}
             />
             <ModuleTile
               href="/dashboard/transactions"
               code="LDG"
-              title="Transactions"
-              desc="Audit every payout: amounts, status, latency."
+              title="Settlement Ledger"
+              desc="Complete transaction history and settlement verification."
               icon={<IconLedger />}
             />
             <ModuleTile
               href="/dashboard/payer"
-              code="HSE"
-              title={branding.payerSingular}
-              desc={`${branding.payerSingular} profile and ACH funding source.`}
-              icon={<IconBuilding />}
+              code="LOC"
+              title="Locations & Fund"
+              desc="Manage operating accounts and multi-location settings."
+              icon={<IconBuilding2 />}
             />
           </div>
         </section>
@@ -178,6 +178,28 @@ function IconBolt() {
     </svg>
   );
 }
+function IconCoins() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="8" cy="12" r="1" />
+      <path d="M8 7v10" strokeLinecap="round" />
+      <path d="M12 7c-1.66 0-3 .9-3 2s1.34 2 3 2 3 .9 3 2-1.34 2-3 2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16 7v10" strokeLinecap="round" />
+      <circle cx="16" cy="12" r="1" />
+    </svg>
+  );
+}
+function IconUtensils() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M3 2v7c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2V2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M7 13.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" strokeLinecap="round" />
+      <path d="M19 2c-1.1 0-2 .9-2 2v7c0 1.1.9 2 2 2h0" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M12 9v11" strokeLinecap="round" />
+      <path d="M8 20h8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 function IconUsers() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -194,11 +216,11 @@ function IconLedger() {
     </svg>
   );
 }
-function IconBuilding() {
+function IconBuilding2() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <path d="M9 9h.01M15 9h.01M9 13h.01M15 13h.01M9 17h6" strokeLinecap="round" />
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="9 22 9 12 15 12 15 22" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

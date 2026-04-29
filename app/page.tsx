@@ -81,16 +81,14 @@ export default function LandingPage() {
               </div>
 
               <h1 className="mt-7 font-display tracking-tightest text-[2.75rem] sm:text-6xl lg:text-7xl leading-[1.02] text-balance">
-                {branding.tagline.split(' ').slice(0, -1).join(' ')}{' '}
+                {branding.productName}:{' '}
                 <em className="not-italic text-gold-bright">
-                  {branding.tagline.split(' ').slice(-1)[0]}
+                  Enterprise Financial Control for Hospitality
                 </em>
               </h1>
 
               <p className="mt-6 text-base sm:text-lg text-white/65 leading-relaxed max-w-xl">
-                {branding.productName} unifies {branding.payoutNounPlural.toLowerCase()}, payroll,
-                and payments into one controlled platform — so your team gets paid in seconds and
-                your books reconcile themselves.
+                Unify tipping, payroll, and procurement across multiple locations into one unified platform. Get your team paid in seconds while your books reconcile automatically—built for enterprise hospitality.
               </p>
 
               <div className="mt-8 flex flex-col sm:flex-row gap-3">
@@ -131,49 +129,48 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end mb-12 lg:mb-16">
             <div className="lg:col-span-8">
-              <p className="text-eyebrow mb-3">The Stack</p>
+              <p className="text-eyebrow mb-3">The Platform</p>
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tightest leading-[1.05] text-balance">
-                Everything you need for end-of-shift money movement.
+                Complete financial operations for multi-location hospitality.
               </h2>
             </div>
             <p className="lg:col-span-4 text-sm text-neutral-500 max-w-sm leading-relaxed">
-              Three core modules. One ledger. Wired to your bank, your team, and the Root
-              payment rails.
+              Three core modules. One unified ledger. Integrated with your bank, your staff, and enterprise compliance rails.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
             <ModuleReceipt
               code="TIP"
-              title="Gratuity Management"
+              title="Tip Distribution"
               status="Active · Live"
               features={[
-                'Instant tip distribution',
-                'Tip pooling protocol',
-                'Per-shift run sheets',
-                'Full audit trails',
+                'Instant tip settlement across locations',
+                'Flexible tip pooling & distribution',
+                'Per-shift reconciliation',
+                'Full compliance audit trails',
               ]}
             />
             <ModuleReceipt
               code="PAY"
-              title={`${branding.payeeSingular} Payouts`}
+              title="Procurement Settlement"
               status="Active · Live"
               features={[
-                'Real-time wage access',
-                'Bank account or debit card',
-                'Same-day ACH fallback',
-                'No credit check required',
+                'Vendor payment automation',
+                'Multi-account ACH routing',
+                'Scheduled invoice processing',
+                'Real-time liquidity tracking',
               ]}
             />
             <ModuleReceipt
               code="OPS"
-              title="Treasury & Reconciliation"
+              title="Treasury & Compliance"
               status="Active · Live"
               features={[
-                'Subaccount funding via ACH',
-                'One-page transaction ledger',
+                'Multi-location subaccounts',
+                'Real-time transaction ledger',
                 'Webhook event streaming',
-                'Roles & shared passwords',
+                'Role-based access control',
               ]}
             />
           </div>
@@ -189,25 +186,25 @@ export default function LandingPage() {
           <div className="max-w-2xl mb-12 lg:mb-16">
             <p className="text-eyebrow mb-3">How it works</p>
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tightest leading-[1.05] text-balance">
-              From shift close to settled tips — in three movements.
+              From onboarding to scaled operations — three core steps.
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12">
             <Step
               n="01"
-              title="Onboard your house"
-              body={`Create a ${branding.payerSingular.toLowerCase()}, link an ACH-funding bank account, and add your team with their preferred payout rail.`}
+              title="Connect Venue Bank"
+              body="Link your operating account (house fund) and establish funding for multi-location settlements. Compliance happens automatically."
             />
             <Step
               n="02"
-              title={`Enter the ${branding.payoutNoun.toLowerCase()}`}
-              body={`At shift close, key in the run sheet. ${branding.productName} validates totals against the team and your liquidity in real time.`}
+              title="Import Staff & Suppliers"
+              body="Add service staff and vendor accounts with their preferred payout rails. Set permissions per location or role."
             />
             <Step
               n="03"
-              title="One click. Funds land."
-              body="Press process — payouts settle to bank or card in seconds. Receipts and webhooks stream into your ledger."
+              title="Automate Payouts"
+              body="Schedule tip distributions and invoice settlements. One platform, all locations, real-time visibility."
             />
           </div>
         </div>
@@ -216,13 +213,12 @@ export default function LandingPage() {
       {/* Trust */}
       <section id="trust" className="py-24 lg:py-28">
         <div className="max-w-3xl mx-auto px-5 sm:px-8 lg:px-10 text-center">
-          <p className="text-eyebrow mb-4">Built for hospitality at scale</p>
+          <p className="text-eyebrow mb-4">Enterprise-grade fintech</p>
           <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tightest leading-[1.05] text-balance">
-            Enterprise rails, with the warmth of an independent house.
+            Bank-level security with hospitality expertise.
           </h2>
           <p className="mt-6 text-neutral-500 leading-relaxed max-w-xl mx-auto">
-            {branding.productName} rides on Root&apos;s secure payment infrastructure — wrapped in
-            a console designed for a host stand, not a CFO suite.
+            {branding.productName} combines regulated payment infrastructure with deep industry knowledge—designed by operators, for operators running multi-location enterprises.
           </p>
 
           <div className="mt-10">

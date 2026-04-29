@@ -7,10 +7,10 @@ import { useLogout } from '@/lib/hooks/useAuth';
 
 const NAV: { href: string; label: string }[] = [
   { href: '/dashboard', label: 'Overview' },
-  { href: '/dashboard/payouts', label: 'Payouts' },
-  { href: '/dashboard/payees', label: branding.payeePlural },
-  { href: '/dashboard/transactions', label: 'Transactions' },
-  { href: '/dashboard/payer', label: branding.payerSingular },
+  { href: '/dashboard/payouts', label: 'Tip Settlements' },
+  { href: '/dashboard/payees', label: 'Service Staff' },
+  { href: '/dashboard/transactions', label: 'Ledger' },
+  { href: '/dashboard/payer', label: 'Multi-location' },
 ];
 
 export function DashboardHeader({ email }: { email: string }) {

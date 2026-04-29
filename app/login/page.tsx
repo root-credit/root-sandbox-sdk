@@ -35,20 +35,18 @@ export default function LoginPage() {
 
         <div className="max-w-md">
           <p className="text-[11px] tracking-[0.18em] uppercase text-white/50 mb-5">
-            Operator console
+            Secure Access
           </p>
           <h2 className="font-display text-4xl xl:text-5xl tracking-tightest leading-[1.05] text-balance">
-            Welcome back to <em className="not-italic text-gold-bright">the house.</em>
+            Enterprise access for <em className="not-italic text-gold-bright">hospitality groups.</em>
           </h2>
           <p className="mt-5 text-white/60 leading-relaxed">
-            Sign in with the email you used at signup. {branding.productName} routes you to your{' '}
-            {branding.payerPossessive} console — {branding.payeePlural.toLowerCase()}, payouts, treasury,
-            all in one place.
+            Bank-grade encryption and compliance for multi-location management. Sign in with the email linked to your {branding.payerPlural.toLowerCase()} account — instant access to payouts, staff, and settlements.
           </p>
 
           <div className="mt-10 grid grid-cols-2 gap-4">
-            <Stat label="Median payout" value="4.2s" />
-            <Stat label="Settled tonight" value="$1,482" accent />
+            <Stat label="Avg settlement time" value="4.2s" />
+            <Stat label="Locations live" value="Multi" accent />
           </div>
         </div>
 
