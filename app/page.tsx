@@ -1,422 +1,199 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { branding } from '@/lib/branding';
 
 export default function LandingPage() {
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
-
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
-      {/* Hero — nav lives inside the dark surface so it can never overlap content */}
-      <header className="relative isolate overflow-hidden bg-ink text-white">
-        {/* warm gradient backdrop */}
-        <div
-          aria-hidden
-          className="absolute inset-0 -z-10"
-          style={{
-            background:
-              'radial-gradient(ellipse at 80% -10%, rgba(212,160,23,0.22), transparent 55%), radial-gradient(ellipse at 0% 110%, rgba(180,83,9,0.18), transparent 60%), #0A0A0A',
-          }}
-        />
-        {/* subtle grid */}
-        <div
-          aria-hidden
-          className="absolute inset-0 -z-10 opacity-[0.05]"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)',
-            backgroundSize: '64px 64px',
-          }}
-        />
-
-        {/* Navigation row */}
-        <nav className="relative z-10">
-          <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 h-16 sm:h-20 flex items-center justify-between gap-4">
-            <Link href="/" className="flex items-center gap-2.5 text-white">
-              <Monogram />
-              <span className="font-display text-lg tracking-tightest">{branding.productName}</span>
+    <div className="min-h-screen flex flex-col bg-canvas text-ink">
+      {/* Global Navigation */}
+      <header className="fixed top-0 w-full z-50 bg-surface-black/95 backdrop-blur-frosted border-b border-white/5">
+        <nav className="max-w-7xl mx-auto px-6 lg:px-10 h-12 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 text-white">
+            <Monogram />
+            <span className="text-nav-link font-semibold">{branding.productName}</span>
+          </Link>
+          <div className="hidden md:flex items-center gap-6">
+            <a href="#features" className="text-nav-link text-white/70 hover:text-white transition-smooth">Features</a>
+            <a href="#how" className="text-nav-link text-white/70 hover:text-white transition-smooth">How it works</a>
+            <a href="#trust" className="text-nav-link text-white/70 hover:text-white transition-smooth">Trust</a>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link href="/login" className="text-nav-link text-white/70 hover:text-white transition-smooth">
+              Sign in
             </Link>
-            <div className="hidden md:flex items-center gap-8 text-[13px] text-white/65">
-              <a href="#stack" className="hover:text-white transition-smooth">The Stack</a>
-              <a href="#how" className="hover:text-white transition-smooth">How it works</a>
-              <a href="#trust" className="hover:text-white transition-smooth">Trust</a>
-            </div>
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Link
-                href="/login"
-                className="px-3 sm:px-4 py-2 text-sm text-white/85 hover:text-white transition-smooth"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/signup"
-                className="px-3 sm:px-4 py-2 text-sm font-medium rounded-md bg-white text-ink hover:bg-gold-soft transition-smooth"
-              >
-                Get started
-              </Link>
-            </div>
+            <Button variant="primary-pill" asChild>
+              <Link href="/signup">Get started</Link>
+            </Button>
           </div>
         </nav>
+      </header>
 
-        {/* Hero content — 12-col grid, no absolute positioning */}
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 pt-12 pb-20 sm:pt-16 sm:pb-24 lg:pt-24 lg:pb-32">
-          <div
-            className={`grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center transition-smooth duration-700 ${
-              isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
-            }`}
-          >
-            {/* Copy column */}
-            <div className="lg:col-span-7 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 bg-white/5 backdrop-blur">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold-bright" />
-                <span className="text-[11px] tracking-[0.18em] uppercase text-white/80">
-                  Gratuity Management · Live
-                </span>
-              </div>
-
-              <h1 className="mt-7 font-display tracking-tightest text-[2.75rem] sm:text-6xl lg:text-7xl leading-[1.02] text-balance">
-                {branding.productName}:{' '}
-                <em className="not-italic text-gold-bright">
-                  Enterprise Financial Control for Hospitality
-                </em>
-              </h1>
-
-              <p className="mt-6 text-base sm:text-lg text-white/65 leading-relaxed max-w-xl">
-                Unify tipping, payroll, and procurement across multiple locations into one unified platform. Get your team paid in seconds while your books reconcile automatically—built for enterprise hospitality.
-              </p>
-
-              <div className="mt-8 flex flex-col sm:flex-row gap-3">
-                <Link
-                  href="/signup"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-white text-ink font-medium text-sm tracking-tight hover:bg-gold-soft transition-smooth shadow-lg-custom"
-                >
-                  Open an account
-                  <ArrowRight />
-                </Link>
-                <Link
-                  href="/login"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md border border-white/20 text-white text-sm hover:bg-white/5 transition-smooth"
-                >
-                  Sign in to console
-                </Link>
-              </div>
-
-              <div className="mt-10 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] tracking-[0.18em] uppercase text-white/40">
-                <span>Powered by Root</span>
-                <span className="h-px w-8 bg-white/20" />
-                <span>Bank-grade security</span>
-                <span className="h-px w-8 bg-white/20" />
-                <span>Real-time settlement</span>
-              </div>
-            </div>
-
-            {/* Live ticket column — properly positioned in the grid, hidden on mobile */}
-            <div className="hidden lg:block lg:col-span-5">
-              <LiveTicketCard />
+      {/* Hero Section - Full bleed light tile */}
+      <section className="pt-40 pb-24 md:py-40 px-6 lg:px-10 bg-canvas">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-3xl">
+            <p className="text-caption text-body-muted uppercase tracking-wide mb-4">Enterprise Fintech</p>
+            <h1 className="text-hero-display text-balance mb-6">
+              {branding.productName}: Enterprise Financial Control for Hospitality
+            </h1>
+            <p className="text-lead text-body-muted mb-8">
+              Unify tipping, payroll, and procurement across multiple locations. Get your team paid in seconds while your books reconcile automatically—built for enterprise hospitality.
+            </p>
+            <div className="flex gap-4 flex-wrap">
+              <Button variant="primary-pill" asChild>
+                <Link href="/signup">Open an account</Link>
+              </Button>
+              <Button variant="secondary-pill" asChild>
+                <a href="#features">Learn more</a>
+              </Button>
             </div>
           </div>
         </div>
-      </header>
+      </section>
 
-      {/* Module receipts */}
-      <section id="stack" className="relative py-24 lg:py-28">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end mb-12 lg:mb-16">
-            <div className="lg:col-span-8">
-              <p className="text-eyebrow mb-3">The Platform</p>
-              <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tightest leading-[1.05] text-balance">
-                Complete financial operations for multi-location hospitality.
-              </h2>
-            </div>
-            <p className="lg:col-span-4 text-sm text-neutral-500 max-w-sm leading-relaxed">
+      {/* Features Section - Dark tile */}
+      <section id="features" className="py-24 md:py-32 px-6 lg:px-10 -mx-6 lg:mx-0 bg-surface-dark-1 text-body-on-dark">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-16">
+            <p className="text-caption text-body-muted/70 uppercase tracking-wide mb-4">The Platform</p>
+            <h2 className="text-display-lg text-balance mb-4">
+              Complete financial operations for multi-location hospitality.
+            </h2>
+            <p className="text-lead text-body-muted/80 max-w-2xl">
               Three core modules. One unified ledger. Integrated with your bank, your staff, and enterprise compliance rails.
             </p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
-            <ModuleReceipt
-              code="TIP"
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <FeatureCard
+              icon="💳"
               title="Tip Distribution"
-              status="Active · Live"
-              features={[
-                'Instant tip settlement across locations',
-                'Flexible tip pooling & distribution',
-                'Per-shift reconciliation',
-                'Full compliance audit trails',
-              ]}
+              desc="Instant tip settlement across locations, flexible pooling, shift reconciliation, and full audit trails."
             />
-            <ModuleReceipt
-              code="PAY"
+            <FeatureCard
+              icon="📦"
               title="Procurement Settlement"
-              status="Active · Live"
-              features={[
-                'Vendor payment automation',
-                'Multi-account ACH routing',
-                'Scheduled invoice processing',
-                'Real-time liquidity tracking',
-              ]}
+              desc="Vendor payment automation, multi-account ACH routing, scheduled processing, and real-time liquidity tracking."
             />
-            <ModuleReceipt
-              code="OPS"
+            <FeatureCard
+              icon="📊"
               title="Treasury & Compliance"
-              status="Active · Live"
-              features={[
-                'Multi-location subaccounts',
-                'Real-time transaction ledger',
-                'Webhook event streaming',
-                'Role-based access control',
-              ]}
+              desc="Multi-location subaccounts, real-time ledger, webhook streaming, and role-based access control."
             />
           </div>
         </div>
       </section>
 
-      {/* How it works */}
-      <section
-        id="how"
-        className="relative py-24 lg:py-28 bg-surface-2 border-y border-neutral-200"
-      >
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
-          <div className="max-w-2xl mb-12 lg:mb-16">
-            <p className="text-eyebrow mb-3">How it works</p>
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tightest leading-[1.05] text-balance">
+      {/* How It Works - Parchment tile */}
+      <section id="how" className="py-24 md:py-32 px-6 lg:px-10 bg-canvas-parchment">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-16">
+            <p className="text-caption text-body-muted uppercase tracking-wide mb-4">How It Works</p>
+            <h2 className="text-display-lg text-balance">
               From onboarding to scaled operations — three core steps.
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12">
-            <Step
-              n="01"
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <StepCard
+              num="01"
               title="Connect Venue Bank"
-              body="Link your operating account (house fund) and establish funding for multi-location settlements. Compliance happens automatically."
+              desc="Link your operating account and establish funding for multi-location settlements. Compliance happens automatically."
             />
-            <Step
-              n="02"
+            <StepCard
+              num="02"
               title="Import Staff & Suppliers"
-              body="Add service staff and vendor accounts with their preferred payout rails. Set permissions per location or role."
+              desc="Add service staff and vendor accounts with preferred payout rails. Set permissions per location or role."
             />
-            <Step
-              n="03"
+            <StepCard
+              num="03"
               title="Automate Payouts"
-              body="Schedule tip distributions and invoice settlements. One platform, all locations, real-time visibility."
+              desc="Schedule tip distributions and invoice settlements. One platform, all locations, real-time visibility."
             />
           </div>
         </div>
       </section>
 
-      {/* Trust */}
-      <section id="trust" className="py-24 lg:py-28">
-        <div className="max-w-3xl mx-auto px-5 sm:px-8 lg:px-10 text-center">
-          <p className="text-eyebrow mb-4">Enterprise-grade fintech</p>
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-tightest leading-[1.05] text-balance">
+      {/* Trust Section - Dark tile */}
+      <section id="trust" className="py-24 md:py-32 px-6 lg:px-10 -mx-6 lg:mx-0 bg-surface-dark-2 text-body-on-dark">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-caption text-body-muted/70 uppercase tracking-wide mb-4">Enterprise-Grade Fintech</p>
+          <h2 className="text-display-lg text-balance mb-6">
             Bank-level security with hospitality expertise.
           </h2>
-          <p className="mt-6 text-neutral-500 leading-relaxed max-w-xl mx-auto">
+          <p className="text-lead text-body-muted/80 mb-16">
             {branding.productName} combines regulated payment infrastructure with deep industry knowledge—designed by operators, for operators running multi-location enterprises.
           </p>
 
-          <div className="mt-10">
-            <Link
-              href="/signup"
-              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-md bg-ink text-white text-sm font-medium hover:bg-ink-soft transition-smooth shadow-md-custom"
-            >
-              Open your console
-              <ArrowRight />
-            </Link>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <TrustCard icon="🔐" title="Bank-Grade Security" desc="Industry-standard encryption and compliance frameworks" />
+            <TrustCard icon="⚡" title="Instant Settlements" desc="Real-time payouts to bank accounts and cards" />
+            <TrustCard icon="📈" title="Full Transparency" desc="Complete audit trails and transaction history" />
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-neutral-200 bg-surface">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 py-8 sm:py-10 flex flex-col sm:flex-row items-center justify-between gap-5">
-          <div className="flex items-center gap-2.5">
-            <Monogram dark />
-            <span className="font-display text-base tracking-tightest">{branding.productName}</span>
+      <footer className="py-16 px-6 lg:px-10 bg-canvas border-t border-neutral-200">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
+            <div className="flex items-center gap-2">
+              <Monogram />
+              <span className="text-body-strong">{branding.productName}</span>
+            </div>
+            <div className="flex gap-6">
+              <a href="#" className="text-dense-link text-body-muted hover:text-ink transition-smooth">Privacy</a>
+              <a href="#" className="text-dense-link text-body-muted hover:text-ink transition-smooth">Terms</a>
+              <a href="#" className="text-dense-link text-body-muted hover:text-ink transition-smooth">Contact</a>
+            </div>
           </div>
-          <p className="text-xs text-neutral-500 text-center sm:text-right">
-            © {new Date().getFullYear()} {branding.productName} · Modern payouts infrastructure.{' '}
-            <Link
-              href="/admin"
-              className="text-neutral-400 hover:text-neutral-600 underline-offset-2 ml-2"
-            >
-              Admin console
-            </Link>
-          </p>
+          <div className="border-t border-neutral-200 pt-8">
+            <p className="text-fine-print text-body-muted">
+              © 2026 {branding.productName}. All rights reserved.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
   );
 }
 
-/* ---------- decorative subcomponents ---------- */
-
-function Monogram({ dark = false }: { dark?: boolean }) {
+function Monogram() {
   return (
-    <span
-      className={`inline-flex items-center justify-center w-8 h-8 rounded-md font-display text-base ${
-        dark
-          ? 'bg-ink text-gold-bright border border-neutral-200'
-          : 'bg-white/10 text-gold-bright border border-white/15'
-      }`}
-      aria-hidden
-    >
-      {branding.productName.charAt(0)}
-    </span>
-  );
-}
-
-function ArrowRight() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M5 12h14M13 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ModuleReceipt({
-  code,
-  title,
-  status,
-  features,
-}: {
-  code: string;
-  title: string;
-  status: string;
-  features: string[];
-}) {
-  return (
-    <div className="relative bg-surface border border-neutral-200 rounded-lg p-6 lg:p-7 transition-smooth hover:-translate-y-0.5 hover:shadow-lg-custom">
-      <div className="flex items-center justify-between mb-5">
-        <span className="font-display text-2xl tracking-tightest">{code}</span>
-        <span className="text-[10px] tracking-[0.18em] uppercase text-neutral-400">
-          Module
-        </span>
-      </div>
-      <div className="gold-rule mb-5" />
-
-      <h3 className="text-lg font-medium tracking-tight mb-4">{title}</h3>
-
-      <ul className="space-y-1.5 mb-6">
-        {features.map((f) => (
-          <li key={f} className="flex items-start gap-2 text-sm text-neutral-600">
-            <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-none" />
-            <span>{f}</span>
-          </li>
-        ))}
-      </ul>
-
-      <div className="inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase text-gold">
-        <span className="w-1.5 h-1.5 rounded-full bg-gold-bright" />
-        {status}
-      </div>
+    <div className="w-8 h-8 bg-gradient-to-br from-blue-primary to-blue-primary/80 rounded-lg flex items-center justify-center">
+      <span className="text-white font-semibold text-xs">R</span>
     </div>
   );
 }
 
-function Step({ n, title, body }: { n: string; title: string; body: string }) {
+function FeatureCard({ icon, title, desc }: { icon: string; title: string; desc: string }) {
+  return (
+    <div className="bg-surface-dark-2 rounded-lg p-8">
+      <div className="text-4xl mb-4">{icon}</div>
+      <h3 className="text-body-strong mb-3">{title}</h3>
+      <p className="text-body text-body-muted/80">{desc}</p>
+    </div>
+  );
+}
+
+function StepCard({ num, title, desc }: { num: string; title: string; desc: string }) {
   return (
     <div>
-      <div className="font-display text-3xl text-gold tracking-tightest">{n}</div>
-      <div className="mt-2 mb-4 h-px bg-neutral-300/60" />
-      <h3 className="text-lg font-medium tracking-tight mb-2">{title}</h3>
-      <p className="text-sm text-neutral-600 leading-relaxed">{body}</p>
+      <p className="text-display-md text-body-muted mb-3">{num}</p>
+      <h3 className="text-body-strong mb-3">{title}</h3>
+      <p className="text-body text-body-muted">{desc}</p>
     </div>
   );
 }
 
-function LiveTicketCard() {
+function TrustCard({ icon, title, desc }: { icon: string; title: string; desc: string }) {
   return (
-    <div className="relative">
-      <div className="rounded-xl bg-white text-ink shadow-lg-custom border border-white/10 overflow-hidden">
-        <div className="px-5 py-4 flex items-center justify-between border-b border-neutral-200">
-          <span className="font-display text-sm">{branding.productName} Console</span>
-          <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.18em] uppercase text-success">
-            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-            Live
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 gap-px bg-neutral-100">
-          <Stat label="Tonight's tip pool" value="$1,482.50" />
-          <Stat label="Avg per server" value="$74.12" accent />
-          <Stat label="Settled" value="18 / 20" />
-          <Stat label="Median latency" value="4.2s" />
-        </div>
-
-        <div className="px-5 py-4 border-t border-neutral-200 space-y-2">
-          <Row name="Maria L." amount="+ $84.50" status="paid" />
-          <Row name="Devon T." amount="+ $72.00" status="paid" />
-          <Row name="Sasha P." amount="+ $61.25" status="processing" />
-        </div>
-      </div>
-
-      {/* faux glow */}
-      <div
-        aria-hidden
-        className="absolute -inset-6 -z-10 rounded-2xl"
-        style={{
-          background:
-            'radial-gradient(ellipse at 50% 0%, rgba(212,160,23,0.25), transparent 60%)',
-        }}
-      />
-    </div>
-  );
-}
-
-function Stat({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string;
-  accent?: boolean;
-}) {
-  return (
-    <div className="bg-white px-5 py-4">
-      <div className="text-[10px] tracking-[0.18em] uppercase text-neutral-500">
-        {label}
-      </div>
-      <div
-        className={`font-display text-xl mt-1 tracking-tightest ${
-          accent ? 'text-gold' : 'text-ink'
-        }`}
-      >
-        {value}
-      </div>
-    </div>
-  );
-}
-
-function Row({
-  name,
-  amount,
-  status,
-}: {
-  name: string;
-  amount: string;
-  status: 'paid' | 'processing';
-}) {
-  return (
-    <div className="flex items-center justify-between text-sm">
-      <span className="text-neutral-700">{name}</span>
-      <div className="flex items-center gap-3">
-        <span className="font-mono-tab text-neutral-700">{amount}</span>
-        <span
-          className={`text-[10px] tracking-[0.18em] uppercase ${
-            status === 'paid' ? 'text-success' : 'text-neutral-400'
-          }`}
-        >
-          {status}
-        </span>
-      </div>
+    <div className="bg-surface-dark-3 rounded-lg p-8">
+      <div className="text-4xl mb-4">{icon}</div>
+      <h3 className="text-body-strong mb-3 text-body-on-dark">{title}</h3>
+      <p className="text-body text-body-muted/80">{desc}</p>
     </div>
   );
 }

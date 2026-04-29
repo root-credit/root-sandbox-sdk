@@ -1,104 +1,66 @@
 @import "tailwindcss";
 
 :root {
-  /* Surfaces */
-  --color-background: #FAF8F2;
-  --color-surface: #FFFFFF;
-  --color-surface-2: #F4F1E7;
-  --color-foreground: #0A0A0A;
-
-  /* Brand palette — charcoal & gold (hospitality/enterprise tone) */
-  --color-ink: #0A0A0A;          /* dark hero / primary buttons */
-  --color-ink-soft: #1F1F1F;
-  --color-ink-2: #262626;
-  --color-gold: #A16207;          /* deep gold for accents/borders */
-  --color-gold-bright: #D4A017;   /* highlight gold */
-  --color-gold-soft: #F4E5B7;     /* gold tint backgrounds */
-
-  /* Neutrals */
-  --color-neutral-50: #FAFAF7;
-  --color-neutral-100: #F5F4EE;
-  --color-neutral-150: #ECEAE0;
-  --color-neutral-200: #E5E2D5;
-  --color-neutral-300: #C8C3B0;
-  --color-neutral-400: #9A9583;
-  --color-neutral-500: #6B6655;
-  --color-neutral-600: #494538;
-  --color-neutral-700: #2E2B22;
-  --color-neutral-800: #18170F;
-
-  /* Status */
-  --color-success: #15803D;
-  --color-success-soft: #DCFCE7;
-  --color-error: #B91C1C;
-  --color-error-soft: #FEE2E2;
-  --color-warning: #B45309;
-  --color-warning-soft: #FEF3C7;
-  --color-info: #0369A1;
-  --color-info-soft: #E0F2FE;
-
-  /* Legacy aliases used across components (kept to avoid logic-touching) */
-  --color-primary: var(--color-ink);
-  --color-primary-light: var(--color-ink-soft);
-  --color-primary-dark: #000000;
-  --color-gray-50: var(--color-neutral-50);
-  --color-gray-100: var(--color-neutral-100);
-  --color-gray-200: var(--color-neutral-200);
-  --color-gray-300: var(--color-neutral-300);
-  --color-gray-400: var(--color-neutral-400);
-  --color-gray-500: var(--color-neutral-500);
-  --color-gray-600: var(--color-neutral-500);
-  --color-gray-700: var(--color-neutral-700);
+  /* Apple Design System — Color Palette */
+  
+  /* Primary Action */
+  --color-blue-primary: #0066cc;        /* Action Blue */
+  --color-blue-primary-focus: #0071e3;  /* Focus state */
+  --color-blue-on-dark: #2997ff;        /* Sky Link Blue on dark surfaces */
+  
+  /* Ink & Text */
+  --color-ink: #1d1d1f;                 /* Near-black, primary text */
+  --color-body-on-dark: #ffffff;        /* White text on dark surfaces */
+  --color-body-muted: #cccccc;          /* Muted text */
+  
+  /* Surface Tiles */
+  --color-surface-dark-1: #272729;      /* First dark gray */
+  --color-surface-dark-2: #2a2a2c;      /* Second dark gray */
+  --color-surface-dark-3: #252527;      /* Third dark gray */
+  --color-canvas: #ffffff;              /* Light surface */
+  --color-canvas-parchment: #f5f5f7;    /* Parchment light */
+  --color-surface-pearl: #fafafc;       /* Pearl light */
+  --color-surface-black: #000000;       /* Global nav background */
+  
+  /* Status Colors */
+  --color-success: #34c759;
+  --color-pending: #0066cc;
+  --color-error: #ff3b30;
+  
+  /* Legacy aliases for compatibility */
+  --color-primary: var(--color-blue-primary);
+  --color-foreground: var(--color-ink);
+  --color-background: var(--color-canvas);
+  --color-surface: var(--color-canvas);
 }
 
 @theme inline {
-  --color-background: var(--color-background);
-  --color-foreground: var(--color-foreground);
-  --color-surface: var(--color-surface);
-  --color-surface-2: var(--color-surface-2);
-
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+  
+  /* Apple Color Tokens */
+  --color-blue-primary: var(--color-blue-primary);
+  --color-blue-primary-focus: var(--color-blue-primary-focus);
+  --color-blue-on-dark: var(--color-blue-on-dark);
   --color-ink: var(--color-ink);
-  --color-ink-soft: var(--color-ink-soft);
-  --color-gold: var(--color-gold);
-  --color-gold-bright: var(--color-gold-bright);
-  --color-gold-soft: var(--color-gold-soft);
-
-  --color-neutral-50: var(--color-neutral-50);
-  --color-neutral-100: var(--color-neutral-100);
-  --color-neutral-150: var(--color-neutral-150);
-  --color-neutral-200: var(--color-neutral-200);
-  --color-neutral-300: var(--color-neutral-300);
-  --color-neutral-400: var(--color-neutral-400);
-  --color-neutral-500: var(--color-neutral-500);
-  --color-neutral-600: var(--color-neutral-600);
-  --color-neutral-700: var(--color-neutral-700);
-  --color-neutral-800: var(--color-neutral-800);
-
+  --color-body-on-dark: var(--color-body-on-dark);
+  --color-body-muted: var(--color-body-muted);
+  --color-surface-dark-1: var(--color-surface-dark-1);
+  --color-surface-dark-2: var(--color-surface-dark-2);
+  --color-surface-dark-3: var(--color-surface-dark-3);
+  --color-canvas: var(--color-canvas);
+  --color-canvas-parchment: var(--color-canvas-parchment);
+  --color-surface-pearl: var(--color-surface-pearl);
+  --color-surface-black: var(--color-surface-black);
   --color-success: var(--color-success);
-  --color-success-soft: var(--color-success-soft);
+  --color-pending: var(--color-pending);
   --color-error: var(--color-error);
-  --color-error-soft: var(--color-error-soft);
-  --color-warning: var(--color-warning);
-  --color-warning-soft: var(--color-warning-soft);
-  --color-info: var(--color-info);
-  --color-info-soft: var(--color-info-soft);
-
-  /* legacy aliases for existing class usage */
-  --color-primary: var(--color-ink);
-  --color-primary-light: var(--color-ink-soft);
-  --color-primary-dark: #000000;
-  --color-gray-50: var(--color-neutral-50);
-  --color-gray-100: var(--color-neutral-100);
-  --color-gray-200: var(--color-neutral-200);
-  --color-gray-300: var(--color-neutral-300);
-  --color-gray-400: var(--color-neutral-400);
-  --color-gray-500: var(--color-neutral-500);
-  --color-gray-600: var(--color-neutral-500);
-  --color-gray-700: var(--color-neutral-700);
-
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-fraunces);
+  
+  /* Legacy */
+  --color-primary: var(--color-blue-primary);
+  --color-foreground: var(--color-ink);
+  --color-background: var(--color-canvas);
+  --color-surface: var(--color-canvas);
 }
 
 * {
@@ -108,16 +70,18 @@
 }
 
 html {
-  background: var(--color-background);
+  background: var(--color-canvas);
   scroll-behavior: smooth;
 }
 
 body {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  font-feature-settings: "ss01", "ss02", "cv11";
-  line-height: 1.55;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.374px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -134,11 +98,11 @@ a {
 
 /* Selection */
 ::selection {
-  background: var(--color-gold-soft);
+  background: var(--color-canvas-parchment);
   color: var(--color-ink);
 }
 
-/* Scrollbar — subtle */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -147,91 +111,199 @@ a {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-neutral-300);
+  background: var(--color-body-muted);
   border-radius: 999px;
-  border: 2px solid var(--color-background);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-neutral-400);
+  background: var(--color-ink);
 }
 
 /* Display + utility classes */
 @layer utilities {
-  .font-display {
-    font-family: var(--font-fraunces), ui-serif, Georgia, "Times New Roman", serif;
-    font-feature-settings: "ss01" on, "salt" on;
-  }
-  .font-mono-tab {
-    font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-feature-settings: "tnum" on;
-  }
-  .tracking-tightest {
-    letter-spacing: -0.04em;
-  }
-  .text-eyebrow {
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    font-size: 0.7rem;
+  /* Typography Scales — Apple Design System */
+  
+  /* Hero Display: 56px, weight-600, -0.28px tracking */
+  .text-hero-display {
+    font-family: var(--font-display);
+    font-size: 56px;
     font-weight: 600;
-    color: var(--color-neutral-500);
+    letter-spacing: -0.28px;
+    line-height: 1.1;
   }
-  .transition-smooth {
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  @media (max-width: 1068px) {
+    .text-hero-display {
+      font-size: 40px;
+    }
   }
-  .shadow-sm-custom {
-    box-shadow: 0 1px 2px rgba(10, 10, 10, 0.04);
+  @media (max-width: 640px) {
+    .text-hero-display {
+      font-size: 34px;
+    }
   }
-  .shadow-md-custom {
-    box-shadow:
-      0 1px 2px rgba(10, 10, 10, 0.04),
-      0 8px 24px -12px rgba(10, 10, 10, 0.12);
+  @media (max-width: 419px) {
+    .text-hero-display {
+      font-size: 28px;
+    }
   }
-  .shadow-lg-custom {
-    box-shadow:
-      0 1px 2px rgba(10, 10, 10, 0.04),
-      0 14px 32px -10px rgba(10, 10, 10, 0.18);
+  
+  /* Display Large: 40px, weight-600, 0 tracking */
+  .text-display-lg {
+    font-family: var(--font-display);
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.15;
   }
-  .ring-focus {
-    outline: 2px solid transparent;
-    outline-offset: 2px;
+  
+  /* Display Medium: 32px, weight-600, -0.16px tracking */
+  .text-display-md {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.16px;
+    line-height: 1.2;
   }
-
-  /* Gold rule used as decorative divider */
-  .gold-rule {
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      var(--color-gold-bright) 30%,
-      var(--color-gold-bright) 70%,
-      transparent 100%
-    );
+  
+  /* Lead: 28px, weight-400, -0.224px tracking */
+  .text-lead {
+    font-family: var(--font-sans);
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: -0.224px;
+    line-height: 1.3;
   }
-
-  /* "Receipt" perforated edge */
-  .perforated-edge {
-    background-image: radial-gradient(
-      circle at 6px 50%,
-      var(--color-background) 6px,
-      transparent 7px
-    );
-    background-size: 20px 12px;
-    background-repeat: repeat-y;
+  
+  /* Lead Airy: 28px, weight-300, 0 tracking */
+  .text-lead-airy {
+    font-family: var(--font-sans);
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 0;
+    line-height: 1.4;
+  }
+  
+  /* Tagline: 21px, weight-600, -0.56px tracking */
+  .text-tagline {
+    font-family: var(--font-sans);
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.56px;
+    line-height: 1.3;
+  }
+  
+  /* Body Strong: 17px, weight-600, -0.374px tracking */
+  .text-body-strong {
+    font-family: var(--font-sans);
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.374px;
+    line-height: 1.6;
+  }
+  
+  /* Body: 17px, weight-400, -0.374px tracking (default) */
+  .text-body {
+    font-family: var(--font-sans);
+    font-size: 17px;
+    font-weight: 400;
+    letter-spacing: -0.374px;
+    line-height: 1.6;
+  }
+  
+  /* Dense Link: 17px, weight-400, 2.41 line-height */
+  .text-dense-link {
+    font-family: var(--font-sans);
+    font-size: 17px;
+    font-weight: 400;
+    letter-spacing: -0.374px;
+    line-height: 2.41;
+  }
+  
+  /* Caption: 14px, weight-400, -0.224px tracking */
+  .text-caption {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.224px;
+    line-height: 1.5;
+  }
+  
+  /* Caption Strong: 14px, weight-600, -0.224px tracking */
+  .text-caption-strong {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.224px;
+    line-height: 1.5;
+  }
+  
+  /* Button Large: 18px, weight-300, -0.224px tracking */
+  .text-button-large {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: -0.224px;
+    line-height: 1.3;
+  }
+  
+  /* Button Utility: 15px, weight-600, 0 tracking */
+  .text-button-utility {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+  
+  /* Fine Print: 13px, weight-400, -0.078px tracking */
+  .text-fine-print {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: -0.078px;
+    line-height: 1.5;
+  }
+  
+  /* Micro Legal: 12px, weight-400, 0 tracking */
+  .text-micro-legal {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.4;
+  }
+  
+  /* Nav Link: 17px, weight-500, -0.374px tracking */
+  .text-nav-link {
+    font-family: var(--font-sans);
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.374px;
+    line-height: 1.6;
+  }
+  
+  /* Product Shadow */
+  .drop-shadow-product {
+    filter: drop-shadow(rgba(0, 0, 0, 0.22) 3px 5px 30px);
+  }
+  
+  /* Frosted Glass Effect */
+  .backdrop-blur-frosted {
+    backdrop-filter: blur(20px) saturate(180%);
   }
 }
 
-/* Form primitives — apply automatically to base elements where safe */
+/* Form primitives */
 input,
 select,
 textarea {
   font-family: inherit;
-  color: var(--color-foreground);
-  background: var(--color-surface);
+  color: var(--color-ink);
+  background: var(--color-canvas);
 }
 input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.18);
-  border-color: var(--color-gold) !important;
+  border-color: var(--color-blue-primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
 }

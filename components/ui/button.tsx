@@ -1,19 +1,29 @@
 import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = (
-  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link",
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "primary-pill" | "secondary-pill" | "dark-utility" | "pearl-capsule" | "store-hero" | "text-link",
   size?: "default" | "sm" | "lg" | "icon"
 ) => {
-  const baseStyles = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300"
+  const baseStyles = "inline-flex items-center justify-center whitespace-nowrap font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
   
   const variants: Record<string, string> = {
-    default: "bg-slate-900 text-slate-50 hover:bg-slate-900/90 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50/90",
-    destructive: "bg-red-500 text-slate-50 hover:bg-red-600 dark:hover:bg-red-600",
-    outline: "border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50",
-    secondary: "bg-slate-100 text-slate-900 hover:bg-slate-100/80 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-slate-800/80",
-    ghost: "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50",
-    link: "text-slate-900 underline-offset-4 hover:underline dark:text-slate-50",
+    // Apple Design System variants
+    "primary-pill": "bg-blue-primary text-white rounded-full px-6 py-2.5 text-button-utility hover:bg-blue-primary-focus active:scale-95",
+    "secondary-pill": "bg-transparent border border-blue-primary text-blue-primary rounded-full px-6 py-2.5 text-button-utility hover:bg-blue-primary/5",
+    "dark-utility": "bg-ink text-white rounded-lg px-4 py-2 text-button-utility hover:bg-ink/90",
+    "pearl-capsule": "bg-surface-pearl border border-neutral-200 text-ink rounded-full px-5 py-2.5 text-body hover:bg-neutral-100",
+    "store-hero": "bg-blue-primary text-white rounded-full px-7 py-3 text-button-large hover:bg-blue-primary-focus active:scale-95",
+    "text-link": "text-blue-primary underline-offset-2 hover:text-blue-primary-focus text-body",
+    
+    // Legacy variants for compatibility
+    default: "bg-ink text-white hover:bg-ink/90",
+    destructive: "bg-error text-white hover:bg-error/90",
+    outline: "border border-neutral-200 bg-white hover:bg-neutral-50 text-ink",
+    secondary: "bg-canvas-parchment text-ink hover:bg-neutral-200",
+    ghost: "hover:bg-neutral-100 text-ink",
+    link: "text-blue-primary underline-offset-2 hover:underline",
   }
 
   const sizes: Record<string, string> = {
@@ -29,16 +39,20 @@ const buttonVariants = (
 const Button = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
+    variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "primary-pill" | "secondary-pill" | "dark-utility" | "pearl-capsule" | "store-hero" | "text-link"
     size?: "default" | "sm" | "lg" | "icon"
+    asChild?: boolean
   }
->(({ className, variant, size, ...props }, ref) => (
-  <button
-    className={cn(buttonVariants(variant, size), className)}
-    ref={ref}
-    {...props}
-  />
-))
+>(({ className, variant, size, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "button"
+  return (
+    <Comp
+      className={cn(buttonVariants(variant, size), className)}
+      ref={ref}
+      {...props}
+    />
+  )
+})
 Button.displayName = "Button"
 
 export { Button, buttonVariants }

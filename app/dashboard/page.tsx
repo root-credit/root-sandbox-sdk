@@ -14,34 +14,36 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-canvas">
       <DashboardHeader email={session.payerEmail} />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-6 lg:px-10 py-12">
-        <section className="mb-12">
-          <p className="text-eyebrow mb-3">Operator console</p>
-          <h1 className="font-display text-4xl md:text-5xl tracking-tightest text-balance">
+      <main className="flex-1 max-w-full px-6 lg:px-0 py-12">
+        <section className="mb-16 px-0 lg:px-10 max-w-7xl mx-auto">
+          <p className="text-caption text-body-muted mb-3 uppercase tracking-wide">Operator Console</p>
+          <h1 className="text-hero-display text-balance">
             {branding.consoleHeading}
           </h1>
-          <p className="text-neutral-500 mt-3 max-w-xl">
+          <p className="text-body text-body-muted mt-4 max-w-2xl">
             {branding.consoleSubheading}
           </p>
         </section>
 
-        <section className="mb-12 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <StatTile label="Active Locations" value="0" />
-          <StatTile label="Total Settled" value="$0.00" accent />
-          <StatTile label="Transactions" value="0" />
-        </section>
-
-        <section>
-          <div className="flex items-end justify-between gap-4 mb-5">
-            <div>
-              <p className="text-eyebrow mb-2">Core Operations</p>
-              <h2 className="font-display text-2xl tracking-tightest">Manage multi-location payouts</h2>
+        <section className="mb-16 bg-surface-dark-1 -mx-6 lg:mx-0 px-6 lg:px-10 py-12 lg:py-16">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <StatTile label="Active Locations" value="0" />
+              <StatTile label="Total Settled" value="$0.00" accent />
+              <StatTile label="Transactions" value="0" />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        </section>
+
+        <section className="px-0 lg:px-10 max-w-7xl mx-auto">
+          <div className="mb-8">
+            <p className="text-caption text-body-muted mb-2 uppercase tracking-wide">Core Operations</p>
+            <h2 className="text-display-md">Manage multi-location payouts</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <ModuleTile
               href="/dashboard/payouts"
               code="TIP"
@@ -88,17 +90,13 @@ function StatTile({
   accent?: boolean;
 }) {
   return (
-    <Card className={accent ? 'border-amber-200 bg-amber-50 dark:bg-amber-950 dark:border-amber-800' : ''}>
-      <CardHeader className="pb-3">
-        <CardDescription className={accent ? 'text-amber-700 dark:text-amber-300' : ''}>{label}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className={`font-display text-3xl tracking-tightest ${
-          accent ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-slate-50'
-        }`}>
+    <Card variant={accent ? "utility" : "light"} className="p-6">
+      <div className="flex flex-col">
+        <p className="text-caption text-body-muted mb-3">{label}</p>
+        <p className={`text-display-md ${accent ? 'text-blue-primary' : 'text-ink'}`}>
           {value}
-        </div>
-      </CardContent>
+        </p>
+      </div>
     </Card>
   );
 }
@@ -120,37 +118,40 @@ function ModuleTile({
 }) {
   return (
     <Link href={href}>
-      <Card className={`group cursor-pointer transition-all hover:shadow-lg hover:border-slate-400 ${
-        primary
-          ? 'bg-slate-900 text-white border-slate-900 dark:bg-slate-800'
-          : 'hover:border-slate-400'
-      }`}>
-        <CardHeader>
-          <div className="flex items-start justify-between mb-2">
+      <Card 
+        variant={primary ? "dark-1" : "utility"}
+        className={`group p-6 cursor-pointer transition-all hover:shadow-md ${
+          primary ? 'hover:bg-surface-dark-2' : 'hover:bg-neutral-100'
+        }`}
+      >
+        <div className="flex flex-col h-full">
+          <div className="flex items-start justify-between mb-4">
             <span
-              className={`inline-flex items-center justify-center w-10 h-10 rounded-md ${
-                primary ? 'bg-white/10 text-amber-400' : 'bg-slate-100 text-slate-900 dark:bg-slate-800'
+              className={`inline-flex items-center justify-center w-11 h-11 rounded-lg flex-shrink-0 ${
+                primary ? 'bg-white/10 text-blue-on-dark' : 'bg-canvas-parchment text-blue-primary'
               }`}
             >
               {icon}
             </span>
-            <Badge variant="secondary" className={primary ? 'bg-white/10 text-white' : ''}>
+            <Badge variant="secondary" className={primary ? 'bg-white/10 text-white text-micro-legal' : 'text-micro-legal'}>
               {code}
             </Badge>
           </div>
-          <CardTitle className={primary ? 'text-white' : 'text-slate-900 dark:text-slate-50'}>{title}</CardTitle>
-          <CardDescription className={primary ? 'text-white/70' : ''}>{desc}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className={`inline-flex items-center gap-1.5 text-xs font-semibold ${
-            primary ? 'text-amber-400' : 'text-slate-600 dark:text-slate-400'
-          } group-hover:gap-2.5 transition-all`}>
+          <h3 className={`text-body-strong mb-2 ${primary ? 'text-body-on-dark' : 'text-ink'}`}>
+            {title}
+          </h3>
+          <p className={`text-body mb-6 flex-grow ${primary ? 'text-body-on-dark/80' : 'text-body-muted'}`}>
+            {desc}
+          </p>
+          <div className={`inline-flex items-center gap-1.5 text-button-utility transition-all ${
+            primary ? 'text-blue-on-dark group-hover:gap-2.5' : 'text-blue-primary group-hover:gap-2.5'
+          }`}>
             Open
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M5 12h14M13 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-        </CardContent>
+        </div>
       </Card>
     </Link>
   );
