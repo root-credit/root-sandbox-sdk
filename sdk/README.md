@@ -6,7 +6,7 @@ A tiny, deterministic JS/TS SDK for the **Root Pay sandbox APIs**. Built so a v0
 - **Deterministic.** Auth header, base URL, error class, response unwrapping, and rail-aware polling are all baked in.
 - **Server-only.** The `X-API-KEY` must never reach the browser. Use the SDK from Server Actions, Route Handlers, RSC, or plain Node scripts.
 - **Sandbox-aware.** Ships the allowed test bank/card/routing numbers, the `John Failed` magic name, and per-rail polling defaults.
-- **Coverage:** subaccounts (incl. moves), payees + payee payment methods, payers + payer payment methods, payouts, payins, webhooks, party session tokens, plus high-level `flows.payTo` / `flows.chargeFrom` orchestrators.
+- **Coverage:** subaccounts (incl. moves), payees + payee payment methods, payers + payer payment methods, payouts, payins, webhooks, party session tokens, plus high-level `flows.payTo`, `flows.chargeFrom`, `flows.moveBetweenSubaccounts`, and `flows.fundSubaccountFromExistingPayer` orchestrators.
 
 ---
 
@@ -65,6 +65,25 @@ const { finalPayin } = await root.flows.chargeFrom({
   payer: { name: 'Acme Buyer', email: 'ap@acme.com' },
   amount_in_cents: 99_900,
   rail: 'standard_ach', // payins only accept 'standard_ach' | 'same_day_ach'
+})
+```
+
+### 2b. Subaccount move + payin without payer onboarding
+
+When the Root payer and pay-by-bank PM already exist (typical after onboarding elsewhere), use these instead of hand-wiring `payins.create` + polling:
+
+```ts
+await root.flows.moveBetweenSubaccounts({
+  from_subaccount_id: fromId,
+  to_subaccount_id: toId,
+  amount_in_cents: 5_000,
+})
+
+const { finalPayin } = await root.flows.fundSubaccountFromExistingPayer({
+  payer_id: payerId,
+  amount_in_cents: 25_000,
+  rail: 'standard_ach',
+  subaccount_id: subaccountId,
 })
 ```
 
@@ -157,7 +176,7 @@ root.payees
 
 root.payers
   .create / .get / .list / .update / .findByEmail
-  .attachPayByBank(id, body?, { is_default? })
+  .attachPayByBank(id, body?, { is_default?, subaccount_id? })
   .listPaymentMethods / .getPaymentMethod / .getDefaultPaymentMethod
   .setDefaultPaymentMethod / .deletePaymentMethod
 
@@ -181,6 +200,8 @@ root.sessionTokens
 root.flows
   .payTo({ payee, amount_in_cents, rail, paymentMethod?, subaccount_id?, simulateFailure?, waitForTerminal?=true, onStatus? })
   .chargeFrom({ payer, amount_in_cents, rail?, bank?, subaccount_id?, simulateFailure?, waitForTerminal?=true, onStatus? })
+  .moveBetweenSubaccounts({ from_subaccount_id, to_subaccount_id, amount_in_cents })
+  .fundSubaccountFromExistingPayer({ payer_id, amount_in_cents, rail, subaccount_id, currency_code?, metadata?, waitForTerminal?=true, onStatus? })
 
 root.request<T>(path, { method, body?, query?, headers?, timeoutMs?, signal? })
 ```

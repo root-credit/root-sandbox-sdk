@@ -6,8 +6,8 @@
  *  - Resource methods that auto-unwrap the `{ data }` envelope.
  *  - Per-rail polling helper (`waitForTerminal`) with sensible defaults.
  *  - Sandbox-allowed test bank/card/routing numbers baked in as constants.
- *  - High-level flows (`flows.payTo`, `flows.chargeFrom`) that do the full
- *    payee → payment-method → payout → poll dance in a single call.
+ *  - High-level flows (`flows.payTo`, `flows.chargeFrom`,
+ *    `flows.moveBetweenSubaccounts`, `flows.fundSubaccountFromExistingPayer`) for orchestrated demos.
  */
 
 import { RootClient, type RootClientOptions } from './client.js'
@@ -123,6 +123,7 @@ export type {
 export { PayersResource } from './resources/payers.js'
 export type {
   AttachPayByBankBody,
+  AttachPayByBankQuery,
   CreatePayerBody,
   ListPayersParams,
   UpdatePayerBody,
@@ -141,6 +142,9 @@ export {
   Flows,
   type ChargeFromInput,
   type ChargeFromResult,
+  type FundSubaccountFromExistingPayerInput,
+  type FundSubaccountFromExistingPayerResult,
+  type MoveBetweenSubaccountsInput,
   type PayToInput,
   type PayToResult,
 } from './flows.js'

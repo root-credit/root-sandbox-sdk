@@ -443,6 +443,8 @@ var PayersResource = class {
    * a different default routing number than payees in the sandbox.
    */
   attachPayByBank(payerId, body, query) {
+    const q = { is_default: query?.is_default ?? true };
+    if (query?.subaccount_id) q.subaccount_id = query.subaccount_id;
     return this.client.post(
       `/api/payers/${encodeURIComponent(payerId)}/payment-methods/pay-by-bank`,
       {
@@ -450,7 +452,7 @@ var PayersResource = class {
         routing_number: body?.routing_number ?? ALLOWED_TEST_ROUTING_NUMBERS[0],
         routing_number_type: body?.routing_number_type ?? "aba"
       },
-      { query: { is_default: query?.is_default ?? true } }
+      { query: q }
     );
   }
   /** `GET /api/payers/{payer_id}/payment-methods` */
@@ -891,6 +893,40 @@ var Flows = class {
       });
     }
     return { payer: payerForTransfer, paymentMethod, payin, finalPayin };
+  }
+  /**
+   * Move funds instantly between two subaccounts (`POST /api/subaccounts/move`).
+   */
+  async moveBetweenSubaccounts(input) {
+    return this.subaccounts.move({
+      from_subaccount_id: input.from_subaccount_id,
+      to_subaccount_id: input.to_subaccount_id,
+      amount_in_cents: input.amount_in_cents
+    });
+  }
+  /**
+   * Create a payin (ACH pull) funding `subaccount_id` using the payer's existing bank PM.
+   * Mirrors the payin + poll portion of {@link Flows.chargeFrom}.
+   */
+  async fundSubaccountFromExistingPayer(input) {
+    const rail = input.rail;
+    const payin = await this.payins.create({
+      payer_id: input.payer_id,
+      amount_in_cents: input.amount_in_cents,
+      rail,
+      subaccount_id: input.subaccount_id,
+      auto_approve: true,
+      currency_code: input.currency_code ?? "USD",
+      metadata: input.metadata
+    });
+    let finalPayin = payin;
+    if (input.waitForTerminal !== false) {
+      finalPayin = await this.payins.waitForTerminal(payin.id, {
+        rail,
+        onUpdate: (snap) => input.onStatus?.(snap.status, snap)
+      });
+    }
+    return { payin, finalPayin };
   }
 };
 async function attachPayeePaymentMethod(payees, payeeId, pm) {

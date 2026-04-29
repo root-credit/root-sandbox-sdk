@@ -13,3 +13,4 @@ export * from './payments';
 export * from './payee';
 export * from './payout';
 export * from './payer';
+export * from './fund';

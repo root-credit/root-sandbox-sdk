@@ -20,6 +20,8 @@ export const payerSchema = z.object({
   phone: z.string().min(7),
   rootPayerId: z.string(),
   bankAccountToken: z.string().optional(),
+  /** Root subaccount id used for payins / payout draws when set (opaque string). */
+  subaccountId: z.string().min(1).optional(),
   createdAt: z.number().int(),
   updatedAt: z.number().int(),
 });
@@ -47,6 +49,15 @@ export const linkBankInputSchema = z.object({
   routingNumber: z.string().regex(/^\d{9}$/, 'Routing number must be exactly 9 digits'),
   accountNumber: z.string().min(8, 'Account number must be at least 8 digits'),
   accountType: z.enum(['checking', 'savings']),
+  /** When set, associate the pay-by-bank PM with this Root subaccount (API query). */
+  subaccountId: z.string().min(1).optional(),
 });
 
 export type LinkBankInput = z.infer<typeof linkBankInputSchema>;
+
+/** Label for a newly created Root subaccount (operator-visible). */
+export const createSubaccountInputSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(128),
+});
+
+export type CreateSubaccountInput = z.infer<typeof createSubaccountInputSchema>;

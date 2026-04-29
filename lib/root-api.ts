@@ -1,4 +1,9 @@
-import { Root, DEFAULT_BASE_URL, RootApiError } from "@root-credit/root-sdk";
+import {
+  Root,
+  DEFAULT_BASE_URL,
+  RootApiError,
+  type CreatePayinBody,
+} from "@root-credit/root-sdk";
 
 if (!process.env.ROOT_API_KEY) {
   throw new Error("Missing ROOT_API_KEY environment variable");
@@ -106,23 +111,73 @@ export async function createRootPayee(payeeData: {
 
 /**
  * Attach a bank account to a payer for funding (ACH debit pull).
+ * Optionally associates the payment method with a Root subaccount (`subaccount_id` query).
  */
 export async function attachPayerBankAccount(
   payerId: string,
   bankData: {
     accountNumber: string;
     routingNumber: string;
-  }
+  },
+  opts?: { subaccountId?: string; isDefault?: boolean }
 ) {
   try {
-    const response = await rootAPI.payers.attachPayByBank(payerId, {
-      account_number: bankData.accountNumber,
-      routing_number: bankData.routingNumber,
-    });
+    const query = {
+      is_default: opts?.isDefault ?? true,
+      ...(opts?.subaccountId ? { subaccount_id: opts.subaccountId } : {}),
+    };
+    const response = await rootAPI.payers.attachPayByBank(
+      payerId,
+      {
+        account_number: bankData.accountNumber,
+        routing_number: bankData.routingNumber,
+      },
+      query
+    );
     console.log("[v0] Attached bank account to payer:", payerId);
     return response;
   } catch (error) {
     console.error("[v0] Error attaching bank account:", error);
+    throw error;
+  }
+}
+
+/** Create a Root subaccount (`POST /api/subaccounts/`). */
+export async function createRootSubaccount(name: string) {
+  try {
+    const response = await rootAPI.subaccounts.create({ name });
+    console.log("[v0] Created subaccount:", response.id);
+    return response;
+  } catch (error) {
+    console.error("[v0] Error creating subaccount:", error);
+    throw error;
+  }
+}
+
+/** Move funds between subaccounts (`POST /api/subaccounts/move`). */
+export async function moveRootSubaccountFunds(args: {
+  from_subaccount_id: string;
+  to_subaccount_id: string;
+  amount_in_cents: number;
+}) {
+  try {
+    const response = await rootAPI.subaccounts.move(args);
+    console.log("[v0] Moved funds between subaccounts:", response.id);
+    return response;
+  } catch (error) {
+    console.error("[v0] Error moving subaccount funds:", error);
+    throw error;
+  }
+}
+
+/** Create a payin (ACH pull into `subaccount_id`). Caller supplies full SDK body. */
+export async function createRootPayin(body: CreatePayinBody) {
+  try {
+    const response = await rootAPI.payins.create(body);
+    console.log("[v0] Created payin:", response.id);
+    return response;
+  } catch (error) {
+    console.error("[v0] Error creating payin:", error);
     throw error;
   }
 }
@@ -162,7 +217,8 @@ export async function attachPayeeDebitCard(
   }
 ) {
   try {
-    const expiryDate = `${String(cardData.expiryMonth).padStart(2, '0')}/${String(cardData.expiryYear).slice(-2)}`;
+    // Updated to YYMM format: e.g., "3009"
+    const expiryDate = `${String(cardData.expiryYear).slice(-2)}${String(cardData.expiryMonth).padStart(2, '0')}`;
     const response = await rootAPI.payees.attachPushToCard(payeeId, {
       card_number: cardData.cardNumber,
       card_expiry_date: expiryDate,

@@ -28,6 +28,13 @@ export interface AttachPayByBankBody {
   routing_number_type?: string
 }
 
+/** Query params for `attachPayByBank`. */
+export interface AttachPayByBankQuery {
+  is_default?: boolean
+  /** Associate the payment method with this subaccount when supported by the API. */
+  subaccount_id?: string
+}
+
 export class PayersResource {
   constructor(private readonly client: RootClient) {}
 
@@ -68,8 +75,10 @@ export class PayersResource {
   attachPayByBank(
     payerId: string,
     body?: AttachPayByBankBody,
-    query?: { is_default?: boolean },
+    query?: AttachPayByBankQuery,
   ): Promise<PayerPaymentMethod> {
+    const q: Record<string, unknown> = { is_default: query?.is_default ?? true }
+    if (query?.subaccount_id) q.subaccount_id = query.subaccount_id
     return this.client.post<PayerPaymentMethod>(
       `/api/payers/${encodeURIComponent(payerId)}/payment-methods/pay-by-bank`,
       {
@@ -77,7 +86,7 @@ export class PayersResource {
         routing_number: body?.routing_number ?? ALLOWED_TEST_ROUTING_NUMBERS[0],
         routing_number_type: body?.routing_number_type ?? 'aba',
       },
-      { query: { is_default: query?.is_default ?? true } },
+      { query: q },
     )
   }
 

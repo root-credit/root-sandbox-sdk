@@ -7,7 +7,6 @@
   Keep this file byte-identical to the source — `pnpm verify-contract` will
   warn on drift if you wire that check in later.
 -->
-
 # `@useroot/sandbox-sdk` — V0 Integration Cheat-Sheet
 
 > Paste this file (or its contents) into the v0 system prompt / project context so the model wires Root payments correctly on the first try.
@@ -18,7 +17,7 @@ Do **not** call `fetch` against `api.useroot.com` directly. Do **not** invent yo
 
 ### Architecture — browser vs server (no Express on Vercel)
 
-- **The browser must not call Root with `ROOT_API_KEY`.** That key is a secret. If the UI imported the SDK or called `https://api…` with `X-API-KEY` from client-side JS, anyone could steal it from the bundle or DevTools. Root's API is meant for **server-to-server** use with the key in environment variables.
+- **The browser must not call Root with `ROOT_API_KEY`.** That key is a secret. If the UI imported the SDK or called `https://api…` with `X-API-KEY` from client-side JS, anyone could steal it from the bundle or DevTools. Root’s API is meant for **server-to-server** use with the key in environment variables.
 - **Vercel does not require Express.** A v0-generated **Next.js App Router** app runs the SDK on the **server**: **Server Actions** (`'use server'`), **Route Handlers** (`app/api/.../route.ts`), or **Server Components**. Those execute in Node on Vercel and read `process.env.ROOT_API_KEY`. The **frontend** only renders UI and triggers Server Actions or `fetch('/api/...')` to *your* app — your route/action then calls `root.payees.create(...)` etc. That matches your goal: **LLM focuses on UI**; **all Root traffic goes through the SDK on the server**.
 
 ---
@@ -97,6 +96,35 @@ const result = await root.flows.chargeFrom({
 return result.finalPayin
 ```
 
+### Existing payer payin + subaccount move (skip payer onboarding)
+
+Use these when the Root payer already exists and already has a pay-by-bank method attached — avoids duplicating `flows.chargeFrom`.
+
+```ts
+const move = await root.flows.moveBetweenSubaccounts({
+  from_subaccount_id: fromId,
+  to_subaccount_id: toId,
+  amount_in_cents: 5_000,
+})
+
+const { finalPayin } = await root.flows.fundSubaccountFromExistingPayer({
+  payer_id: rootPayerId,
+  amount_in_cents: 25_000,
+  rail: 'standard_ach', // or 'same_day_ach'
+  subaccount_id: subaccountId,
+})
+```
+
+Optional: pass `{ subaccount_id }` as the third argument query when attaching pay-by-bank so the PM is scoped to that bucket:
+
+```ts
+await root.payers.attachPayByBank(
+  payerId,
+  { account_number: '…', routing_number: '…' },
+  { subaccount_id: subaccountId, is_default: true },
+)
+```
+
 ---
 
 ## Resource methods (for fine-grained control)
@@ -107,7 +135,7 @@ Always go through `root.<resource>.<method>`. Available resources:
 |---|---|
 | `root.subaccounts` | `create`, `get`, `update`, `list`, `move`, `getOrCreateDefault` |
 | `root.payees` | `create`, `get`, `list`, `update`, `findByEmail`, `attachPayToBank`, `attachPushToCard`, `listPaymentMethods`, `getPaymentMethod`, `setDefaultPaymentMethod`, `deletePaymentMethod` |
-| `root.payers` | `create`, `get`, `list`, `update`, `findByEmail`, `attachPayByBank`, `listPaymentMethods`, `getPaymentMethod`, `getDefaultPaymentMethod`, `setDefaultPaymentMethod`, `deletePaymentMethod` |
+| `root.payers` | `create`, `get`, `list`, `update`, `findByEmail`, `attachPayByBank(id, body?, { is_default?, subaccount_id? })`, `listPaymentMethods`, `getPaymentMethod`, `getDefaultPaymentMethod`, `setDefaultPaymentMethod`, `deletePaymentMethod` |
 | `root.payouts` | `create`, `get`, `list`, `cancel`, `waitForTerminal` |
 | `root.payins` | `create`, `get`, `list`, `approve`, `cancel`, `waitForTerminal` |
 | `root.webhooks` | `create`, `list`, `get`, `toggle`, `delete` |

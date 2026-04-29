@@ -20,6 +20,7 @@ import type {
   PayinRail,
   Payout,
   PayoutRail,
+  SubaccountMove,
   TransferStatus,
 } from './types.js'
 import { payeeNameForTransaction } from './constants.js'
@@ -78,6 +79,38 @@ export interface ChargeFromResult {
   payer: Payer
   paymentMethod: PayerPaymentMethod
   payin: Payin
+  finalPayin: Payin
+}
+
+/** Instant move between two subaccounts (same entity). */
+export interface MoveBetweenSubaccountsInput {
+  from_subaccount_id: string
+  to_subaccount_id: string
+  amount_in_cents: number
+}
+
+/**
+ * ACH pull from an existing payer's linked pay-by-bank method into a subaccount.
+ * Preconditions: Root payer exists and has a default (or usable) pay-by-bank PM attached.
+ * Does not create payers or attach banks — use {@link Flows.chargeFrom} for full onboarding.
+ */
+export interface FundSubaccountFromExistingPayerInput {
+  payer_id: string
+  amount_in_cents: number
+  rail: PayinRail
+  subaccount_id: string
+  currency_code?: string
+  metadata?: Record<string, unknown>
+  /**
+   * If `true`, polls until the payin reaches a terminal status. Default `true`.
+   */
+  waitForTerminal?: boolean
+  onStatus?: (status: TransferStatus, payin: Payin) => void
+}
+
+export interface FundSubaccountFromExistingPayerResult {
+  payin: Payin
+  /** Snapshot after polling when `waitForTerminal` is not `false`. */
   finalPayin: Payin
 }
 
@@ -206,6 +239,46 @@ export class Flows {
     }
 
     return { payer: payerForTransfer, paymentMethod, payin, finalPayin }
+  }
+
+  /**
+   * Move funds instantly between two subaccounts (`POST /api/subaccounts/move`).
+   */
+  async moveBetweenSubaccounts(input: MoveBetweenSubaccountsInput): Promise<SubaccountMove> {
+    return this.subaccounts.move({
+      from_subaccount_id: input.from_subaccount_id,
+      to_subaccount_id: input.to_subaccount_id,
+      amount_in_cents: input.amount_in_cents,
+    })
+  }
+
+  /**
+   * Create a payin (ACH pull) funding `subaccount_id` using the payer's existing bank PM.
+   * Mirrors the payin + poll portion of {@link Flows.chargeFrom}.
+   */
+  async fundSubaccountFromExistingPayer(
+    input: FundSubaccountFromExistingPayerInput,
+  ): Promise<FundSubaccountFromExistingPayerResult> {
+    const rail: PayinRail = input.rail
+    const payin = await this.payins.create({
+      payer_id: input.payer_id,
+      amount_in_cents: input.amount_in_cents,
+      rail,
+      subaccount_id: input.subaccount_id,
+      auto_approve: true,
+      currency_code: input.currency_code ?? 'USD',
+      metadata: input.metadata,
+    })
+
+    let finalPayin = payin
+    if (input.waitForTerminal !== false) {
+      finalPayin = await this.payins.waitForTerminal(payin.id, {
+        rail,
+        onUpdate: (snap) => input.onStatus?.(snap.status, snap),
+      })
+    }
+
+    return { payin, finalPayin }
   }
 }
 

@@ -52,6 +52,8 @@ export interface PayerRecord {
   phone: string;
   rootPayerId: string;
   bankAccountToken?: string;
+  /** Primary Root subaccount for funding draws when configured. */
+  subaccountId?: string;
   createdAt: number;
   updatedAt: number;
 }

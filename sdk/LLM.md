@@ -87,6 +87,35 @@ const result = await root.flows.chargeFrom({
 return result.finalPayin
 ```
 
+### Existing payer payin + subaccount move (skip payer onboarding)
+
+Use these when the Root payer already exists and already has a pay-by-bank method attached — avoids duplicating `flows.chargeFrom`.
+
+```ts
+const move = await root.flows.moveBetweenSubaccounts({
+  from_subaccount_id: fromId,
+  to_subaccount_id: toId,
+  amount_in_cents: 5_000,
+})
+
+const { finalPayin } = await root.flows.fundSubaccountFromExistingPayer({
+  payer_id: rootPayerId,
+  amount_in_cents: 25_000,
+  rail: 'standard_ach', // or 'same_day_ach'
+  subaccount_id: subaccountId,
+})
+```
+
+Optional: pass `{ subaccount_id }` as the third argument query when attaching pay-by-bank so the PM is scoped to that bucket:
+
+```ts
+await root.payers.attachPayByBank(
+  payerId,
+  { account_number: '…', routing_number: '…' },
+  { subaccount_id: subaccountId, is_default: true },
+)
+```
+
 ---
 
 ## Resource methods (for fine-grained control)
@@ -97,7 +126,7 @@ Always go through `root.<resource>.<method>`. Available resources:
 |---|---|
 | `root.subaccounts` | `create`, `get`, `update`, `list`, `move`, `getOrCreateDefault` |
 | `root.payees` | `create`, `get`, `list`, `update`, `findByEmail`, `attachPayToBank`, `attachPushToCard`, `listPaymentMethods`, `getPaymentMethod`, `setDefaultPaymentMethod`, `deletePaymentMethod` |
-| `root.payers` | `create`, `get`, `list`, `update`, `findByEmail`, `attachPayByBank`, `listPaymentMethods`, `getPaymentMethod`, `getDefaultPaymentMethod`, `setDefaultPaymentMethod`, `deletePaymentMethod` |
+| `root.payers` | `create`, `get`, `list`, `update`, `findByEmail`, `attachPayByBank(id, body?, { is_default?, subaccount_id? })`, `listPaymentMethods`, `getPaymentMethod`, `getDefaultPaymentMethod`, `setDefaultPaymentMethod`, `deletePaymentMethod` |
 | `root.payouts` | `create`, `get`, `list`, `cancel`, `waitForTerminal` |
 | `root.payins` | `create`, `get`, `list`, `approve`, `cancel`, `waitForTerminal` |
 | `root.webhooks` | `create`, `list`, `get`, `toggle`, `delete` |

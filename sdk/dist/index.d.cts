@@ -302,6 +302,12 @@ interface AttachPayByBankBody {
     routing_number?: string;
     routing_number_type?: string;
 }
+/** Query params for `attachPayByBank`. */
+interface AttachPayByBankQuery {
+    is_default?: boolean;
+    /** Associate the payment method with this subaccount when supported by the API. */
+    subaccount_id?: string;
+}
 declare class PayersResource {
     private readonly client;
     constructor(client: RootClient);
@@ -320,9 +326,7 @@ declare class PayersResource {
      * Defaults to a sandbox-allowed account/routing pair. Note that payers use
      * a different default routing number than payees in the sandbox.
      */
-    attachPayByBank(payerId: string, body?: AttachPayByBankBody, query?: {
-        is_default?: boolean;
-    }): Promise<PayerPaymentMethod>;
+    attachPayByBank(payerId: string, body?: AttachPayByBankBody, query?: AttachPayByBankQuery): Promise<PayerPaymentMethod>;
     /** `GET /api/payers/{payer_id}/payment-methods` */
     listPaymentMethods(payerId: string): Promise<ListResponse<PayerPaymentMethod>>;
     /** `GET /api/payers/{payer_id}/payment-methods/{pm_id}` */
@@ -625,6 +629,35 @@ interface ChargeFromResult {
     payin: Payin;
     finalPayin: Payin;
 }
+/** Instant move between two subaccounts (same entity). */
+interface MoveBetweenSubaccountsInput {
+    from_subaccount_id: string;
+    to_subaccount_id: string;
+    amount_in_cents: number;
+}
+/**
+ * ACH pull from an existing payer's linked pay-by-bank method into a subaccount.
+ * Preconditions: Root payer exists and has a default (or usable) pay-by-bank PM attached.
+ * Does not create payers or attach banks — use {@link Flows.chargeFrom} for full onboarding.
+ */
+interface FundSubaccountFromExistingPayerInput {
+    payer_id: string;
+    amount_in_cents: number;
+    rail: PayinRail;
+    subaccount_id: string;
+    currency_code?: string;
+    metadata?: Record<string, unknown>;
+    /**
+     * If `true`, polls until the payin reaches a terminal status. Default `true`.
+     */
+    waitForTerminal?: boolean;
+    onStatus?: (status: TransferStatus, payin: Payin) => void;
+}
+interface FundSubaccountFromExistingPayerResult {
+    payin: Payin;
+    /** Snapshot after polling when `waitForTerminal` is not `false`. */
+    finalPayin: Payin;
+}
 declare class Flows {
     private readonly payees;
     private readonly payers;
@@ -650,6 +683,15 @@ declare class Flows {
      *   5. (optional) Poll until terminal.
      */
     chargeFrom(input: ChargeFromInput): Promise<ChargeFromResult>;
+    /**
+     * Move funds instantly between two subaccounts (`POST /api/subaccounts/move`).
+     */
+    moveBetweenSubaccounts(input: MoveBetweenSubaccountsInput): Promise<SubaccountMove>;
+    /**
+     * Create a payin (ACH pull) funding `subaccount_id` using the payer's existing bank PM.
+     * Mirrors the payin + poll portion of {@link Flows.chargeFrom}.
+     */
+    fundSubaccountFromExistingPayer(input: FundSubaccountFromExistingPayerInput): Promise<FundSubaccountFromExistingPayerResult>;
 }
 
 /**
@@ -769,8 +811,8 @@ declare function collectAll<T, P extends PaginationParams>(fetcher: (params: P) 
  *  - Resource methods that auto-unwrap the `{ data }` envelope.
  *  - Per-rail polling helper (`waitForTerminal`) with sensible defaults.
  *  - Sandbox-allowed test bank/card/routing numbers baked in as constants.
- *  - High-level flows (`flows.payTo`, `flows.chargeFrom`) that do the full
- *    payee → payment-method → payout → poll dance in a single call.
+ *  - High-level flows (`flows.payTo`, `flows.chargeFrom`,
+ *    `flows.moveBetweenSubaccounts`, `flows.fundSubaccountFromExistingPayer`) for orchestrated demos.
  */
 
 declare class Root {
@@ -791,4 +833,4 @@ declare class Root {
 /** Functional alias if you prefer `createRoot()` over `new Root()`. */
 declare function createRoot(opts?: RootClientOptions): Root;
 
-export { ALLOWED_TEST_ACCOUNT_NUMBERS, ALLOWED_TEST_CARD_NUMBERS, ALLOWED_TEST_ROUTING_NUMBERS, type AttachPayByBankBody, type AttachPayToBankBody, type AttachPushToCardBody, type ChargeFromInput, type ChargeFromResult, type CreatePayeeBody, type CreatePayerBody, type CreatePayinBody, type CreatePayoutBody, DEFAULT_BASE_URL, DEFAULT_POLLING, DEFAULT_TEST_BANK, DEFAULT_TEST_CARD, FAILURE_SIMULATION_NAME, Flows, type ListPayeesParams, type ListPayersParams, type ListPayinsParams, type ListPayoutsParams, type ListResponse, type ListSubaccountsParams, type PaginationParams, type PartySessionToken, type PayToInput, type PayToResult, type Payee, type PayeePaymentMethod, PayeesResource, type Payer, type PayerPaymentMethod, PayersResource, type Payin, type PayinRail, PayinsResource, type Payout, type PayoutRail, PayoutsResource, type QueryParams, RAIL_POLLING, type RequestObserver, type RequestOptions, Root, RootApiError, RootClient, type RootClientOptions, RootPollTimeoutError, SessionTokensResource, type Subaccount, type SubaccountMove, SubaccountsResource, TERMINAL_STATUSES, TEST_CARD_EXPIRY, type TransferStatus, type UpdatePayeeBody, type UpdatePayerBody, type WaitForTerminalOptions, type Webhook, WebhooksResource, apiKeyFormatHint, collectAll, createRoot, Root as default, describeApiKeyForLogs, isLikelyRootApiToken, isSuccess, isTerminal, paginate, payeeNameForTransaction, sanitizeApiKey, statusLabel, terminalForRail, waitForTerminal };
+export { ALLOWED_TEST_ACCOUNT_NUMBERS, ALLOWED_TEST_CARD_NUMBERS, ALLOWED_TEST_ROUTING_NUMBERS, type AttachPayByBankBody, type AttachPayByBankQuery, type AttachPayToBankBody, type AttachPushToCardBody, type ChargeFromInput, type ChargeFromResult, type CreatePayeeBody, type CreatePayerBody, type CreatePayinBody, type CreatePayoutBody, DEFAULT_BASE_URL, DEFAULT_POLLING, DEFAULT_TEST_BANK, DEFAULT_TEST_CARD, FAILURE_SIMULATION_NAME, Flows, type FundSubaccountFromExistingPayerInput, type FundSubaccountFromExistingPayerResult, type ListPayeesParams, type ListPayersParams, type ListPayinsParams, type ListPayoutsParams, type ListResponse, type ListSubaccountsParams, type MoveBetweenSubaccountsInput, type PaginationParams, type PartySessionToken, type PayToInput, type PayToResult, type Payee, type PayeePaymentMethod, PayeesResource, type Payer, type PayerPaymentMethod, PayersResource, type Payin, type PayinRail, PayinsResource, type Payout, type PayoutRail, PayoutsResource, type QueryParams, RAIL_POLLING, type RequestObserver, type RequestOptions, Root, RootApiError, RootClient, type RootClientOptions, RootPollTimeoutError, SessionTokensResource, type Subaccount, type SubaccountMove, SubaccountsResource, TERMINAL_STATUSES, TEST_CARD_EXPIRY, type TransferStatus, type UpdatePayeeBody, type UpdatePayerBody, type WaitForTerminalOptions, type Webhook, WebhooksResource, apiKeyFormatHint, collectAll, createRoot, Root as default, describeApiKeyForLogs, isLikelyRootApiToken, isSuccess, isTerminal, paginate, payeeNameForTransaction, sanitizeApiKey, statusLabel, terminalForRail, waitForTerminal };
