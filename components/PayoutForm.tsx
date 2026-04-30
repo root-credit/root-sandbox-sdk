@@ -60,7 +60,7 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
     try {
       await processPayout({ payerId, lineItems: parsed.data.lineItems, totalAmount });
       toast.success(
-        `Paid out $${totalAmount.toFixed(2)} to ${parsed.data.lineItems.length} ${branding.payeeSingular.toLowerCase()}(s)`
+        `${branding.payoutVerb} $${totalAmount.toFixed(2)} to ${parsed.data.lineItems.length} ${branding.payeeSingular.toLowerCase()}(s)`
       );
       setAmounts({});
       setTotalAmount(0);
@@ -72,7 +72,7 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
 
   if (payees.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-lg border bg-muted/30 p-10 text-center">
+      <div className="flex flex-col items-center gap-3 rounded-xl border-2 bg-secondary p-10 text-center">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" strokeLinecap="round" />
@@ -80,9 +80,9 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
           </svg>
         </div>
         <div>
-          <p className="font-medium">No {branding.payeePlural.toLowerCase()} yet</p>
+          <p className="font-extrabold">No {branding.payeePlural.toLowerCase()} yet</p>
           <p className="text-sm text-muted-foreground mt-1">
-            Add {branding.payeePlural.toLowerCase()} before you can process a {branding.payoutNoun.toLowerCase()}.
+            Add a {branding.payeeSingular.toLowerCase()} before you can {branding.payoutVerb.toLowerCase()}.
           </p>
         </div>
       </div>
@@ -94,13 +94,17 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <div>
-        <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">{branding.payoutNoun}</p>
-        <h3 className="font-semibold tracking-tight mb-1">Enter end-of-shift amounts</h3>
+        <p className="text-xs font-bold uppercase tracking-widest text-primary mb-1">
+          {branding.payoutNoun}
+        </p>
+        <h3 className="text-lg font-extrabold tracking-tight mb-1">
+          Enter {branding.payoutVerb.toLowerCase()} amounts
+        </h3>
         <p className="text-sm text-muted-foreground">
-          Enter the amount for each {branding.payeeSingular.toLowerCase()}. Leave blank to skip.
+          Set an amount for each {branding.payeeSingular.toLowerCase()}. Leave blank to skip.
         </p>
 
-        <div className="mt-4 rounded-lg border overflow-hidden bg-card">
+        <div className="mt-4 rounded-xl border-2 overflow-hidden bg-card">
           {payees.map((payee, idx) => (
             <div
               key={payee.id}
@@ -131,21 +135,24 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
         </div>
       </div>
 
-      <div className="rounded-lg border bg-primary/5 border-primary/20 p-5">
-        <div className="flex items-end justify-between gap-4">
+      <div className="rounded-xl border-2 bg-primary/10 border-primary/40 p-5">
+        <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Tonight&apos;s total payout</p>
-            <div className="text-3xl font-semibold font-mono mt-1 tracking-tight">
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              {`Total ${branding.payoutVerb.toLowerCase()}`}
+            </p>
+            <div className="text-4xl font-extrabold font-mono mt-1 tracking-tight tabular-nums">
               ${totalAmount.toFixed(2)}
             </div>
-            <p className="mt-1.5 text-xs text-muted-foreground">
-              {fundedCount} of {payees.length} {branding.payeePlural.toLowerCase()} · settles via Root rails
+            <p className="mt-1.5 text-xs text-muted-foreground font-semibold">
+              {fundedCount} of {payees.length} {branding.payeePlural.toLowerCase()} · settles via Root
+              rails
             </p>
           </div>
           <Button
             type="submit"
             disabled={isProcessing || totalAmount <= 0}
-            className="shrink-0"
+            className="shrink-0 rounded-full font-bold bg-foreground text-background hover:bg-foreground/90 h-11 px-5"
           >
             {isProcessing ? (
               <>
@@ -153,14 +160,14 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
                 Settling…
               </>
             ) : (
-              'Process payouts'
+              `Process ${branding.payoutNounPlural.toLowerCase()}`
             )}
           </Button>
         </div>
       </div>
 
       <p className="text-xs text-muted-foreground text-center">
-        Payouts are processed immediately via Root&apos;s payment infrastructure.
+        {branding.payoutNounPlural} are processed immediately via Root&apos;s payment infrastructure.
       </p>
     </form>
   );

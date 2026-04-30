@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Activity as ActivityIcon } from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { branding } from '@/lib/branding';
 import { useSession } from '@/lib/hooks/useSession';
@@ -15,18 +18,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
-export default function TransactionsPage() {
+export default function ActivityPage() {
   const router = useRouter();
   const { session } = useSession();
+  useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
+
   const payerId = session?.payerId ?? null;
   const { transactions, isLoading, error } = useTransactions(payerId);
-
-  useEffect(() => {
-    if (session === undefined) router.push('/login');
-  }, [session, router]);
 
   if (!session) return null;
 
@@ -40,80 +39,98 @@ export default function TransactionsPage() {
       <DashboardHeader email={session.payerEmail} />
 
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
+        <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
+          <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
+            Console
+          </Link>
+          <span>/</span>
+          <span className="text-foreground font-bold">Activity</span>
+        </nav>
+
         <div className="mb-8">
-          <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
-            <Link href="/dashboard" className="hover:text-foreground transition-colors">Console</Link>
-            <span>/</span>
-            <span className="text-foreground">Transactions</span>
-          </nav>
-          <h1 className="text-2xl font-semibold tracking-tight">Transactions</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Every payout, every status, every receipt — written to the ledger.
+          <h1 className="text-4xl font-extrabold tracking-tight">Activity</h1>
+          <p className="text-base text-muted-foreground mt-2 max-w-xl">
+            Every {branding.payoutNoun.toLowerCase()}, every status, every receipt — written to
+            your ledger.
           </p>
         </div>
 
         {error && (
-          <div className="rounded-md border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm text-destructive mb-6">
+          <div className="rounded-xl border-2 border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
             {error}
           </div>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <StatCard label="Total paid out" value={formatMoney(totalPaidCents)} />
-          <StatCard label="Successful payouts" value={String(successfulTransactions)} />
-          <StatCard label="Total transactions" value={String(transactions.length)} />
+          <StatCard
+            label={`Total ${branding.payoutVerb.toLowerCase()}`}
+            value={formatMoney(totalPaidCents)}
+          />
+          <StatCard
+            label={`Successful ${branding.payoutNounPlural.toLowerCase()}`}
+            value={String(successfulTransactions)}
+          />
+          <StatCard label="Total events" value={String(transactions.length)} />
         </div>
 
-        <div className="rounded-xl border bg-card overflow-hidden">
+        <div className="rounded-2xl border-2 bg-card overflow-hidden">
           {isLoading ? (
-            <div className="p-12 text-center text-sm text-muted-foreground">
-              Loading transactions…
+            <div className="p-12 text-center text-sm text-muted-foreground font-semibold">
+              Loading activity…
             </div>
           ) : transactions.length === 0 ? (
             <div className="p-16 flex flex-col items-center gap-3 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 6h18M3 12h18M3 18h12" strokeLinecap="round" />
-                </svg>
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                <ActivityIcon className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
-                <p className="font-medium">No transactions yet</p>
+                <p className="text-lg font-extrabold">No activity yet</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Process your first payout to populate the ledger.
+                  Run your first {branding.payoutNoun.toLowerCase()} to populate the ledger.
                 </p>
               </div>
               <Link
                 href="/dashboard/payouts"
-                className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-foreground text-background px-5 h-11 text-sm font-bold hover:bg-foreground/90 transition-colors"
               >
-                Process your first payout →
+                Run your first {branding.payoutNoun.toLowerCase()} →
               </Link>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{branding.payeeSingular}</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
+                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                    {branding.payeeSingular}
+                  </TableHead>
+                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                    Email
+                  </TableHead>
+                  <TableHead className="text-right font-bold uppercase tracking-widest text-[10px]">
+                    Amount
+                  </TableHead>
+                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                    Status
+                  </TableHead>
+                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                    Date
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {transactions.map((transaction) => (
                   <TableRow key={transaction.id}>
-                    <TableCell className="font-medium">{transaction.payeeName}</TableCell>
+                    <TableCell className="font-bold">{transaction.payeeName}</TableCell>
                     <TableCell className="text-muted-foreground font-mono text-xs">
                       {transaction.payeeEmail}
                     </TableCell>
-                    <TableCell className="text-right font-mono tabular-nums font-semibold">
+                    <TableCell className="text-right font-mono tabular-nums font-extrabold">
                       ${centsToDollars(transaction.amountCents ?? 0).toFixed(2)}
                     </TableCell>
                     <TableCell>
                       <StatusBadge status={transaction.status} />
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-xs">
+                    <TableCell className="text-muted-foreground text-xs font-semibold">
                       {new Date(transaction.createdAt).toLocaleDateString(undefined, {
                         year: 'numeric',
                         month: 'short',
@@ -135,14 +152,15 @@ export default function TransactionsPage() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border bg-card p-5 flex flex-col gap-2">
-      <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className="text-2xl font-semibold font-mono tabular-nums">{value}</div>
+    <div className="rounded-2xl border-2 bg-card p-5 flex flex-col gap-2">
+      <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </div>
+      <div className="text-2xl font-extrabold font-mono tabular-nums">{value}</div>
     </div>
   );
 }
 
-/** Root `TransferStatus` and legacy Redis labels used before live hydration. */
 function isSuccessfulPayoutStatus(status: string): boolean {
   const s = status.toLowerCase();
   return s === 'settled' || s === 'completed' || s === 'success';
@@ -171,5 +189,9 @@ function StatusBadge({ status }: { status: string }) {
     label: status.replace(/_/g, ' '),
     variant: 'secondary' as const,
   };
-  return <Badge variant={variant}>{label}</Badge>;
+  return (
+    <Badge variant={variant} className="font-bold">
+      {label}
+    </Badge>
+  );
 }

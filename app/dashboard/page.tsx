@@ -1,11 +1,10 @@
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { DashboardHeader } from '@/components/DashboardHeader';
-import { listPayees } from '@/app/actions/payees';
-import { listTransactions } from '@/app/actions/transactions';
+import { DashboardOverviewHero } from '@/components/DashboardOverviewHero';
 import { getCurrentSession } from '@/lib/session';
 import { branding } from '@/lib/branding';
-import { formatMoney } from '@/lib/types/payments';
-import Link from 'next/link';
+import { Globe2, Tag, Wallet, ArrowDownToLine, ArrowUpFromLine, Activity } from 'lucide-react';
 
 export default async function DashboardPage() {
   const session = await getCurrentSession();
@@ -14,114 +13,198 @@ export default async function DashboardPage() {
     redirect('/login');
   }
 
-  const [payees, transactions] = await Promise.all([
-    listPayees(session.payerId),
-    listTransactions(session.payerId),
-  ]);
-  const activePayeeCount = payees.length;
-  const totalPaidCents = transactions.reduce((sum, t) => sum + (t.amountCents ?? 0), 0);
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <DashboardHeader email={session.payerEmail} />
 
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage your {branding.payeePlural.toLowerCase()}, payouts, and treasury.
+        {/* Hero */}
+        <section className="rounded-3xl border-2 bg-card p-8 md:p-10 mb-8 relative overflow-hidden">
+          <div className="absolute inset-0 -z-10">
+            <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
+            <div className="absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
+          </div>
+          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground mb-5">
+            {branding.productName} console
+          </span>
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05] max-w-3xl">
+            {branding.consoleHeading}
+          </h1>
+          <p className="text-base md:text-lg text-muted-foreground mt-4 max-w-2xl leading-relaxed">
+            {branding.consoleSubheading}
           </p>
-        </div>
 
-        {/* Stat tiles */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <StatCard
-            label={`Active ${branding.payeePlural.toLowerCase()}`}
-            value={String(activePayeeCount)}
-          />
-          <StatCard label="Total paid out" value={formatMoney(totalPaidCents)} />
-          <StatCard label="Transactions" value={String(transactions.length)} />
-        </div>
+          <DashboardOverviewHero />
+        </section>
+
+        {/* Quick actions */}
+        <section className="mb-8">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
+            Quick actions
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <ActionTile
+              href="/dashboard/marketplace"
+              title="Browse marketplace"
+              desc="Find a domain and buy with your wallet."
+              icon={<Globe2 className="h-5 w-5" />}
+              primary
+            />
+            <ActionTile
+              href="/dashboard/domains"
+              title="List a domain"
+              desc="Set an asking price and put it up for sale."
+              icon={<Tag className="h-5 w-5" />}
+            />
+            <ActionTile
+              href="/dashboard/payer"
+              title="Top up wallet"
+              desc={`Pull funds via ACH from your ${branding.funderShortLabel.toLowerCase()}.`}
+              icon={<ArrowDownToLine className="h-5 w-5" />}
+            />
+            <ActionTile
+              href="/dashboard/payouts"
+              title={branding.payoutVerb}
+              desc={`Move funds out to a ${branding.payeeSingular.toLowerCase()}.`}
+              icon={<ArrowUpFromLine className="h-5 w-5" />}
+            />
+          </div>
+        </section>
+
+        {/* Stats — static placeholders per spec */}
+        <section className="mb-8">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
+            At a glance
+          </h2>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard label="GAG wallet" value="$0.00" icon={<Wallet className="h-4 w-4" />} />
+            <StatCard label="Owned domains" value="0" icon={<Globe2 className="h-4 w-4" />} />
+            <StatCard label="Listed for sale" value="0" icon={<Tag className="h-4 w-4" />} />
+            <StatCard
+              label={branding.payoutNounPlural}
+              value="$0.00"
+              icon={<Activity className="h-4 w-4" />}
+            />
+          </div>
+        </section>
 
         {/* Module tiles */}
-        <div className="rounded-xl border bg-card overflow-hidden">
-          <div className="border-b px-6 py-4">
-            <h2 className="font-semibold tracking-tight">Modules</h2>
+        <section className="rounded-2xl border-2 bg-card overflow-hidden">
+          <div className="border-b-2 px-6 py-5">
+            <h2 className="text-xl font-extrabold tracking-tight">Modules</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Everything you need to run operations.
+              Everything you need to run your domain business.
             </p>
           </div>
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <ModuleTile
+              href="/dashboard/marketplace"
+              title="Marketplace"
+              desc="Browse every domain listed for sale by other accounts."
+            />
+            <ModuleTile
+              href="/dashboard/domains"
+              title="My domains"
+              desc="See what you own. List or unlist any domain."
+            />
             <ModuleTile
               href="/dashboard/payouts"
-              title="Process payouts"
-              desc={`Run an end-of-shift ${branding.payoutNoun.toLowerCase()} and settle in seconds.`}
-              primary
+              title={branding.payoutNounPlural}
+              desc={`Move wallet funds to a ${branding.payeeSingular.toLowerCase()}.`}
             />
             <ModuleTile
               href="/dashboard/payees"
               title={branding.payeePlural}
-              desc={`Add ${branding.payeePlural.toLowerCase()} and link bank accounts or debit cards.`}
+              desc={`Manage banks and debit cards you ${branding.payoutVerb.toLowerCase()} to.`}
             />
             <ModuleTile
               href="/dashboard/transactions"
-              title="Transactions"
-              desc="Audit every payout: amounts, status, latency."
+              title="Activity"
+              desc="Audit every wallet move with full receipts."
             />
             <ModuleTile
               href="/dashboard/payer"
               title={branding.payerSingular}
-              desc={`${branding.payerSingular} profile and ACH funding source.`}
+              desc={`Profile, ${branding.funderShortLabel.toLowerCase()}, and GAG wallet settings.`}
             />
           </div>
-        </div>
+        </section>
       </main>
     </div>
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
+function StatCard({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
   return (
-    <div className="rounded-xl border bg-card p-5 flex flex-col gap-2">
-      <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className="text-2xl font-semibold font-mono tabular-nums">{value}</div>
+    <div className="rounded-2xl border-2 bg-card p-5 flex flex-col gap-2">
+      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        {icon}
+        {label}
+      </div>
+      <div className="text-3xl font-extrabold font-mono tabular-nums">{value}</div>
     </div>
   );
 }
 
-function ModuleTile({
+function ActionTile({
   href,
   title,
   desc,
+  icon,
   primary,
 }: {
   href: string;
   title: string;
   desc: string;
+  icon: React.ReactNode;
   primary?: boolean;
 }) {
   return (
     <Link
       href={href}
-      className={`group block rounded-lg border p-5 transition-colors ${
+      className={`group flex flex-col gap-3 rounded-2xl border-2 p-5 transition-all ${
         primary
-          ? 'bg-primary text-primary-foreground border-primary hover:bg-primary/90'
-          : 'bg-card hover:bg-muted/50'
+          ? 'bg-foreground text-background border-foreground hover:bg-foreground/90'
+          : 'bg-card hover:border-foreground hover:shadow-md'
       }`}
     >
-      <h3 className="font-semibold tracking-tight mb-1.5">{title}</h3>
-      <p
-        className={`text-sm leading-relaxed ${
-          primary ? 'text-primary-foreground/75' : 'text-muted-foreground'
+      <div
+        className={`flex h-10 w-10 items-center justify-center rounded-full ${
+          primary ? 'bg-primary text-primary-foreground' : 'bg-primary/15 text-primary'
         }`}
       >
-        {desc}
-      </p>
+        {icon}
+      </div>
+      <div>
+        <div className="text-base font-extrabold tracking-tight mb-0.5">{title}</div>
+        <p
+          className={`text-sm leading-snug ${
+            primary ? 'text-background/75' : 'text-muted-foreground'
+          }`}
+        >
+          {desc}
+        </p>
+      </div>
       <div
-        className={`mt-4 text-xs font-medium ${
-          primary ? 'text-primary-foreground/75' : 'text-muted-foreground group-hover:text-foreground'
-        } transition-colors`}
+        className={`mt-auto text-xs font-bold uppercase tracking-widest ${
+          primary ? 'text-background/75' : 'text-foreground'
+        }`}
       >
+        Open →
+      </div>
+    </Link>
+  );
+}
+
+function ModuleTile({ href, title, desc }: { href: string; title: string; desc: string }) {
+  return (
+    <Link
+      href={href}
+      className="group block rounded-xl border-2 p-5 transition-all bg-card hover:border-foreground hover:shadow-md"
+    >
+      <h3 className="font-extrabold tracking-tight mb-1.5">{title}</h3>
+      <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
+      <div className="mt-4 text-xs font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
         Open →
       </div>
     </Link>

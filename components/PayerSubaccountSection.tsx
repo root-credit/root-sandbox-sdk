@@ -42,7 +42,7 @@ export function PayerSubaccountSection({
     usePayerSubaccountToggle();
   const { fundPayin, isSubmitting: payinBusy } = useFundSubaccountPayin();
 
-  const defaultSubaccountName = `${payerName} · ${branding.productName} treasury`.slice(
+  const defaultSubaccountName = `${payerName} · ${branding.productName} GAG wallet`.slice(
     0,
     128,
   );
@@ -90,19 +90,20 @@ export function PayerSubaccountSection({
   }
 
   return (
-    <Card className="mb-6">
+    <Card className="mb-6 rounded-2xl border-2">
       <CardHeader>
-        <CardTitle>Treasury subaccount</CardTitle>
+        <CardTitle className="text-xl font-extrabold tracking-tight">Good as Gold wallet</CardTitle>
         <CardDescription>
-          Enable a Root subaccount and pull funds from your linked bank via ACH payins.
+          Your in-app balance for buying domains, receiving sales, and {branding.payoutVerb.toLowerCase()}-ing
+          to your {branding.payeePlural.toLowerCase()}. Powered by a Root subaccount.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
-        <div className="flex flex-col gap-4 rounded-lg border bg-muted/20 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 rounded-xl border-2 bg-secondary p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-medium">Enable subaccount functionality</p>
+            <p className="text-sm font-bold">Enable Good as Gold wallet</p>
             <p className="text-xs text-muted-foreground">
-              Calls Root to create a subaccount and saves its ID on your operator record.
+              Provisions a Root subaccount to back your wallet balance and ACH payins.
             </p>
           </div>
           <ToggleSwitch
@@ -113,21 +114,20 @@ export function PayerSubaccountSection({
         </div>
 
         {subaccountEnabled && subaccountId ? (
-          <div className="rounded-md border bg-background px-3 py-2">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Root subaccount ID
+          <div className="rounded-xl border-2 bg-background px-3 py-2">
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              Wallet (subaccount) ID
             </p>
             <p className="font-mono text-xs break-all text-muted-foreground">{subaccountId}</p>
           </div>
         ) : null}
 
         {subaccountEnabled ? (
-          <div className="flex flex-col gap-4 rounded-lg border bg-muted/30 p-4">
+          <div className="flex flex-col gap-4 rounded-xl border-2 bg-secondary p-4">
             <div>
-              <p className="text-sm font-medium">Fund subaccount (ACH pull)</p>
+              <p className="text-sm font-bold">Top up GAG wallet (ACH pull)</p>
               <p className="text-xs text-muted-foreground mt-1">
-                Payin from your linked {branding.funderShortLabel.toLowerCase()} into this
-                subaccount using{' '}
+                Pull funds from your {branding.funderLabel.toLowerCase()} into your wallet using{' '}
                 <code className="rounded bg-muted px-1 py-0.5 text-[11px]">standard_ach</code>{' '}
                 or{' '}
                 <code className="rounded bg-muted px-1 py-0.5 text-[11px]">
@@ -138,8 +138,8 @@ export function PayerSubaccountSection({
             </div>
 
             {!hasLinkedBank ? (
-              <p className="text-sm text-amber-700 dark:text-amber-400">
-                Link your bank account above before starting a payin.
+              <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">
+                Link your {branding.funderShortLabel.toLowerCase()} above before topping up your wallet.
               </p>
             ) : (
               <form onSubmit={handleSubmit(onPayinSubmit)} className="flex flex-col gap-4">
@@ -176,14 +176,18 @@ export function PayerSubaccountSection({
                     ) : null}
                   </div>
                 </div>
-                <Button type="submit" disabled={payinBusy} variant="secondary">
+                <Button
+                  type="submit"
+                  disabled={payinBusy}
+                  className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90"
+                >
                   {payinBusy ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating payin…
+                      Topping up…
                     </>
                   ) : (
-                    'Pull funds into subaccount'
+                    'Top up GAG wallet'
                   )}
                 </Button>
               </form>
