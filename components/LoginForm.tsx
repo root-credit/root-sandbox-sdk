@@ -60,7 +60,11 @@ export function LoginForm() {
         )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button 
+        type="submit" 
+        className="w-full bg-[#1E30CA] hover:bg-[#1E30CA]/90 text-white" 
+        disabled={isSubmitting}
+      >
         {isSubmitting ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
