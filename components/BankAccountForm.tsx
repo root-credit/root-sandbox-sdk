@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
@@ -19,6 +20,7 @@ interface BankAccountFormProps {
 }
 
 export function BankAccountForm({ payerId, onSuccess }: BankAccountFormProps) {
+  const router = useRouter();
   const [linked, setLinked] = useState(false);
   const { linkBank, isSubmitting } = useLinkBank();
 
@@ -38,6 +40,7 @@ export function BankAccountForm({ payerId, onSuccess }: BankAccountFormProps) {
       toast.success('Bank account linked successfully');
       setLinked(true);
       reset();
+      router.refresh();
       if (onSuccess) onSuccess();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'An error occurred');
