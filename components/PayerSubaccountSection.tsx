@@ -11,6 +11,7 @@ import {
   fundSubaccountPayinInputSchema,
   type FundSubaccountPayinInput,
 } from '@/lib/types/fund';
+import { useDomainStore } from '@/components/DomainStoreProvider';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,6 +42,7 @@ export function PayerSubaccountSection({
   const { enableSubaccount, disableSubaccount, isSubmitting: toggleBusy } =
     usePayerSubaccountToggle();
   const { fundPayin, isSubmitting: payinBusy } = useFundSubaccountPayin();
+  const { refreshWallet } = useDomainStore();
 
   const defaultSubaccountName = `${payerName} · ${branding.productName} GAG wallet`.slice(
     0,
@@ -52,12 +54,15 @@ export function PayerSubaccountSection({
     try {
       if (enable) {
         await enableSubaccount(payerId, defaultSubaccountName);
-        toast.success('Subaccount enabled');
+        toast.success('Good as Gold wallet enabled');
       } else {
         await disableSubaccount(payerId);
-        toast.success('Subaccount disabled for this profile');
+        toast.success('Good as Gold wallet disabled for this profile');
       }
       router.refresh();
+      // Pull fresh balance (incoming - outgoing) from Root after the wallet
+      // (subaccount) state changes; client cache stays in sync with the server.
+      await refreshWallet();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');
     }
@@ -80,10 +85,14 @@ export function PayerSubaccountSection({
     try {
       const result = await fundPayin(payerId, data);
       toast.success(
-        `Payin started — ${result.rail} (${result.payinId.slice(0, 8)}…)`,
+        `Top-up started — ${result.rail} (${result.payinId.slice(0, 8)}…)`,
       );
       reset({ amount: data.amount, rail: data.rail });
       router.refresh();
+      // Re-fetch live wallet balance from Root once the payin lands. Root reports
+      // `incoming` and `outgoing` totals on the subaccount; we never cache the
+      // derived balance, so a fresh GET is the only source of truth.
+      await refreshWallet();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Payin failed');
     }

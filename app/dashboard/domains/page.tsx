@@ -10,7 +10,7 @@ import { useDomainStore } from '@/components/DomainStoreProvider';
 import { useSession } from '@/lib/hooks/useSession';
 import { branding } from '@/lib/branding';
 import { dollarsToCents, formatMoney } from '@/lib/types/payments';
-import type { OwnedDomain } from '@/lib/godaddy-mock-data';
+import type { OwnedDomainRecord } from '@/lib/godaddy-actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,37 +29,38 @@ export default function MyDomainsPage() {
   const { session } = useSession();
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
 
-  const { ownedDomains, addOwnedDomain, listDomainForSale, unlistDomain } = useDomainStore();
+  const { ownedDomains, isDomainsLoading, transferIn, listForSale, unlist } = useDomainStore();
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferName, setTransferName] = useState('');
+  const [transferBusy, setTransferBusy] = useState(false);
 
-  const [listingDomain, setListingDomain] = useState<OwnedDomain | null>(null);
+  const [listingDomain, setListingDomain] = useState<OwnedDomainRecord | null>(null);
   const [listingPrice, setListingPrice] = useState('');
+  const [listingBusy, setListingBusy] = useState(false);
 
   if (!session) return null;
 
   const listed = ownedDomains.filter((d) => d.listingPriceCents !== undefined);
   const unlisted = ownedDomains.filter((d) => d.listingPriceCents === undefined);
 
-  function handleTransfer() {
-    const name = transferName.trim().toLowerCase();
-    if (!name || !/^[a-z0-9-]+\.[a-z]{2,}$/i.test(name)) {
-      toast.error('Enter a valid domain like example.com');
-      return;
-    }
-    if (ownedDomains.some((d) => d.name === name)) {
-      toast.error('You already own that domain.');
-      return;
-    }
-    const next = addOwnedDomain(name);
-    if (next) {
-      toast.success(`Transferred ${next.name} into your account.`);
-      setTransferOpen(false);
-      setTransferName('');
+  async function handleTransfer() {
+    if (transferBusy) return;
+    setTransferBusy(true);
+    try {
+      const result = await transferIn(transferName);
+      if (result.ok) {
+        toast.success(`Transferred ${result.domain?.name ?? ''} into your account.`);
+        setTransferOpen(false);
+        setTransferName('');
+      } else {
+        toast.error(result.reason);
+      }
+    } finally {
+      setTransferBusy(false);
     }
   }
 
-  function openListing(domain: OwnedDomain) {
+  function openListing(domain: OwnedDomainRecord) {
     setListingDomain(domain);
     setListingPrice(
       domain.listingPriceCents !== undefined
@@ -68,23 +69,36 @@ export default function MyDomainsPage() {
     );
   }
 
-  function handleConfirmListing() {
-    if (!listingDomain) return;
+  async function handleConfirmListing() {
+    if (!listingDomain || listingBusy) return;
     const dollars = parseFloat(listingPrice);
     if (!Number.isFinite(dollars) || dollars <= 0) {
       toast.error('Enter a valid asking price.');
       return;
     }
     const cents = dollarsToCents(dollars);
-    listDomainForSale(listingDomain.id, cents);
-    toast.success(`${listingDomain.name} listed for ${formatMoney(cents)}.`);
-    setListingDomain(null);
-    setListingPrice('');
+    setListingBusy(true);
+    try {
+      const result = await listForSale(listingDomain.name, cents);
+      if (result.ok) {
+        toast.success(`${listingDomain.name} listed for ${formatMoney(cents)}.`);
+        setListingDomain(null);
+        setListingPrice('');
+      } else {
+        toast.error(result.reason);
+      }
+    } finally {
+      setListingBusy(false);
+    }
   }
 
-  function handleUnlist(domain: OwnedDomain) {
-    unlistDomain(domain.id);
-    toast.success(`${domain.name} removed from the marketplace.`);
+  async function handleUnlist(domain: OwnedDomainRecord) {
+    const result = await unlist(domain.name);
+    if (result.ok) {
+      toast.success(`${domain.name} removed from the marketplace.`);
+    } else {
+      toast.error(result.reason);
+    }
   }
 
   return (
@@ -120,7 +134,9 @@ export default function MyDomainsPage() {
           />
         </div>
 
-        {ownedDomains.length === 0 ? (
+        {isDomainsLoading ? (
+          <LoadingState />
+        ) : ownedDomains.length === 0 ? (
           <EmptyState onTransfer={() => setTransferOpen(true)} />
         ) : (
           <div className="space-y-8">
@@ -159,7 +175,6 @@ export default function MyDomainsPage() {
         )}
       </main>
 
-      {/* Transfer-in dialog */}
       <Dialog open={transferOpen} onOpenChange={setTransferOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -179,6 +194,7 @@ export default function MyDomainsPage() {
               value={transferName}
               onChange={(e) => setTransferName(e.target.value)}
               className="font-mono"
+              disabled={transferBusy}
             />
           </div>
           <DialogFooter>
@@ -186,20 +202,21 @@ export default function MyDomainsPage() {
               variant="ghost"
               onClick={() => setTransferOpen(false)}
               className="rounded-full font-bold"
+              disabled={transferBusy}
             >
               Cancel
             </Button>
             <Button
               onClick={handleTransfer}
+              disabled={transferBusy}
               className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90"
             >
-              Add domain
+              {transferBusy ? 'Transferring…' : 'Add domain'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* List-for-sale dialog */}
       <Dialog
         open={listingDomain !== null}
         onOpenChange={(open) => {
@@ -234,6 +251,7 @@ export default function MyDomainsPage() {
                 value={listingPrice}
                 onChange={(e) => setListingPrice(e.target.value)}
                 className="pl-7 font-mono"
+                disabled={listingBusy}
               />
             </div>
           </div>
@@ -242,14 +260,20 @@ export default function MyDomainsPage() {
               variant="ghost"
               onClick={() => setListingDomain(null)}
               className="rounded-full font-bold"
+              disabled={listingBusy}
             >
               Cancel
             </Button>
             <Button
               onClick={handleConfirmListing}
+              disabled={listingBusy}
               className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90"
             >
-              {listingDomain?.listingPriceCents !== undefined ? 'Update listing' : 'List domain'}
+              {listingBusy
+                ? 'Saving…'
+                : listingDomain?.listingPriceCents !== undefined
+                  ? 'Update listing'
+                  : 'List domain'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -306,7 +330,7 @@ function DomainRow({
   onList,
   onUnlist,
 }: {
-  domain: OwnedDomain;
+  domain: OwnedDomainRecord;
   onList: () => void;
   onUnlist: () => void;
 }) {
@@ -372,6 +396,17 @@ function DomainRow({
           </Button>
         )}
       </div>
+    </div>
+  );
+}
+
+function LoadingState() {
+  return (
+    <div className="rounded-2xl border-2 bg-card p-16 flex flex-col items-center gap-4 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+        <Globe2 className="h-6 w-6 text-muted-foreground" />
+      </div>
+      <p className="text-sm text-muted-foreground">Loading your domains…</p>
     </div>
   );
 }

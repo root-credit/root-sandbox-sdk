@@ -58,7 +58,7 @@ export default function CashOutPage() {
               Available to {branding.payoutVerb.toLowerCase()}
             </div>
             <div className="text-4xl md:text-5xl font-extrabold font-mono tabular-nums">
-              {formatMoney(walletBalanceCents)}
+              {walletBalanceCents == null ? '—' : formatMoney(walletBalanceCents)}
             </div>
             <p className="text-sm text-background/70 mt-2 max-w-md">
               Your GAG wallet balance. {branding.payoutNoun} requests pull from this balance.

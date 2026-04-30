@@ -1,157 +1,182 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import {
-  initialMarketplaceDomains,
-  initialOwnedDomains,
-  type DomainCategory,
-  type MarketplaceDomain,
-  type OwnedDomain,
-} from '@/lib/godaddy-mock-data';
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  buyDomain as buyDomainAction,
+  getMarketplaceDomains,
+  getMyOwnedDomains,
+  getMyWalletStatus,
+  listDomainForSale as listDomainForSaleAction,
+  transferInDomain,
+  unlistDomain as unlistDomainAction,
+  type DomainMutationResult,
+  type MarketplaceDomainRecord,
+  type OwnedDomainRecord,
+  type WalletStatus,
+} from '@/lib/godaddy-actions';
 import type { Money } from '@/lib/types/payments';
 
 /**
- * Cross-page mock store for the GoDaddy reskin.
+ * Cross-page client store for the GoDaddy reskin.
  *
- * The live Root SDK has no concept of domains — these records are intentionally
- * client-only. We mount the provider once at the dashboard layout level so navigating
- * between dashboard sub-pages keeps wallet balance, owned domains, and the marketplace
- * inventory in a single place.
+ * - All state is fetched live from server actions (no client-side cache,
+ *   no localStorage, no bootstrap data).
+ * - The GAG wallet balance is derived from `getMyWalletStatus()`, which calls
+ *   `GET /api/subaccounts/{id}` and computes `incoming - outgoing` server-side.
+ * - Marketplace + owned domains live in Redis, so listings made by one payer
+ *   are visible to every other signed-in payer.
  */
 
-type BuyResult = { ok: true } | { ok: false; reason: string };
-
 type DomainStore = {
-  walletBalanceCents: Money;
-  topUpWallet: (cents: Money) => void;
-  withdrawFromWallet: (cents: Money) => boolean;
+  // Wallet
+  walletEnabled: boolean;
+  walletBalanceCents: Money | null;
+  walletIncomingCents: Money | null;
+  walletOutgoingCents: Money | null;
+  isWalletLoading: boolean;
+  refreshWallet: () => Promise<void>;
 
-  ownedDomains: OwnedDomain[];
-  addOwnedDomain: (name: string) => OwnedDomain | null;
-  listDomainForSale: (id: string, priceCents: Money) => void;
-  unlistDomain: (id: string) => void;
+  // Domains
+  ownedDomains: OwnedDomainRecord[];
+  marketplaceDomains: MarketplaceDomainRecord[];
+  isDomainsLoading: boolean;
+  refreshDomains: () => Promise<void>;
 
-  marketplaceDomains: MarketplaceDomain[];
-  buyDomain: (id: string) => BuyResult;
+  // Mutations
+  transferIn: (
+    name: string,
+  ) => Promise<DomainMutationResult & { domain?: OwnedDomainRecord }>;
+  listForSale: (name: string, priceCents: Money) => Promise<DomainMutationResult>;
+  unlist: (name: string) => Promise<DomainMutationResult>;
+  buy: (name: string) => Promise<DomainMutationResult>;
 };
 
 const DomainStoreContext = createContext<DomainStore | null>(null);
 
-const STARTING_BALANCE_CENTS: Money = 125000;
+const EMPTY_WALLET: WalletStatus = {
+  enabled: false,
+  subaccountId: null,
+  balanceCents: null,
+  incomingCents: null,
+  outgoingCents: null,
+};
 
 export function DomainStoreProvider({ children }: { children: React.ReactNode }) {
-  const [walletBalanceCents, setWalletBalanceCents] = useState<Money>(STARTING_BALANCE_CENTS);
-  const [ownedDomains, setOwnedDomains] = useState<OwnedDomain[]>(initialOwnedDomains);
-  const [marketplaceDomains, setMarketplaceDomains] =
-    useState<MarketplaceDomain[]>(initialMarketplaceDomains);
+  const [wallet, setWallet] = useState<WalletStatus>(EMPTY_WALLET);
+  const [isWalletLoading, setIsWalletLoading] = useState(true);
 
-  const topUpWallet = useCallback((cents: Money) => {
-    setWalletBalanceCents((b) => b + cents);
+  const [ownedDomains, setOwnedDomains] = useState<OwnedDomainRecord[]>([]);
+  const [marketplaceDomains, setMarketplaceDomains] = useState<MarketplaceDomainRecord[]>([]);
+  const [isDomainsLoading, setIsDomainsLoading] = useState(true);
+
+  const refreshWallet = useCallback(async () => {
+    setIsWalletLoading(true);
+    try {
+      const next = await getMyWalletStatus();
+      setWallet(next);
+    } catch {
+      setWallet(EMPTY_WALLET);
+    } finally {
+      setIsWalletLoading(false);
+    }
   }, []);
 
-  const withdrawFromWallet = useCallback(
-    (cents: Money) => {
-      if (cents <= 0) return false;
-      if (walletBalanceCents < cents) return false;
-      setWalletBalanceCents((b) => b - cents);
-      return true;
+  const refreshDomains = useCallback(async () => {
+    setIsDomainsLoading(true);
+    try {
+      const [owned, marketplace] = await Promise.all([
+        getMyOwnedDomains(),
+        getMarketplaceDomains(),
+      ]);
+      setOwnedDomains(owned);
+      setMarketplaceDomains(marketplace);
+    } catch {
+      setOwnedDomains([]);
+      setMarketplaceDomains([]);
+    } finally {
+      setIsDomainsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshWallet();
+    refreshDomains();
+  }, [refreshWallet, refreshDomains]);
+
+  const transferIn = useCallback(
+    async (name: string) => {
+      const result = await transferInDomain(name);
+      if (result.ok) await refreshDomains();
+      return result;
     },
-    [walletBalanceCents],
+    [refreshDomains],
   );
 
-  const addOwnedDomain = useCallback((name: string) => {
-    const trimmed = name.trim().toLowerCase();
-    if (!trimmed) return null;
-    const next: OwnedDomain = {
-      id: `own-${Date.now()}`,
-      name: trimmed,
-      registeredAt: new Date().toISOString().slice(0, 10),
-    };
-    setOwnedDomains((list) => [next, ...list]);
-    return next;
-  }, []);
-
-  const listDomainForSale = useCallback((id: string, priceCents: Money) => {
-    setOwnedDomains((list) =>
-      list.map((d) => (d.id === id ? { ...d, listingPriceCents: priceCents } : d)),
-    );
-    setOwnedDomains((current) => {
-      const target = current.find((d) => d.id === id);
-      if (!target) return current;
-      // also surface in marketplace as a self-listed domain
-      const sellerDomain: MarketplaceDomain = {
-        id: `mkt-self-${id}`,
-        name: target.name,
-        priceCents,
-        sellerHandle: '@you',
-        category: inferCategory(target.name),
-        trafficScore: 50 + Math.floor(Math.random() * 30),
-        description: 'Listed by you. Visible to other accounts in the marketplace.',
-      };
-      setMarketplaceDomains((mkt) => {
-        const existing = mkt.find((m) => m.id === sellerDomain.id);
-        if (existing) {
-          return mkt.map((m) => (m.id === sellerDomain.id ? { ...m, priceCents } : m));
-        }
-        return [sellerDomain, ...mkt];
-      });
-      return current;
-    });
-  }, []);
-
-  const unlistDomain = useCallback((id: string) => {
-    setOwnedDomains((list) =>
-      list.map((d) =>
-        d.id === id ? { ...d, listingPriceCents: undefined } : d,
-      ),
-    );
-    setMarketplaceDomains((mkt) => mkt.filter((m) => m.id !== `mkt-self-${id}`));
-  }, []);
-
-  const buyDomain = useCallback(
-    (id: string): BuyResult => {
-      const target = marketplaceDomains.find((m) => m.id === id);
-      if (!target) return { ok: false, reason: 'Domain no longer available.' };
-      if (walletBalanceCents < target.priceCents) {
-        return { ok: false, reason: 'Insufficient wallet balance.' };
-      }
-      setWalletBalanceCents((b) => b - target.priceCents);
-      setMarketplaceDomains((mkt) => mkt.filter((m) => m.id !== id));
-      setOwnedDomains((list) => [
-        {
-          id: `own-${Date.now()}`,
-          name: target.name,
-          registeredAt: new Date().toISOString().slice(0, 10),
-        },
-        ...list,
-      ]);
-      return { ok: true };
+  const listForSale = useCallback(
+    async (name: string, priceCents: Money) => {
+      const result = await listDomainForSaleAction(name, priceCents);
+      if (result.ok) await refreshDomains();
+      return result;
     },
-    [marketplaceDomains, walletBalanceCents],
+    [refreshDomains],
+  );
+
+  const unlist = useCallback(
+    async (name: string) => {
+      const result = await unlistDomainAction(name);
+      if (result.ok) await refreshDomains();
+      return result;
+    },
+    [refreshDomains],
+  );
+
+  const buy = useCallback(
+    async (name: string) => {
+      const result = await buyDomainAction(name);
+      if (result.ok) {
+        await Promise.all([refreshDomains(), refreshWallet()]);
+      }
+      return result;
+    },
+    [refreshDomains, refreshWallet],
   );
 
   const value = useMemo<DomainStore>(
     () => ({
-      walletBalanceCents,
-      topUpWallet,
-      withdrawFromWallet,
+      walletEnabled: wallet.enabled,
+      walletBalanceCents: wallet.balanceCents,
+      walletIncomingCents: wallet.incomingCents,
+      walletOutgoingCents: wallet.outgoingCents,
+      isWalletLoading,
+      refreshWallet,
       ownedDomains,
-      addOwnedDomain,
-      listDomainForSale,
-      unlistDomain,
       marketplaceDomains,
-      buyDomain,
+      isDomainsLoading,
+      refreshDomains,
+      transferIn,
+      listForSale,
+      unlist,
+      buy,
     }),
     [
-      walletBalanceCents,
-      topUpWallet,
-      withdrawFromWallet,
+      wallet,
+      isWalletLoading,
+      refreshWallet,
       ownedDomains,
-      addOwnedDomain,
-      listDomainForSale,
-      unlistDomain,
       marketplaceDomains,
-      buyDomain,
+      isDomainsLoading,
+      refreshDomains,
+      transferIn,
+      listForSale,
+      unlist,
+      buy,
     ],
   );
 
@@ -164,13 +189,4 @@ export function useDomainStore() {
     throw new Error('useDomainStore must be used within a DomainStoreProvider');
   }
   return ctx;
-}
-
-function inferCategory(name: string): DomainCategory {
-  const lc = name.toLowerCase();
-  if (/(dev|stack|cloud|api|tech|app|io)/.test(lc)) return 'tech';
-  if (/(shop|trade|biz|deal|store)/.test(lc)) return 'business';
-  if (/(studio|loop|paper|design|art)/.test(lc)) return 'creative';
-  if (/(credit|finance|capital|fund|bank)/.test(lc)) return 'finance';
-  return 'lifestyle';
 }

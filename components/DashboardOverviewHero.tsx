@@ -4,14 +4,26 @@ import { useDomainStore } from '@/components/DomainStoreProvider';
 import { formatMoney } from '@/lib/types/payments';
 
 /**
- * The hero block on the overview page surfaces a live wallet pill from the
- * client-side mock store. The four stat cards on the overview itself stay as
- * static placeholders ("0", "$0.00") per the reskin spec — only this pill
- * reflects the in-memory GAG wallet balance for the session.
+ * Live wallet pill on the dashboard overview. Balance is read fresh from
+ * `GET /api/subaccounts/{id}` (incoming - outgoing) on every mount and after
+ * any wallet-affecting mutation; nothing is cached client-side.
  */
 export function DashboardOverviewHero() {
-  const { walletBalanceCents, ownedDomains, marketplaceDomains } = useDomainStore();
+  const {
+    walletEnabled,
+    walletBalanceCents,
+    isWalletLoading,
+    ownedDomains,
+    marketplaceDomains,
+  } = useDomainStore();
   const listedCount = ownedDomains.filter((d) => d.listingPriceCents !== undefined).length;
+
+  const balanceLabel =
+    !walletEnabled && !isWalletLoading
+      ? 'Not enabled'
+      : walletBalanceCents == null
+        ? '—'
+        : formatMoney(walletBalanceCents);
 
   return (
     <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-stretch">
@@ -21,7 +33,7 @@ export function DashboardOverviewHero() {
         </span>
         <div className="flex items-end gap-3 mt-1">
           <span className="text-3xl md:text-4xl font-extrabold font-mono tabular-nums">
-            {formatMoney(walletBalanceCents)}
+            {isWalletLoading ? '…' : balanceLabel}
           </span>
           <span className="rounded-full bg-primary text-primary-foreground px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest mb-1">
             Live
