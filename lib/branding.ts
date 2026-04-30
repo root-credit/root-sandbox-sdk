@@ -13,28 +13,28 @@
  */
 export const branding = {
   /** Top-level product name shown in nav, footer, browser title. */
-  productName: "Roosterwise",
+  productName: "UKG Salary Disbursement",
   /** One-line tagline used on landing + auth panels. */
-  tagline: "Tips paid the moment the shift ends.",
+  tagline: "Salaries disbursed efficiently, directly to employee bank accounts.",
   /** Payer entity (the operator who logs in and funds payouts). */
-  payerSingular: "Restaurant",
-  payerPlural: "Restaurants",
-  /** Used in possessive contexts: e.g. "your restaurant's bank account". */
-  payerPossessive: "restaurant's",
+  payerSingular: "Employer",
+  payerPlural: "Employers",
+  /** Used in possessive contexts: e.g. "your employer's bank account". */
+  payerPossessive: "employer's",
   /** Payee entity (the person being paid). */
-  payeeSingular: "Worker",
-  payeePlural: "Workers",
+  payeeSingular: "Employee",
+  payeePlural: "Employees",
   /** Payout terminology. */
-  payoutVerb: "Tip out",
-  payoutNoun: "Tip payout",
-  payoutNounPlural: "Tip payouts",
+  payoutVerb: "Disburse salary",
+  payoutNoun: "Salary disbursement",
+  payoutNounPlural: "Salary disbursements",
   /** Funding source label on the payer settings screen. */
-  funderLabel: "Restaurant bank account",
+  funderLabel: "Employer bank account",
   funderShortLabel: "Bank account",
   /** Console heading displayed on the dashboard home. */
-  consoleHeading: "Welcome back. Let's settle the night.",
+  consoleHeading: "Welcome back. Manage your salary disbursements.",
   consoleSubheading:
-    "Manage your house, your team, and tonight's tip-out from a single console.",
+    "Oversee your employees, disbursement schedules, and transaction history from a single dashboard.",
 } as const;
 
 export type Branding = typeof branding;
