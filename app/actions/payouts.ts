@@ -76,7 +76,8 @@ export async function processPayout(
         payeeEmail: payee.email,
         amountCents,
         amount: item.amount,
-        status: payout.status || 'completed',
+        /** Snapshot at create time; list view replaces with live `GET /api/payouts/{rootPayoutId}`. */
+        status: payout.status || 'initiated',
         rootPayoutId: payout.id,
         rootTransactionId: payout.id,
         createdAt: Date.now(),

@@ -113,6 +113,14 @@ export async function createPayerSubaccount(
     throw new Error('Payer not found');
   }
 
+  if (payer.subaccountId) {
+    return {
+      success: true,
+      subaccountId: payer.subaccountId,
+      name: parsed.name,
+    };
+  }
+
   const sub = await createRootSubaccount(parsed.name);
 
   await setPayer(payerId, {
@@ -124,6 +132,31 @@ export async function createPayerSubaccount(
   revalidatePath('/dashboard/payer');
 
   return { success: true, subaccountId: sub.id, name: sub.name };
+}
+
+/** Clear stored subaccount id (does not delete the remote Root subaccount). */
+export async function clearPayerSubaccount(
+  payerId: string
+): Promise<{ success: true }> {
+  const session = await getCurrentSession();
+  if (!sessionOwnsPayer(session, payerId)) {
+    throw new Error('Unauthorized');
+  }
+
+  const payer = await getPayer(payerId);
+  if (!payer) {
+    throw new Error('Payer not found');
+  }
+
+  await setPayer(payerId, {
+    ...payer,
+    subaccountId: undefined,
+    updatedAt: Date.now(),
+  });
+
+  revalidatePath('/dashboard/payer');
+
+  return { success: true };
 }
 
 /**

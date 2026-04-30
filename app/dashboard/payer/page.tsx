@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { BankAccountForm } from '@/components/BankAccountForm';
+import { PayerSubaccountSection } from '@/components/PayerSubaccountSection';
 import { getCurrentSession } from '@/lib/session';
 import { getPayer } from '@/lib/redis';
 import { branding } from '@/lib/branding';
@@ -60,7 +61,7 @@ export default async function PayerSettingsPage() {
         </Card>
 
         {/* Bank account card */}
-        <Card>
+        <Card className="mb-6">
           <CardHeader>
             <CardTitle>Bank account</CardTitle>
             <CardDescription>
@@ -91,6 +92,13 @@ export default async function PayerSettingsPage() {
             </div>
           </CardContent>
         </Card>
+
+        <PayerSubaccountSection
+          payerId={session.payerId}
+          payerName={payer.payerName}
+          subaccountId={payer.subaccountId}
+          hasLinkedBank={Boolean(payer.bankAccountToken)}
+        />
       </main>
     </div>
   );
