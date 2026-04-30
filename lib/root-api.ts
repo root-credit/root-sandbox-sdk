@@ -5,17 +5,26 @@ import {
   type CreatePayinBody,
 } from "@root-credit/root-sdk";
 
-if (!process.env.ROOT_API_KEY) {
-  throw new Error("Missing ROOT_API_KEY environment variable");
+/**
+ * Lazily construct the Root client so importing this module during Next.js build
+ * (e.g. route metadata collection) does not require ROOT_API_KEY. The key is only
+ * enforced when a Root API call runs at runtime.
+ */
+let rootClient: Root | undefined;
+
+function getRootAPI(): Root {
+  if (!rootClient) {
+    const apiKey = process.env.ROOT_API_KEY?.trim();
+    if (!apiKey) {
+      throw new Error("Missing ROOT_API_KEY environment variable");
+    }
+    rootClient = new Root({
+      apiKey,
+      baseUrl: process.env.ROOT_BASE_URL ?? DEFAULT_BASE_URL,
+    });
+  }
+  return rootClient;
 }
-
-/** Same default host as the SDK; override with ROOT_BASE_URL for sandbox vs live. */
-const ROOT_API_BASE = process.env.ROOT_BASE_URL ?? DEFAULT_BASE_URL;
-
-export const rootAPI = new Root({
-  apiKey: process.env.ROOT_API_KEY,
-  baseUrl: ROOT_API_BASE,
-});
 
 export type PayoutRail =
   | "instant_bank"
@@ -59,7 +68,7 @@ function isDuplicatePayerConflict(error: unknown): boolean {
  * Resolve an existing Root payer by email via the SDK (`payers.findByEmail`).
  */
 async function findRootPayerByEmail(email: string) {
-  return rootAPI.payers.findByEmail(email.trim());
+  return getRootAPI().payers.findByEmail(email.trim());
 }
 
 /**
@@ -89,7 +98,7 @@ export async function getOrCreateRootPayer(payerData: {
   }
 
   try {
-    const response = await rootAPI.payers.create({
+    const response = await getRootAPI().payers.create({
       email,
       name: payerData.name,
       metadata: {
@@ -119,7 +128,7 @@ export async function getOrCreateRootPayer(payerData: {
 }
 
 async function findRootPayeeByEmail(email: string) {
-  return rootAPI.payees.findByEmail(email.trim());
+  return getRootAPI().payees.findByEmail(email.trim());
 }
 
 /**
@@ -143,7 +152,7 @@ export async function getOrCreateRootPayee(payeeData: {
   }
 
   try {
-    const response = await rootAPI.payees.create({
+    const response = await getRootAPI().payees.create({
       email,
       name: payeeData.name,
       metadata: {
@@ -189,7 +198,7 @@ export async function attachPayerBankAccount(
       is_default: opts?.isDefault ?? true,
       ...(opts?.subaccountId ? { subaccount_id: opts.subaccountId } : {}),
     };
-    const response = await rootAPI.payers.attachPayByBank(
+    const response = await getRootAPI().payers.attachPayByBank(
       payerId,
       {
         account_number: bankData.accountNumber,
@@ -208,7 +217,7 @@ export async function attachPayerBankAccount(
 /** Create a Root subaccount (`POST /api/subaccounts/`). */
 export async function createRootSubaccount(name: string) {
   try {
-    const response = await rootAPI.subaccounts.create({ name });
+    const response = await getRootAPI().subaccounts.create({ name });
     console.log("[v0] Created subaccount:", response.id);
     return response;
   } catch (error) {
@@ -224,7 +233,7 @@ export async function moveRootSubaccountFunds(args: {
   amount_in_cents: number;
 }) {
   try {
-    const response = await rootAPI.subaccounts.move(args);
+    const response = await getRootAPI().subaccounts.move(args);
     console.log("[v0] Moved funds between subaccounts:", response.id);
     return response;
   } catch (error) {
@@ -236,7 +245,7 @@ export async function moveRootSubaccountFunds(args: {
 /** Create a payin (ACH pull into `subaccount_id`). Caller supplies full SDK body. */
 export async function createRootPayin(body: CreatePayinBody) {
   try {
-    const response = await rootAPI.payins.create(body);
+    const response = await getRootAPI().payins.create(body);
     console.log("[v0] Created payin:", response.id);
     return response;
   } catch (error) {
@@ -256,7 +265,7 @@ export async function attachPayeeBankAccount(
   }
 ) {
   try {
-    const response = await rootAPI.payees.attachPayToBank(payeeId, {
+    const response = await getRootAPI().payees.attachPayToBank(payeeId, {
       account_number: bankData.accountNumber,
       routing_number: bankData.routingNumber,
     });
@@ -282,7 +291,7 @@ export async function attachPayeeDebitCard(
   try {
     // Updated to YYMM format: e.g., "3009"
     const expiryDate = `${String(cardData.expiryYear).slice(-2)}${String(cardData.expiryMonth).padStart(2, '0')}`;
-    const response = await rootAPI.payees.attachPushToCard(payeeId, {
+    const response = await getRootAPI().payees.attachPushToCard(payeeId, {
       card_number: cardData.cardNumber,
       card_expiry_date: expiryDate,
     });
@@ -304,7 +313,7 @@ export async function createPayout(
   rail: PayoutRail = "instant_bank"
 ) {
   try {
-    const response = await rootAPI.payouts.create({
+    const response = await getRootAPI().payouts.create({
       payee_id: payeeId,
       amount_in_cents: amountCents,
       rail,
@@ -327,7 +336,7 @@ export async function createPayout(
  */
 export async function getPayoutStatus(payoutId: string) {
   try {
-    const response = await rootAPI.payouts.get(payoutId);
+    const response = await getRootAPI().payouts.get(payoutId);
     return response;
   } catch (error) {
     console.error("[v0] Error fetching payout:", error);
