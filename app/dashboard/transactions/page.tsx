@@ -31,8 +31,8 @@ export default function TransactionsPage() {
   if (!session) return null;
 
   const totalPaidCents = transactions.reduce((sum, t) => sum + (t.amountCents ?? 0), 0);
-  const successfulTransactions = transactions.filter(
-    (t) => t.status === 'completed' || t.status === 'success'
+  const successfulTransactions = transactions.filter((t) =>
+    isSuccessfulPayoutStatus(t.status),
   ).length;
 
   return (
@@ -142,13 +142,34 @@ function StatCard({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** Root `TransferStatus` and legacy Redis labels used before live hydration. */
+function isSuccessfulPayoutStatus(status: string): boolean {
+  const s = status.toLowerCase();
+  return s === 'settled' || s === 'completed' || s === 'success';
+}
+
 function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { label: string; variant: 'success' | 'warning' | 'destructive' | 'secondary' }> = {
+  const key = status.toLowerCase();
+  const map: Record<
+    string,
+    { label: string; variant: 'success' | 'warning' | 'destructive' | 'secondary' }
+  > = {
+    settled: { label: 'Settled', variant: 'success' },
     completed: { label: 'Settled', variant: 'success' },
     success: { label: 'Settled', variant: 'success' },
+    initiated: { label: 'Initiated', variant: 'warning' },
+    processing: { label: 'Processing', variant: 'warning' },
+    approved: { label: 'Approved', variant: 'warning' },
+    created: { label: 'Created', variant: 'warning' },
+    debited: { label: 'Debited', variant: 'warning' },
     pending: { label: 'Pending', variant: 'warning' },
+    needs_review: { label: 'Needs review', variant: 'warning' },
     failed: { label: 'Failed', variant: 'destructive' },
+    canceled: { label: 'Canceled', variant: 'secondary' },
   };
-  const { label, variant } = map[status] ?? { label: status, variant: 'secondary' };
+  const { label, variant } = map[key] ?? {
+    label: status.replace(/_/g, ' '),
+    variant: 'secondary' as const,
+  };
   return <Badge variant={variant}>{label}</Badge>;
 }
