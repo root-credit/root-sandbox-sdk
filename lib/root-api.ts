@@ -118,17 +118,33 @@ export async function getOrCreateRootPayer(payerData: {
   }
 }
 
+async function findRootPayeeByEmail(email: string) {
+  return rootAPI.payees.findByEmail(email.trim());
+}
+
 /**
- * Create a payee in Root.
+ * Create a Root payee or return the existing one for this email (409 / duplicate-safe).
+ * Mirrors {@link getOrCreateRootPayer}: remote API is authoritative; Redis must not run ahead of it.
  */
-export async function createRootPayee(payeeData: {
+export async function getOrCreateRootPayee(payeeData: {
   email: string;
   name: string;
   phone?: string;
 }) {
+  const email = payeeData.email.trim();
+
+  const existingFirst = await findRootPayeeByEmail(email);
+  if (existingFirst) {
+    console.log(
+      "[v0] Root payee already exists for this email; reusing:",
+      existingFirst.id,
+    );
+    return existingFirst;
+  }
+
   try {
     const response = await rootAPI.payees.create({
-      email: payeeData.email,
+      email,
       name: payeeData.name,
       metadata: {
         type: "payee",
@@ -138,8 +154,21 @@ export async function createRootPayee(payeeData: {
     console.log("[v0] Created Root payee:", response.id);
     return response;
   } catch (error) {
-    console.error("[v0] Error creating Root payee:", error);
-    throw error;
+    if (!isDuplicatePayerConflict(error)) {
+      console.error("[v0] Error creating Root payee:", error);
+      throw error;
+    }
+    console.warn(
+      "[v0] Create payee failed with duplicate-like error; resolving Root payee by email.",
+    );
+    const existingAfterConflict = await findRootPayeeByEmail(email);
+    if (existingAfterConflict) {
+      console.log("[v0] Linked existing Root payee:", existingAfterConflict.id);
+      return existingAfterConflict;
+    }
+    throw new Error(
+      "Root indicates this payee email already exists but could not load the payee by email. Try again or contact support.",
+    );
   }
 }
 

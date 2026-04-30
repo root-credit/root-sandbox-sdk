@@ -62,9 +62,9 @@ export const payeeDebitCardInputSchema = z.object({
  */
 export const createPayeeInputSchema = z.intersection(
   z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
+    name: z.string(),
     email: z.string().email('Invalid email'),
-    phone: z.string().min(10, 'Phone must be at least 10 digits'),
+    phone: z.string(),
   }),
   z.discriminatedUnion('paymentMethodType', [
     payeeBankAccountInputSchema,

@@ -1,8 +1,10 @@
 import { redirect } from 'next/navigation';
 import { DashboardHeader } from '@/components/DashboardHeader';
-import { Card, CardContent } from '@/components/ui/card';
+import { listPayees } from '@/app/actions/payees';
+import { listTransactions } from '@/app/actions/transactions';
 import { getCurrentSession } from '@/lib/session';
 import { branding } from '@/lib/branding';
+import { formatMoney } from '@/lib/types/payments';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
@@ -11,6 +13,13 @@ export default async function DashboardPage() {
   if (!session) {
     redirect('/login');
   }
+
+  const [payees, transactions] = await Promise.all([
+    listPayees(session.payerId),
+    listTransactions(session.payerId),
+  ]);
+  const activePayeeCount = payees.length;
+  const totalPaidCents = transactions.reduce((sum, t) => sum + (t.amountCents ?? 0), 0);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -26,9 +35,12 @@ export default async function DashboardPage() {
 
         {/* Stat tiles */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <StatCard label={`Active ${branding.payeePlural.toLowerCase()}`} value="0" />
-          <StatCard label="Total paid out" value="$0.00" />
-          <StatCard label="Transactions" value="0" />
+          <StatCard
+            label={`Active ${branding.payeePlural.toLowerCase()}`}
+            value={String(activePayeeCount)}
+          />
+          <StatCard label="Total paid out" value={formatMoney(totalPaidCents)} />
+          <StatCard label="Transactions" value={String(transactions.length)} />
         </div>
 
         {/* Module tiles */}
