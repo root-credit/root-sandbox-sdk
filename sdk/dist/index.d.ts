@@ -255,7 +255,7 @@ declare class PayeesResource {
     list(params?: ListPayeesParams): Promise<ListResponse<Payee>>;
     /** `PATCH /api/payees/{id}` */
     update(payeeId: string, body: UpdatePayeeBody): Promise<Payee>;
-    /** Convenience: find a payee by exact email match (case-insensitive). */
+    /** Convenience: find a payee by exact email match (case-insensitive). Uses {@link ROOT_LIST_BY_EMAIL_MIN_LIMIT} for list queries. */
     findByEmail(email: string): Promise<Payee | null>;
     /**
      * `POST /api/payees/{id}/payment-methods/pay-to-bank`
@@ -319,6 +319,7 @@ declare class PayersResource {
     list(params?: ListPayersParams): Promise<ListResponse<Payer>>;
     /** `PATCH /api/payers/{id}` */
     update(payerId: string, body: UpdatePayerBody): Promise<Payer>;
+    /** Convenience: find payer by email (case-insensitive). Uses {@link ROOT_LIST_BY_EMAIL_MIN_LIMIT} for list queries. */
     findByEmail(email: string): Promise<Payer | null>;
     /**
      * `POST /api/payers/{id}/payment-methods/pay-by-bank`
@@ -715,6 +716,8 @@ declare function describeApiKeyForLogs(key: string): string;
 
 /** Default base URL. Sandbox and live share this host; the API key decides the mode. */
 declare const DEFAULT_BASE_URL = "https://api.useroot.com";
+/** Minimum `limit` for `GET /api/payers` and `GET /api/payees` when using email filter (Root validates `>= 10`). */
+declare const ROOT_LIST_BY_EMAIL_MIN_LIMIT = 10;
 /**
  * The single magic name that forces a sandbox transfer to fail.
  * Use `payeeNameForTransaction(name, simulateFailure)` to swap it in.
@@ -833,4 +836,4 @@ declare class Root {
 /** Functional alias if you prefer `createRoot()` over `new Root()`. */
 declare function createRoot(opts?: RootClientOptions): Root;
 
-export { ALLOWED_TEST_ACCOUNT_NUMBERS, ALLOWED_TEST_CARD_NUMBERS, ALLOWED_TEST_ROUTING_NUMBERS, type AttachPayByBankBody, type AttachPayByBankQuery, type AttachPayToBankBody, type AttachPushToCardBody, type ChargeFromInput, type ChargeFromResult, type CreatePayeeBody, type CreatePayerBody, type CreatePayinBody, type CreatePayoutBody, DEFAULT_BASE_URL, DEFAULT_POLLING, DEFAULT_TEST_BANK, DEFAULT_TEST_CARD, FAILURE_SIMULATION_NAME, Flows, type FundSubaccountFromExistingPayerInput, type FundSubaccountFromExistingPayerResult, type ListPayeesParams, type ListPayersParams, type ListPayinsParams, type ListPayoutsParams, type ListResponse, type ListSubaccountsParams, type MoveBetweenSubaccountsInput, type PaginationParams, type PartySessionToken, type PayToInput, type PayToResult, type Payee, type PayeePaymentMethod, PayeesResource, type Payer, type PayerPaymentMethod, PayersResource, type Payin, type PayinRail, PayinsResource, type Payout, type PayoutRail, PayoutsResource, type QueryParams, RAIL_POLLING, type RequestObserver, type RequestOptions, Root, RootApiError, RootClient, type RootClientOptions, RootPollTimeoutError, SessionTokensResource, type Subaccount, type SubaccountMove, SubaccountsResource, TERMINAL_STATUSES, TEST_CARD_EXPIRY, type TransferStatus, type UpdatePayeeBody, type UpdatePayerBody, type WaitForTerminalOptions, type Webhook, WebhooksResource, apiKeyFormatHint, collectAll, createRoot, Root as default, describeApiKeyForLogs, isLikelyRootApiToken, isSuccess, isTerminal, paginate, payeeNameForTransaction, sanitizeApiKey, statusLabel, terminalForRail, waitForTerminal };
+export { ALLOWED_TEST_ACCOUNT_NUMBERS, ALLOWED_TEST_CARD_NUMBERS, ALLOWED_TEST_ROUTING_NUMBERS, type AttachPayByBankBody, type AttachPayByBankQuery, type AttachPayToBankBody, type AttachPushToCardBody, type ChargeFromInput, type ChargeFromResult, type CreatePayeeBody, type CreatePayerBody, type CreatePayinBody, type CreatePayoutBody, DEFAULT_BASE_URL, DEFAULT_POLLING, DEFAULT_TEST_BANK, DEFAULT_TEST_CARD, FAILURE_SIMULATION_NAME, Flows, type FundSubaccountFromExistingPayerInput, type FundSubaccountFromExistingPayerResult, type ListPayeesParams, type ListPayersParams, type ListPayinsParams, type ListPayoutsParams, type ListResponse, type ListSubaccountsParams, type MoveBetweenSubaccountsInput, type PaginationParams, type PartySessionToken, type PayToInput, type PayToResult, type Payee, type PayeePaymentMethod, PayeesResource, type Payer, type PayerPaymentMethod, PayersResource, type Payin, type PayinRail, PayinsResource, type Payout, type PayoutRail, PayoutsResource, type QueryParams, RAIL_POLLING, ROOT_LIST_BY_EMAIL_MIN_LIMIT, type RequestObserver, type RequestOptions, Root, RootApiError, RootClient, type RootClientOptions, RootPollTimeoutError, SessionTokensResource, type Subaccount, type SubaccountMove, SubaccountsResource, TERMINAL_STATUSES, TEST_CARD_EXPIRY, type TransferStatus, type UpdatePayeeBody, type UpdatePayerBody, type WaitForTerminalOptions, type Webhook, WebhooksResource, apiKeyFormatHint, collectAll, createRoot, Root as default, describeApiKeyForLogs, isLikelyRootApiToken, isSuccess, isTerminal, paginate, payeeNameForTransaction, sanitizeApiKey, statusLabel, terminalForRail, waitForTerminal };

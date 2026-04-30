@@ -35,9 +35,19 @@ export function payoutRailForPayee(payee: {
     : "instant_bank";
 }
 
+/**
+ * Root may signal "already exists" as 409 or as other statuses with a duplicate-ish payload.
+ */
 function isDuplicatePayerConflict(error: unknown): boolean {
-  if (error instanceof RootApiError && error.status === 409) {
-    return true;
+  if (error instanceof RootApiError) {
+    if (error.status === 409) return true;
+    const blob = `${error.rawText}\n${JSON.stringify(error.body ?? '')}`.toLowerCase();
+    if (
+      /duplicate|already exists|already registered|unique|resource exists/i.test(blob)
+    ) {
+      return true;
+    }
+    return false;
   }
   if (error instanceof Error) {
     return /\b409\b/.test(error.message) && /already exists|duplicate/i.test(error.message);
@@ -46,40 +56,64 @@ function isDuplicatePayerConflict(error: unknown): boolean {
 }
 
 /**
- * Create a payer in Root, or if one already exists for this email (e.g. Redis was cleared),
- * resolve and return the existing payer via list/findByEmail.
+ * Resolve an existing Root payer by email via the SDK (`payers.findByEmail`).
+ */
+async function findRootPayerByEmail(email: string) {
+  return rootAPI.payers.findByEmail(email.trim());
+}
+
+/**
+ * Create a payer in Root, or return the existing Root payer for this email.
+ *
+ * Order of operations:
+ * 1. **Lookup first** — if Root already has this email (e.g. app Redis was wiped), use that payer
+ *    and skip create (no dependency on create returning 409).
+ * 2. **Create** — happy path for brand-new emails.
+ * 3. **Duplicate handling** — if create fails with a duplicate-like error, resolve again by email
+ *    (race or non-409 error shapes).
  */
 export async function getOrCreateRootPayer(payerData: {
   email: string;
   name: string;
   phone?: string;
 }) {
+  const email = payerData.email.trim();
+
+  const existingFirst = await findRootPayerByEmail(email);
+  if (existingFirst) {
+    console.log(
+      '[v0] Root payer already exists for this email; linking (e.g. Redis empty but Root has payer):',
+      existingFirst.id,
+    );
+    return existingFirst;
+  }
+
   try {
     const response = await rootAPI.payers.create({
-      email: payerData.email,
+      email,
       name: payerData.name,
       metadata: {
-        type: "payer",
+        type: 'payer',
         onboardingDate: new Date().toISOString(),
       },
     });
-    console.log("[v0] Created Root payer:", response.id);
+    console.log('[v0] Created Root payer:', response.id);
     return response;
   } catch (error) {
     if (!isDuplicatePayerConflict(error)) {
-      console.error("[v0] Error creating Root payer:", error);
+      console.error('[v0] Error creating Root payer:', error);
       throw error;
     }
     console.warn(
-      "[v0] Root payer already exists for this email; reusing existing payer (typical after Redis clear)."
+      '[v0] Create failed with duplicate-like error; resolving Root payer by email.',
     );
-    const existing = await rootAPI.payers.findByEmail(payerData.email);
-    if (existing) {
-      console.log("[v0] Linked existing Root payer:", existing.id);
-      return existing;
+    const existingAfterConflict = await findRootPayerByEmail(email);
+    if (existingAfterConflict) {
+      console.log('[v0] Linked existing Root payer:', existingAfterConflict.id);
+      return existingAfterConflict;
     }
     throw new Error(
-      "Root reports this payer email already exists but could not load the payer by email. Try again or contact support."
+      'Root indicates this payer email already exists but could not load the payer by email. Try again or contact support.',
     );
   }
 }

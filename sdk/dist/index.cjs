@@ -36,6 +36,7 @@ function describeApiKeyForLogs(key) {
 
 // src/constants.ts
 var DEFAULT_BASE_URL = "https://api.useroot.com";
+var ROOT_LIST_BY_EMAIL_MIN_LIMIT = 10;
 var FAILURE_SIMULATION_NAME = "John Failed";
 var ALLOWED_TEST_ACCOUNT_NUMBERS = [
   "1234567890",
@@ -345,9 +346,9 @@ var PayeesResource = class {
   update(payeeId, body) {
     return this.client.patch(`/api/payees/${encodeURIComponent(payeeId)}`, body);
   }
-  /** Convenience: find a payee by exact email match (case-insensitive). */
+  /** Convenience: find a payee by exact email match (case-insensitive). Uses {@link ROOT_LIST_BY_EMAIL_MIN_LIMIT} for list queries. */
   async findByEmail(email) {
-    const list = await this.list({ email, limit: 5 });
+    const list = await this.list({ email, limit: ROOT_LIST_BY_EMAIL_MIN_LIMIT });
     const lower = email.toLowerCase();
     return list.data?.find((p) => p.email.toLowerCase() === lower) ?? null;
   }
@@ -431,8 +432,9 @@ var PayersResource = class {
   update(payerId, body) {
     return this.client.patch(`/api/payers/${encodeURIComponent(payerId)}`, body);
   }
+  /** Convenience: find payer by email (case-insensitive). Uses {@link ROOT_LIST_BY_EMAIL_MIN_LIMIT} for list queries. */
   async findByEmail(email) {
-    const list = await this.list({ email, limit: 5 });
+    const list = await this.list({ email, limit: ROOT_LIST_BY_EMAIL_MIN_LIMIT });
     const lower = email.toLowerCase();
     return list.data?.find((p) => p.email.toLowerCase() === lower) ?? null;
   }
@@ -1008,6 +1010,7 @@ exports.PayersResource = PayersResource;
 exports.PayinsResource = PayinsResource;
 exports.PayoutsResource = PayoutsResource;
 exports.RAIL_POLLING = RAIL_POLLING;
+exports.ROOT_LIST_BY_EMAIL_MIN_LIMIT = ROOT_LIST_BY_EMAIL_MIN_LIMIT;
 exports.Root = Root;
 exports.RootApiError = RootApiError;
 exports.RootClient = RootClient;

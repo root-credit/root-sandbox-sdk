@@ -60,20 +60,6 @@ export function LoginForm() {
         )}
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          {...register('password')}
-          type="password"
-          id="password"
-          autoComplete="current-password"
-          placeholder="Enter your password"
-        />
-        {errors.password && (
-          <p className="text-xs text-destructive">{errors.password.message}</p>
-        )}
-      </div>
-
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? (
           <>

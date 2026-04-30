@@ -3,6 +3,9 @@ import type { PayoutRail } from './types.js'
 /** Default base URL. Sandbox and live share this host; the API key decides the mode. */
 export const DEFAULT_BASE_URL = 'https://api.useroot.com'
 
+/** Minimum `limit` for `GET /api/payers` and `GET /api/payees` when using email filter (Root validates `>= 10`). */
+export const ROOT_LIST_BY_EMAIL_MIN_LIMIT = 10
+
 /**
  * The single magic name that forces a sandbox transfer to fail.
  * Use `payeeNameForTransaction(name, simulateFailure)` to swap it in.

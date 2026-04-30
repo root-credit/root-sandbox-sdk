@@ -5,16 +5,13 @@
  *
  * v0 / LLM contract:
  *   - Components SHOULD call these via the matching hook (e.g. `useLogin`) — NEVER `fetch('/api/...')`.
- *   - Login/signup share a single shared-app password, configured by the admin console.
- *   - The hardcoded admin email (`admin@root.credit`) is short-circuited at the route level
- *     so signup/login here apply only to payer accounts.
+ *   - Sign-in uses email only (sandbox demo); must match an existing payer from signup.
  */
 
 import { cookies } from 'next/headers';
 import { generateSessionToken } from '@/lib/auth';
 import { registerPayer } from '@/lib/auth';
 import { setSession, deleteSession, getPayerByEmail } from '@/lib/redis';
-import { verifySharedAppPassword } from '@/lib/app-settings';
 import { HARDCODED_ADMIN_EMAIL } from '@/lib/admin-session';
 import {
   loginInputSchema,
@@ -43,19 +40,14 @@ export async function signIn(input: LoginInput): Promise<LoginResult> {
 
   if (parsed.email.trim().toLowerCase() === HARDCODED_ADMIN_EMAIL.toLowerCase()) {
     throw new Error(
-      'Use the admin login route for the admin email; this action is for payers only.'
+      'Admin accounts sign in from /admin with separate credentials.'
     );
-  }
-
-  const passwordOk = await verifySharedAppPassword(parsed.password);
-  if (!passwordOk) {
-    throw new Error('Invalid password');
   }
 
   const payer = await getPayerByEmail(parsed.email.trim());
   if (!payer) {
     throw new Error(
-      'No account exists for this email. Sign up first, then sign in with the same email and password.'
+      'No account exists for this email. Sign up first with this email.'
     );
   }
 
@@ -85,11 +77,6 @@ export async function signUp(input: SignupPayerInput): Promise<SignupResult> {
     throw new Error(
       'This email is reserved for the admin console. Use a different email to create a payer account.'
     );
-  }
-
-  const passwordOk = await verifySharedAppPassword(parsed.password);
-  if (!passwordOk) {
-    throw new Error('Invalid password');
   }
 
   const { payerId, rootPayerId } = await registerPayer({

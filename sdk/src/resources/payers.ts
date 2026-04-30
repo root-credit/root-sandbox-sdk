@@ -1,5 +1,5 @@
 import type { RootClient } from '../client.js'
-import { ALLOWED_TEST_ROUTING_NUMBERS, DEFAULT_TEST_BANK } from '../constants.js'
+import { ALLOWED_TEST_ROUTING_NUMBERS, DEFAULT_TEST_BANK, ROOT_LIST_BY_EMAIL_MIN_LIMIT } from '../constants.js'
 import type { ListResponse, Payer, PayerPaymentMethod } from '../types.js'
 
 export interface ListPayersParams {
@@ -60,8 +60,9 @@ export class PayersResource {
     return this.client.patch<Payer>(`/api/payers/${encodeURIComponent(payerId)}`, body)
   }
 
+  /** Convenience: find payer by email (case-insensitive). Uses {@link ROOT_LIST_BY_EMAIL_MIN_LIMIT} for list queries. */
   async findByEmail(email: string): Promise<Payer | null> {
-    const list = await this.list({ email, limit: 5 })
+    const list = await this.list({ email, limit: ROOT_LIST_BY_EMAIL_MIN_LIMIT })
     const lower = email.toLowerCase()
     return list.data?.find((p) => p.email.toLowerCase() === lower) ?? null
   }

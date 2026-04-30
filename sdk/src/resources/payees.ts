@@ -1,5 +1,5 @@
 import type { RootClient } from '../client.js'
-import { DEFAULT_TEST_BANK, DEFAULT_TEST_CARD } from '../constants.js'
+import { DEFAULT_TEST_BANK, DEFAULT_TEST_CARD, ROOT_LIST_BY_EMAIL_MIN_LIMIT } from '../constants.js'
 import type { ListResponse, Payee, PayeePaymentMethod } from '../types.js'
 
 export interface ListPayeesParams {
@@ -58,9 +58,9 @@ export class PayeesResource {
     return this.client.patch<Payee>(`/api/payees/${encodeURIComponent(payeeId)}`, body)
   }
 
-  /** Convenience: find a payee by exact email match (case-insensitive). */
+  /** Convenience: find a payee by exact email match (case-insensitive). Uses {@link ROOT_LIST_BY_EMAIL_MIN_LIMIT} for list queries. */
   async findByEmail(email: string): Promise<Payee | null> {
-    const list = await this.list({ email, limit: 5 })
+    const list = await this.list({ email, limit: ROOT_LIST_BY_EMAIL_MIN_LIMIT })
     const lower = email.toLowerCase()
     return list.data?.find((p) => p.email.toLowerCase() === lower) ?? null
   }

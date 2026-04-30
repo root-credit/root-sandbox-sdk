@@ -32,6 +32,7 @@ function describeApiKeyForLogs(key) {
 
 // src/constants.ts
 var DEFAULT_BASE_URL = "https://api.useroot.com";
+var ROOT_LIST_BY_EMAIL_MIN_LIMIT = 10;
 var FAILURE_SIMULATION_NAME = "John Failed";
 var ALLOWED_TEST_ACCOUNT_NUMBERS = [
   "1234567890",
@@ -341,9 +342,9 @@ var PayeesResource = class {
   update(payeeId, body) {
     return this.client.patch(`/api/payees/${encodeURIComponent(payeeId)}`, body);
   }
-  /** Convenience: find a payee by exact email match (case-insensitive). */
+  /** Convenience: find a payee by exact email match (case-insensitive). Uses {@link ROOT_LIST_BY_EMAIL_MIN_LIMIT} for list queries. */
   async findByEmail(email) {
-    const list = await this.list({ email, limit: 5 });
+    const list = await this.list({ email, limit: ROOT_LIST_BY_EMAIL_MIN_LIMIT });
     const lower = email.toLowerCase();
     return list.data?.find((p) => p.email.toLowerCase() === lower) ?? null;
   }
@@ -427,8 +428,9 @@ var PayersResource = class {
   update(payerId, body) {
     return this.client.patch(`/api/payers/${encodeURIComponent(payerId)}`, body);
   }
+  /** Convenience: find payer by email (case-insensitive). Uses {@link ROOT_LIST_BY_EMAIL_MIN_LIMIT} for list queries. */
   async findByEmail(email) {
-    const list = await this.list({ email, limit: 5 });
+    const list = await this.list({ email, limit: ROOT_LIST_BY_EMAIL_MIN_LIMIT });
     const lower = email.toLowerCase();
     return list.data?.find((p) => p.email.toLowerCase() === lower) ?? null;
   }
@@ -990,6 +992,6 @@ function createRoot(opts = {}) {
 }
 var index_default = Root;
 
-export { ALLOWED_TEST_ACCOUNT_NUMBERS, ALLOWED_TEST_CARD_NUMBERS, ALLOWED_TEST_ROUTING_NUMBERS, DEFAULT_BASE_URL, DEFAULT_POLLING, DEFAULT_TEST_BANK, DEFAULT_TEST_CARD, FAILURE_SIMULATION_NAME, Flows, PayeesResource, PayersResource, PayinsResource, PayoutsResource, RAIL_POLLING, Root, RootApiError, RootClient, RootPollTimeoutError, SessionTokensResource, SubaccountsResource, TERMINAL_STATUSES, TEST_CARD_EXPIRY, WebhooksResource, apiKeyFormatHint, collectAll, createRoot, index_default as default, describeApiKeyForLogs, isLikelyRootApiToken, isSuccess, isTerminal, paginate, payeeNameForTransaction, sanitizeApiKey, statusLabel, terminalForRail, waitForTerminal };
+export { ALLOWED_TEST_ACCOUNT_NUMBERS, ALLOWED_TEST_CARD_NUMBERS, ALLOWED_TEST_ROUTING_NUMBERS, DEFAULT_BASE_URL, DEFAULT_POLLING, DEFAULT_TEST_BANK, DEFAULT_TEST_CARD, FAILURE_SIMULATION_NAME, Flows, PayeesResource, PayersResource, PayinsResource, PayoutsResource, RAIL_POLLING, ROOT_LIST_BY_EMAIL_MIN_LIMIT, Root, RootApiError, RootClient, RootPollTimeoutError, SessionTokensResource, SubaccountsResource, TERMINAL_STATUSES, TEST_CARD_EXPIRY, WebhooksResource, apiKeyFormatHint, collectAll, createRoot, index_default as default, describeApiKeyForLogs, isLikelyRootApiToken, isSuccess, isTerminal, paginate, payeeNameForTransaction, sanitizeApiKey, statusLabel, terminalForRail, waitForTerminal };
 //# sourceMappingURL=index.js.map
 //# sourceMappingURL=index.js.map

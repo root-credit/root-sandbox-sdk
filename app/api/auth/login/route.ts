@@ -1,25 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateSessionToken, validateEmail } from '@/lib/auth';
 import { setSession, getPayerByEmail } from '@/lib/redis';
-import { verifySharedAppPassword } from '@/lib/app-settings';
-import {
-  HARDCODED_ADMIN_EMAIL,
-  verifyAdminCredentials,
-  createAdminSessionToken,
-  ADMIN_SESSION_TTL_SEC,
-} from '@/lib/admin-session';
+import { HARDCODED_ADMIN_EMAIL } from '@/lib/admin-session';
 
 /**
- * Operator login.
- *
- * Special-case: the hardcoded admin email (admin@root.credit) is recognised here so
- * the admin can sign in from this single login screen without ever touching Redis.
- * Real payer users go through the shared-password gate and a Redis payer lookup.
+ * Operator login (email only — sandbox demo).
+ * Admin accounts use `/api/admin/login` from `/admin`.
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password } = body;
+    const { email } = body;
 
     if (!email || typeof email !== 'string') {
       return NextResponse.json(
@@ -37,42 +28,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (typeof password !== 'string' || password.length < 8) {
-      return NextResponse.json(
-        { error: 'Password is required (min 8 characters)' },
-        { status: 400 }
-      );
-    }
-
-    // Hardcoded admin path — fully bypasses Redis.
     if (trimmedEmail.toLowerCase() === HARDCODED_ADMIN_EMAIL.toLowerCase()) {
-      if (!verifyAdminCredentials(trimmedEmail, password)) {
-        return NextResponse.json(
-          { error: 'Invalid admin credentials' },
-          { status: 401 }
-        );
-      }
-      const token = createAdminSessionToken();
-      const res = NextResponse.json({
-        ok: true,
-        isAdmin: true,
-        redirectTo: '/admin',
-      });
-      res.cookies.set('admin_session', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-        maxAge: ADMIN_SESSION_TTL_SEC,
-      });
-      return res;
-    }
-
-    const passwordOk = await verifySharedAppPassword(password);
-    if (!passwordOk) {
       return NextResponse.json(
-        { error: 'Invalid password' },
-        { status: 401 }
+        {
+          error:
+            'Admin accounts sign in from /admin with separate credentials.',
+          code: 'ADMIN_USE_ADMIN_ROUTE',
+        },
+        { status: 403 }
       );
     }
 
@@ -81,7 +44,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            'No account exists for this email. Sign up first, then sign in with the same email and password.',
+            'No account exists for this email. Sign up first with this email.',
           code: 'PAYER_ACCOUNT_NOT_FOUND',
         },
         { status: 404 }

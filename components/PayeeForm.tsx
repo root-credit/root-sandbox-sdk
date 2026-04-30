@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,9 +16,9 @@ import { Label } from '@/components/ui/label';
 
 const formSchema = z
   .object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
-    email: z.string().email('Invalid email'),
-    phone: z.string().min(10, 'Phone must be at least 10 digits'),
+    name: z.string(),
+    email: z.string(),
+    phone: z.string(),
     paymentMethodType: z.enum([
       PaymentMethodType.BankAccount,
       PaymentMethodType.DebitCard,
@@ -61,6 +60,7 @@ export function PayeeForm({ payerId, onSuccess }: PayeeFormProps) {
 
   const {
     register,
+    setValue,
     handleSubmit,
     formState: { errors },
     reset,
@@ -137,23 +137,33 @@ export function PayeeForm({ payerId, onSuccess }: PayeeFormProps) {
         </div>
       </div>
 
-      {/* Rail selection */}
+      {/* Rail selection — buttons + setValue avoid duplicate register() / sr-only radios escaping layout */}
       <div className="flex flex-col gap-3">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Payout rail</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div
+          className="grid grid-cols-2 gap-3"
+          role="radiogroup"
+          aria-label="Payout rail"
+        >
           <RadioCard
             id="rail-bank"
-            value={PaymentMethodType.BankAccount}
-            register={register('paymentMethodType')}
-            checked={currentPaymentType === PaymentMethodType.BankAccount}
+            selected={currentPaymentType === PaymentMethodType.BankAccount}
+            onSelect={() =>
+              setValue('paymentMethodType', PaymentMethodType.BankAccount, {
+                shouldDirty: true,
+              })
+            }
             title="Bank account"
             desc="ACH or instant bank rail"
           />
           <RadioCard
             id="rail-card"
-            value={PaymentMethodType.DebitCard}
-            register={register('paymentMethodType')}
-            checked={currentPaymentType === PaymentMethodType.DebitCard}
+            selected={currentPaymentType === PaymentMethodType.DebitCard}
+            onSelect={() =>
+              setValue('paymentMethodType', PaymentMethodType.DebitCard, {
+                shouldDirty: true,
+              })
+            }
             title="Debit card"
             desc="Instant card push"
           />
@@ -278,30 +288,31 @@ export function PayeeForm({ payerId, onSuccess }: PayeeFormProps) {
 
 function RadioCard({
   id,
-  value,
-  register,
-  checked,
+  selected,
+  onSelect,
   title,
   desc,
 }: {
   id: string;
-  value: string;
-  register: ReturnType<ReturnType<typeof useForm>['register']>;
-  checked: boolean;
+  selected: boolean;
+  onSelect: () => void;
   title: string;
   desc: string;
 }) {
   return (
-    <label
-      htmlFor={id}
+    <button
+      type="button"
+      id={id}
+      role="radio"
+      aria-checked={selected}
+      onClick={onSelect}
       className={cn(
-        'relative flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors',
-        checked
+        'relative flex w-full cursor-pointer items-start gap-3 rounded-lg border p-4 text-left transition-colors',
+        selected
           ? 'border-primary bg-primary/5'
           : 'border-input hover:bg-muted/30'
       )}
     >
-      <input type="radio" id={id} value={value} {...register} className="sr-only" />
       <span className="flex-1">
         <span className="block text-sm font-medium">{title}</span>
         <span className="mt-0.5 block text-xs text-muted-foreground">{desc}</span>
@@ -309,9 +320,9 @@ function RadioCard({
       <span
         className={cn(
           'mt-0.5 flex h-4 w-4 flex-none rounded-full border-2 transition-colors',
-          checked ? 'border-primary bg-primary' : 'border-muted-foreground/30'
+          selected ? 'border-primary bg-primary' : 'border-muted-foreground/30'
         )}
       />
-    </label>
+    </button>
   );
 }

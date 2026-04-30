@@ -88,6 +88,7 @@ export {
   DEFAULT_TEST_CARD,
   FAILURE_SIMULATION_NAME,
   RAIL_POLLING,
+  ROOT_LIST_BY_EMAIL_MIN_LIMIT,
   TEST_CARD_EXPIRY,
   payeeNameForTransaction,
 } from './constants.js'

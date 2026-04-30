@@ -17,7 +17,7 @@ export const payerSchema = z.object({
   id: z.string().uuid(),
   payerEmail: z.string().email(),
   payerName: z.string().min(2),
-  phone: z.string().min(7),
+  phone: z.string(),
   rootPayerId: z.string(),
   bankAccountToken: z.string().optional(),
   /** Root subaccount id used for payins / payout draws when set (opaque string). */
@@ -31,15 +31,14 @@ export type Payer = z.infer<typeof payerSchema>;
 export const signupPayerInputSchema = z.object({
   email: z.string().email('Invalid email address'),
   payerName: z.string().min(2, 'Name must be at least 2 characters'),
-  phone: z.string().min(10, 'Phone must be at least 10 digits'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  phone: z.string(),
 });
 
 export type SignupPayerInput = z.infer<typeof signupPayerInputSchema>;
 
+/** Sandbox demo login: email only — must match an existing payer from signup. */
 export const loginInputSchema = z.object({
   email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
 export type LoginInput = z.infer<typeof loginInputSchema>;
