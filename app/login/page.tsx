@@ -35,13 +35,13 @@ export default function LoginPage() {
               </span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              Sign in with the email you used when you opened your {branding.payerSingular.toLowerCase()}.
-              Your Good as Gold wallet, owned domains, and marketplace listings are waiting.
+              Sign in with the email you used when you opened your {branding.payerSingular.toLowerCase()} account.
+              Your {branding.productName} wallet, posted shifts, and marketplace bookings are waiting.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
                 <Check />
-                One wallet for buying and selling
+                One wallet for hiring and earning
               </li>
               <li className="flex items-center gap-3">
                 <Check />

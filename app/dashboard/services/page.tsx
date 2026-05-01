@@ -291,7 +291,7 @@ function estimatedTotalCents(form: { hours: string; hourlyRate: string }): numbe
   if (!Number.isFinite(hours) || !Number.isFinite(rate) || hours <= 0 || rate <= 0) {
     return 0;
   }
-  return Math.round(rate * 100) * hours;
+  return Math.round(rate * 100 * hours);
 }
 
 function nextWeekdayIso(): string {

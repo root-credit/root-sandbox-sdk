@@ -35,8 +35,8 @@ export default function SignupPage() {
               </span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              Create an {branding.payerSingular.toLowerCase()} in under two minutes. We&apos;ll spin up
-              your Good as Gold wallet, ready to fund and trade.
+              Create a {branding.payerSingular.toLowerCase()} account in under two minutes. We&apos;ll
+              auto-provision your {branding.productName} wallet, ready to fund and hire.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
@@ -45,7 +45,7 @@ export default function SignupPage() {
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                Buy with wallet, sell to other accounts
+                Hire from the marketplace, earn from posted shifts
               </li>
               <li className="flex items-center gap-3">
                 <Check />

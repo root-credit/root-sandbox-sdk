@@ -67,7 +67,7 @@ export default async function PayerSettingsPage() {
           <div className="border-b-2 px-6 py-5">
             <h2 className="text-xl font-extrabold tracking-tight">{branding.funderLabel}</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Link your {branding.payerPossessive} bank to fund your Good as Gold wallet via ACH.
+              Link your {branding.payerPossessive} bank to fund your {branding.productName} wallet via ACH.
             </p>
           </div>
           <div className="p-6 flex flex-col gap-6">
@@ -94,7 +94,7 @@ export default async function PayerSettingsPage() {
           </div>
         </section>
 
-        {/* GAG wallet (subaccount) */}
+        {/* Wallet (Root subaccount) */}
         <PayerSubaccountSection
           payerId={session.payerId}
           payerName={payer.payerName}
