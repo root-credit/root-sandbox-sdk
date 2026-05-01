@@ -1,5 +1,5 @@
-import { DomainStoreProvider } from '@/components/DomainStoreProvider';
+import { RentalStoreProvider } from '@/components/RentalStoreProvider';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return <DomainStoreProvider>{children}</DomainStoreProvider>;
+  return <RentalStoreProvider>{children}</RentalStoreProvider>;
 }

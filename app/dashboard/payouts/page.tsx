@@ -9,17 +9,17 @@ import { PayoutForm } from '@/components/PayoutForm';
 import { branding } from '@/lib/branding';
 import { useSession } from '@/lib/hooks/useSession';
 import { usePayees } from '@/lib/hooks/usePayees';
-import { useDomainStore } from '@/components/DomainStoreProvider';
+import { useRentalStore } from '@/components/RentalStoreProvider';
 import { formatMoney } from '@/lib/types/payments';
 
-export default function CashOutPage() {
+export default function PayOutPage() {
   const router = useRouter();
   const { session } = useSession();
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
 
   const payerId = session?.payerId ?? null;
   const { payees, isLoading, error, refresh } = usePayees(payerId);
-  const { walletBalanceCents } = useDomainStore();
+  const { walletBalanceCents } = useRentalStore();
 
   if (!session) return null;
 
@@ -27,8 +27,8 @@ export default function CashOutPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <DashboardHeader email={session.payerEmail} />
 
-      <main className="flex-1 mx-auto max-w-5xl w-full px-6 lg:px-10 py-8">
-        <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
+      <main className="flex-1 mx-auto max-w-5xl w-full px-6 lg:px-10 py-10">
+        <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-4">
           <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
             Console
           </Link>
@@ -38,10 +38,12 @@ export default function CashOutPage() {
 
         <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">{branding.payoutNounPlural}</h1>
-            <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Move funds out of your Good as Gold wallet to a {branding.payeeSingular.toLowerCase()} —
-              bank or debit card.
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
+              {branding.payoutNounPlural}
+            </h1>
+            <p className="text-base text-muted-foreground mt-2 max-w-xl leading-relaxed">
+              Move funds out of your {branding.productName} wallet to a{' '}
+              {branding.payeeSingular.toLowerCase()} — bank or debit card.
             </p>
           </div>
           <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary px-4 py-2 text-xs font-bold uppercase tracking-widest">
@@ -51,7 +53,7 @@ export default function CashOutPage() {
         </div>
 
         {/* Wallet summary */}
-        <section className="rounded-2xl border-2 bg-foreground text-background p-6 mb-6 flex flex-wrap items-end justify-between gap-4">
+        <section className="rounded-3xl bg-foreground text-background p-7 mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-background/60 mb-2">
               <ArrowUpFromLine className="h-3.5 w-3.5" />
@@ -61,7 +63,8 @@ export default function CashOutPage() {
               {walletBalanceCents == null ? '—' : formatMoney(walletBalanceCents)}
             </div>
             <p className="text-sm text-background/70 mt-2 max-w-md">
-              Your GAG wallet balance. {branding.payoutNoun} requests pull from this balance.
+              Your {branding.productName} wallet balance. {branding.payoutNoun} requests pull
+              from this balance.
             </p>
           </div>
           <Link
@@ -73,12 +76,12 @@ export default function CashOutPage() {
         </section>
 
         {error && (
-          <div className="rounded-xl border-2 border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
+          <div className="rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
             {error}
           </div>
         )}
 
-        <section className="rounded-2xl border-2 bg-card p-6 mb-6">
+        <section className="rounded-2xl border bg-card p-6 mb-6">
           {isLoading ? (
             <div className="text-center text-sm text-muted-foreground py-10 font-semibold">
               Loading {branding.payeePlural.toLowerCase()}…
@@ -106,7 +109,7 @@ export default function CashOutPage() {
             items={[
               `Settles in roughly 5 seconds per ${branding.payeeSingular.toLowerCase()}`,
               `${branding.payeeSingular} payment methods must be linked first`,
-              'Funds pull from your GAG wallet balance',
+              `Funds pull from your ${branding.productName} wallet balance`,
               'Audit everything in Activity',
             ]}
           />
@@ -128,7 +131,7 @@ function InfoCard({
   ordered?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border-2 bg-card p-6">
+    <div className="rounded-2xl border bg-card p-6">
       <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">{label}</p>
       <h3 className="font-extrabold tracking-tight text-lg mb-4">{title}</h3>
       {ordered ? (

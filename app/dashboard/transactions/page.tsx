@@ -38,8 +38,8 @@ export default function ActivityPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <DashboardHeader email={session.payerEmail} />
 
-      <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
-        <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
+      <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-10">
+        <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-4">
           <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
             Console
           </Link>
@@ -48,15 +48,15 @@ export default function ActivityPage() {
         </nav>
 
         <div className="mb-8">
-          <h1 className="text-4xl font-extrabold tracking-tight">Activity</h1>
-          <p className="text-base text-muted-foreground mt-2 max-w-xl">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">Activity</h1>
+          <p className="text-base text-muted-foreground mt-2 max-w-xl leading-relaxed">
             Every {branding.payoutNoun.toLowerCase()}, every status, every receipt — written to
             your ledger.
           </p>
         </div>
 
         {error && (
-          <div className="rounded-xl border-2 border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
+          <div className="rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
             {error}
           </div>
         )}
@@ -73,7 +73,7 @@ export default function ActivityPage() {
           <StatCard label="Total events" value={String(transactions.length)} />
         </div>
 
-        <div className="rounded-2xl border-2 bg-card overflow-hidden">
+        <div className="rounded-2xl border bg-card overflow-hidden">
           {isLoading ? (
             <div className="p-12 text-center text-sm text-muted-foreground font-semibold">
               Loading activity…
@@ -91,7 +91,7 @@ export default function ActivityPage() {
               </div>
               <Link
                 href="/dashboard/payouts"
-                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-foreground text-background px-5 h-11 text-sm font-bold hover:bg-foreground/90 transition-colors"
+                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-5 h-11 text-sm font-bold hover:bg-primary/90 transition-colors"
               >
                 Run your first {branding.payoutNoun.toLowerCase()} →
               </Link>

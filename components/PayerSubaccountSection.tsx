@@ -11,7 +11,7 @@ import {
   fundSubaccountPayinInputSchema,
   type FundSubaccountPayinInput,
 } from '@/lib/types/fund';
-import { useDomainStore } from '@/components/DomainStoreProvider';
+import { useRentalStore } from '@/components/RentalStoreProvider';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -42,9 +42,9 @@ export function PayerSubaccountSection({
   const { enableSubaccount, disableSubaccount, isSubmitting: toggleBusy } =
     usePayerSubaccountToggle();
   const { fundPayin, isSubmitting: payinBusy } = useFundSubaccountPayin();
-  const { refreshWallet } = useDomainStore();
+  const { refreshWallet } = useRentalStore();
 
-  const defaultSubaccountName = `${payerName} · ${branding.productName} GAG wallet`.slice(
+  const defaultSubaccountName = `${payerName} · ${branding.productName} wallet`.slice(
     0,
     128,
   );
@@ -54,10 +54,10 @@ export function PayerSubaccountSection({
     try {
       if (enable) {
         await enableSubaccount(payerId, defaultSubaccountName);
-        toast.success('Good as Gold wallet enabled');
+        toast.success(`${branding.productName} wallet enabled`);
       } else {
         await disableSubaccount(payerId);
-        toast.success('Good as Gold wallet disabled for this profile');
+        toast.success(`${branding.productName} wallet disabled for this profile`);
       }
       router.refresh();
       // Pull fresh balance (incoming - outgoing) from Root after the wallet
@@ -99,18 +99,21 @@ export function PayerSubaccountSection({
   }
 
   return (
-    <Card className="mb-6 rounded-2xl border-2">
+    <Card className="mb-6 rounded-2xl border">
       <CardHeader>
-        <CardTitle className="text-xl font-extrabold tracking-tight">Good as Gold wallet</CardTitle>
+        <CardTitle className="text-xl font-extrabold tracking-tight">
+          {branding.productName} wallet
+        </CardTitle>
         <CardDescription>
-          Your in-app balance for buying domains, receiving sales, and {branding.payoutVerb.toLowerCase()}-ing
-          to your {branding.payeePlural.toLowerCase()}. Powered by a Root subaccount.
+          Your in-app balance for booking stays, receiving payouts as a host, and{' '}
+          {branding.payoutVerb.toLowerCase()}-ing to your {branding.payeePlural.toLowerCase()}.
+          Powered by a Root subaccount.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
-        <div className="flex flex-col gap-4 rounded-xl border-2 bg-secondary p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 rounded-xl border bg-secondary p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-bold">Enable Good as Gold wallet</p>
+            <p className="text-sm font-bold">Enable {branding.productName} wallet</p>
             <p className="text-xs text-muted-foreground">
               Provisions a Root subaccount to back your wallet balance and ACH payins.
             </p>
@@ -123,7 +126,7 @@ export function PayerSubaccountSection({
         </div>
 
         {subaccountEnabled && subaccountId ? (
-          <div className="rounded-xl border-2 bg-background px-3 py-2">
+          <div className="rounded-xl border bg-background px-3 py-2">
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
               Wallet (subaccount) ID
             </p>
@@ -132,9 +135,11 @@ export function PayerSubaccountSection({
         ) : null}
 
         {subaccountEnabled ? (
-          <div className="flex flex-col gap-4 rounded-xl border-2 bg-secondary p-4">
+          <div className="flex flex-col gap-4 rounded-xl border bg-secondary p-4">
             <div>
-              <p className="text-sm font-bold">Top up GAG wallet (ACH pull)</p>
+              <p className="text-sm font-bold">
+                Top up {branding.productName} wallet (ACH pull)
+              </p>
               <p className="text-xs text-muted-foreground mt-1">
                 Pull funds from your {branding.funderLabel.toLowerCase()} into your wallet using{' '}
                 <code className="rounded bg-muted px-1 py-0.5 text-[11px]">standard_ach</code>{' '}
@@ -196,7 +201,7 @@ export function PayerSubaccountSection({
                       Topping up…
                     </>
                   ) : (
-                    'Top up GAG wallet'
+                    `Top up ${branding.productName} wallet`
                   )}
                 </Button>
               </form>
