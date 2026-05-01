@@ -1,6 +1,6 @@
 'use client';
 
-import { useDomainStore } from '@/components/DomainStoreProvider';
+import { useListingStore } from '@/components/ListingStoreProvider';
 import { formatMoney } from '@/lib/types/payments';
 
 /**
@@ -13,10 +13,11 @@ export function DashboardOverviewHero() {
     walletEnabled,
     walletBalanceCents,
     isWalletLoading,
-    ownedDomains,
-    marketplaceDomains,
-  } = useDomainStore();
-  const listedCount = ownedDomains.filter((d) => d.listingPriceCents !== undefined).length;
+    hostedListings,
+    marketplaceListings,
+    trips,
+  } = useListingStore();
+  const availableHosted = hostedListings.filter((l) => l.status === 'available').length;
 
   const balanceLabel =
     !walletEnabled && !isWalletLoading
@@ -26,10 +27,10 @@ export function DashboardOverviewHero() {
         : formatMoney(walletBalanceCents);
 
   return (
-    <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-      <div className="flex flex-col justify-between rounded-2xl border-2 bg-foreground text-background px-5 py-4 sm:min-w-72">
+    <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-stretch">
+      <div className="flex flex-col justify-between rounded-2xl bg-foreground text-background px-6 py-5 sm:min-w-72 shadow-sm">
         <span className="text-[11px] font-bold uppercase tracking-widest text-background/60">
-          GAG wallet
+          Airbnb wallet
         </span>
         <div className="flex items-end gap-3 mt-1">
           <span className="text-3xl md:text-4xl font-extrabold font-mono tabular-nums">
@@ -40,10 +41,11 @@ export function DashboardOverviewHero() {
           </span>
         </div>
       </div>
-      <div className="flex flex-1 flex-wrap items-center gap-2 rounded-2xl border-2 bg-card px-5 py-4">
-        <Pill label="Owned" value={String(ownedDomains.length)} />
-        <Pill label="Listed" value={String(listedCount)} />
-        <Pill label="In marketplace" value={String(marketplaceDomains.length)} />
+      <div className="flex flex-1 flex-wrap items-center gap-2 rounded-2xl border bg-card px-6 py-5">
+        <Pill label="Hosting" value={String(hostedListings.length)} />
+        <Pill label="Available" value={String(availableHosted)} />
+        <Pill label="Trips" value={String(trips.length)} />
+        <Pill label="In marketplace" value={String(marketplaceListings.length)} />
       </div>
     </div>
   );

@@ -32,8 +32,8 @@ export default async function PayerSettingsPage() {
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight">{branding.payerSingular}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Your profile, your {branding.funderShortLabel.toLowerCase()}, and the Good as Gold
-              wallet behind every domain trade.
+              Your profile, your {branding.funderShortLabel.toLowerCase()}, and the{' '}
+              {branding.productName} wallet behind every booking and payout.
             </p>
           </div>
           {payer.bankAccountToken && (
@@ -67,7 +67,7 @@ export default async function PayerSettingsPage() {
           <div className="border-b-2 px-6 py-5">
             <h2 className="text-xl font-extrabold tracking-tight">{branding.funderLabel}</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Link your {branding.payerPossessive} bank to fund your Good as Gold wallet via ACH.
+              Link your {branding.payerPossessive} bank to fund your {branding.productName} wallet via ACH.
             </p>
           </div>
           <div className="p-6 flex flex-col gap-6">
@@ -79,7 +79,7 @@ export default async function PayerSettingsPage() {
               </p>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-foreground">
                 {[
-                  `Fund your GAG wallet via ACH debit`,
+                  `Fund your ${branding.productName} wallet via ACH debit`,
                   'Fast and secure transfers',
                   'Support for checking and savings accounts',
                   'Direct integration with Root infrastructure',
@@ -94,7 +94,7 @@ export default async function PayerSettingsPage() {
           </div>
         </section>
 
-        {/* GAG wallet (subaccount) */}
+        {/* Wallet (subaccount) */}
         <PayerSubaccountSection
           payerId={session.payerId}
           payerName={payer.payerName}

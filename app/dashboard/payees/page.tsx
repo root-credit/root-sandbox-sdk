@@ -68,8 +68,8 @@ export default function PayeesPage() {
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight">{branding.payeePlural}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              The banks and debit cards you {branding.payoutVerb.toLowerCase()} to from your Good as Gold
-              wallet.
+              The banks and debit cards you {branding.payoutVerb.toLowerCase()} to from your{' '}
+              {branding.productName} wallet.
             </p>
           </div>
 

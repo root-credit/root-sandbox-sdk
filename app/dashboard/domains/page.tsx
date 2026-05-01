@@ -4,13 +4,21 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Globe2, Plus, Tag, TagIcon, X } from 'lucide-react';
+import {
+  CalendarDays,
+  CheckCircle2,
+  Home,
+  Lock,
+  MapPin,
+  Plus,
+  X,
+} from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
-import { useDomainStore } from '@/components/DomainStoreProvider';
+import { useListingStore } from '@/components/ListingStoreProvider';
 import { useSession } from '@/lib/hooks/useSession';
 import { branding } from '@/lib/branding';
-import { dollarsToCents, formatMoney } from '@/lib/types/payments';
-import type { OwnedDomainRecord } from '@/lib/godaddy-actions';
+import { formatMoney } from '@/lib/types/payments';
+import type { ListingRecord } from '@/lib/airbnb-actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,78 +32,71 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
-export default function MyDomainsPage() {
+export default function HostingPage() {
   const router = useRouter();
   const { session } = useSession();
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
 
-  const { ownedDomains, isDomainsLoading, transferIn, listForSale, unlist } = useDomainStore();
-  const [transferOpen, setTransferOpen] = useState(false);
-  const [transferName, setTransferName] = useState('');
-  const [transferBusy, setTransferBusy] = useState(false);
+  const { hostedListings, isListingsLoading, createListing, unlist } = useListingStore();
+  const [createOpen, setCreateOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
 
-  const [listingDomain, setListingDomain] = useState<OwnedDomainRecord | null>(null);
-  const [listingPrice, setListingPrice] = useState('');
-  const [listingBusy, setListingBusy] = useState(false);
+  const [title, setTitle] = useState('');
+  const [location, setLocation] = useState('');
+  const [description, setDescription] = useState('');
+  const [pricePerNight, setPricePerNight] = useState('');
+  const [checkIn, setCheckIn] = useState('');
+  const [checkOut, setCheckOut] = useState('');
 
   if (!session) return null;
 
-  const listed = ownedDomains.filter((d) => d.listingPriceCents !== undefined);
-  const unlisted = ownedDomains.filter((d) => d.listingPriceCents === undefined);
+  const available = hostedListings.filter((l) => l.status === 'available');
+  const booked = hostedListings.filter((l) => l.status === 'booked');
+  const grossEarningsCents = booked.reduce((sum, l) => sum + l.totalPriceCents, 0);
 
-  async function handleTransfer() {
-    if (transferBusy) return;
-    setTransferBusy(true);
-    try {
-      const result = await transferIn(transferName);
-      if (result.ok) {
-        toast.success(`Transferred ${result.domain?.name ?? ''} into your account.`);
-        setTransferOpen(false);
-        setTransferName('');
-      } else {
-        toast.error(result.reason);
-      }
-    } finally {
-      setTransferBusy(false);
-    }
+  function resetForm() {
+    setTitle('');
+    setLocation('');
+    setDescription('');
+    setPricePerNight('');
+    setCheckIn('');
+    setCheckOut('');
   }
 
-  function openListing(domain: OwnedDomainRecord) {
-    setListingDomain(domain);
-    setListingPrice(
-      domain.listingPriceCents !== undefined
-        ? (domain.listingPriceCents / 100).toFixed(2)
-        : '',
-    );
-  }
-
-  async function handleConfirmListing() {
-    if (!listingDomain || listingBusy) return;
-    const dollars = parseFloat(listingPrice);
-    if (!Number.isFinite(dollars) || dollars <= 0) {
-      toast.error('Enter a valid asking price.');
+  async function handleCreate() {
+    if (busy) return;
+    const price = parseFloat(pricePerNight);
+    if (!Number.isFinite(price) || price <= 0) {
+      toast.error('Enter a valid nightly price.');
       return;
     }
-    const cents = dollarsToCents(dollars);
-    setListingBusy(true);
+    setBusy(true);
     try {
-      const result = await listForSale(listingDomain.name, cents);
+      const result = await createListing({
+        title,
+        location,
+        description,
+        pricePerNightDollars: price,
+        checkIn,
+        checkOut,
+      });
       if (result.ok) {
-        toast.success(`${listingDomain.name} listed for ${formatMoney(cents)}.`);
-        setListingDomain(null);
-        setListingPrice('');
+        toast.success(`Listed ${result.listing?.title}. Guests can book now.`);
+        setCreateOpen(false);
+        resetForm();
       } else {
         toast.error(result.reason);
       }
     } finally {
-      setListingBusy(false);
+      setBusy(false);
     }
   }
 
-  async function handleUnlist(domain: OwnedDomainRecord) {
-    const result = await unlist(domain.name);
+  async function handleUnlist(listing: ListingRecord) {
+    if (!confirm(`Remove "${listing.title}" from the marketplace?`)) return;
+    const result = await unlist(listing.id);
     if (result.ok) {
-      toast.success(`${domain.name} removed from the marketplace.`);
+      toast.success(`Removed ${listing.title}.`);
     } else {
       toast.error(result.reason);
     }
@@ -106,67 +107,55 @@ export default function MyDomainsPage() {
       <DashboardHeader email={session.payerEmail} />
 
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
-        <Breadcrumb here="My domains" />
+        <Breadcrumb here="Hosting" />
 
         <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">My domains</h1>
-            <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Every domain you own. List one for sale, set the price, and it shows up in the
-              marketplace for other {branding.payerPlural.toLowerCase()} to buy.
+            <h1 className="text-4xl font-extrabold tracking-tight">Your hosting</h1>
+            <p className="text-base text-muted-foreground mt-2 max-w-xl leading-relaxed">
+              Open your space to guests for a specific window. Once another account books your
+              listing, funds settle into your {branding.productName} wallet instantly.
             </p>
           </div>
           <Button
-            onClick={() => setTransferOpen(true)}
-            className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90 h-11 px-5"
+            onClick={() => setCreateOpen(true)}
+            className="rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-12 px-6"
           >
             <Plus className="h-4 w-4" />
-            Transfer in a domain
+            List a home
           </Button>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          <StatCard label="Owned" value={String(ownedDomains.length)} />
-          <StatCard label="Listed for sale" value={String(listed.length)} />
-          <StatCard
-            label="Total ask"
-            value={formatMoney(listed.reduce((sum, d) => sum + (d.listingPriceCents ?? 0), 0))}
-          />
+          <StatCard label="Total listings" value={String(hostedListings.length)} />
+          <StatCard label="Currently bookable" value={String(available.length)} />
+          <StatCard label="Gross earnings" value={formatMoney(grossEarningsCents)} mono />
         </div>
 
-        {isDomainsLoading ? (
+        {isListingsLoading ? (
           <LoadingState />
-        ) : ownedDomains.length === 0 ? (
-          <EmptyState onTransfer={() => setTransferOpen(true)} />
+        ) : hostedListings.length === 0 ? (
+          <EmptyState onCreate={() => setCreateOpen(true)} />
         ) : (
-          <div className="space-y-8">
-            {listed.length > 0 && (
-              <Section
-                title="Listed for sale"
-                desc="Visible in the marketplace. Unlist any time."
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {listed.map((d) => (
-                    <DomainRow
-                      key={d.id}
-                      domain={d}
-                      onList={() => openListing(d)}
-                      onUnlist={() => handleUnlist(d)}
+          <div className="space-y-10">
+            {available.length > 0 && (
+              <Section title="Live listings" desc="Visible in stays. Guests can reserve.">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {available.map((l) => (
+                    <HostListingCard
+                      key={l.id}
+                      listing={l}
+                      onUnlist={() => handleUnlist(l)}
                     />
                   ))}
                 </div>
               </Section>
             )}
-            {unlisted.length > 0 && (
-              <Section title="Not listed" desc="Set an asking price to put one up for sale.">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {unlisted.map((d) => (
-                    <DomainRow
-                      key={d.id}
-                      domain={d}
-                      onList={() => openListing(d)}
-                      onUnlist={() => handleUnlist(d)}
-                    />
+            {booked.length > 0 && (
+              <Section title="Booked" desc="Guest is checked in. Funds have settled.">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {booked.map((l) => (
+                    <HostListingCard key={l.id} listing={l} />
                   ))}
                 </div>
               </Section>
@@ -175,105 +164,114 @@ export default function MyDomainsPage() {
         )}
       </main>
 
-      <Dialog open={transferOpen} onOpenChange={setTransferOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-extrabold tracking-tight">
-              Transfer in a domain
-            </DialogTitle>
-            <DialogDescription>
-              Mocked transfer — enter the domain name you own and we&apos;ll add it to your{' '}
-              {branding.payerSingular.toLowerCase()}.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="transfer-name">Domain</Label>
-            <Input
-              id="transfer-name"
-              placeholder="example.com"
-              value={transferName}
-              onChange={(e) => setTransferName(e.target.value)}
-              className="font-mono"
-              disabled={transferBusy}
-            />
-          </div>
-          <DialogFooter>
-            <Button
-              variant="ghost"
-              onClick={() => setTransferOpen(false)}
-              className="rounded-full font-bold"
-              disabled={transferBusy}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleTransfer}
-              disabled={transferBusy}
-              className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90"
-            >
-              {transferBusy ? 'Transferring…' : 'Add domain'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       <Dialog
-        open={listingDomain !== null}
+        open={createOpen}
         onOpenChange={(open) => {
-          if (!open) {
-            setListingDomain(null);
-            setListingPrice('');
-          }
+          setCreateOpen(open);
+          if (!open) resetForm();
         }}
       >
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-extrabold tracking-tight">
-              {listingDomain?.listingPriceCents !== undefined ? 'Update price' : 'List for sale'}
+              List a home
             </DialogTitle>
             <DialogDescription>
-              <span className="font-mono font-bold text-foreground">{listingDomain?.name}</span>{' '}
-              will be visible to every account in the marketplace.
+              Tell guests about your space, then pick the rental window and nightly price.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="listing-price">Asking price (USD)</Label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-mono">
-                $
-              </span>
+          <div className="flex flex-col gap-4 py-2">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="title">Listing title</Label>
               <Input
-                id="listing-price"
-                type="number"
-                step="0.01"
-                min="0.01"
-                placeholder="1000.00"
-                value={listingPrice}
-                onChange={(e) => setListingPrice(e.target.value)}
-                className="pl-7 font-mono"
-                disabled={listingBusy}
+                id="title"
+                placeholder="Sunny cottage minutes from downtown"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                disabled={busy}
               />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                placeholder="Asheville, NC"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                disabled={busy}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="description">Description</Label>
+              <textarea
+                id="description"
+                placeholder="A peaceful retreat with a fireplace, hot tub, and walking trails out the back door."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                disabled={busy}
+                rows={3}
+                className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="check-in">Check-in</Label>
+                <Input
+                  id="check-in"
+                  type="date"
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                  disabled={busy}
+                  className="font-mono"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="check-out">Check-out</Label>
+                <Input
+                  id="check-out"
+                  type="date"
+                  value={checkOut}
+                  onChange={(e) => setCheckOut(e.target.value)}
+                  disabled={busy}
+                  className="font-mono"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="ppn">Price per night (USD)</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-mono">
+                  $
+                </span>
+                <Input
+                  id="ppn"
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  placeholder="125.00"
+                  value={pricePerNight}
+                  onChange={(e) => setPricePerNight(e.target.value)}
+                  disabled={busy}
+                  className="pl-7 font-mono"
+                />
+              </div>
             </div>
           </div>
           <DialogFooter>
             <Button
               variant="ghost"
-              onClick={() => setListingDomain(null)}
+              onClick={() => setCreateOpen(false)}
+              disabled={busy}
               className="rounded-full font-bold"
-              disabled={listingBusy}
             >
               Cancel
             </Button>
             <Button
-              onClick={handleConfirmListing}
-              disabled={listingBusy}
-              className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90"
+              onClick={handleCreate}
+              disabled={busy}
+              className="rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              {listingBusy
-                ? 'Saving…'
-                : listingDomain?.listingPriceCents !== undefined
-                  ? 'Update listing'
-                  : 'List domain'}
+              {busy ? 'Listing…' : 'Publish listing'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -314,87 +312,105 @@ function Section({
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
+function StatCard({
+  label,
+  value,
+  mono,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
   return (
-    <div className="rounded-2xl border-2 bg-card p-5 flex flex-col gap-2">
+    <div className="rounded-2xl border bg-card p-5 flex flex-col gap-2">
       <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
         {label}
       </div>
-      <div className="text-2xl font-extrabold font-mono tabular-nums">{value}</div>
+      <div
+        className={`text-2xl font-extrabold tabular-nums ${mono ? 'font-mono' : ''}`}
+      >
+        {value}
+      </div>
     </div>
   );
 }
 
-function DomainRow({
-  domain,
-  onList,
+function HostListingCard({
+  listing,
   onUnlist,
 }: {
-  domain: OwnedDomainRecord;
-  onList: () => void;
-  onUnlist: () => void;
+  listing: ListingRecord;
+  onUnlist?: () => void;
 }) {
-  const isListed = domain.listingPriceCents !== undefined;
+  const isBooked = listing.status === 'booked';
   return (
-    <div className="rounded-2xl border-2 bg-card p-5 flex flex-col gap-3 hover:border-foreground transition-colors">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <Globe2 className="h-4 w-4 text-muted-foreground flex-none" />
-            <h3 className="text-lg font-extrabold font-mono tracking-tight break-all">
-              {domain.name}
-            </h3>
-          </div>
-          <p className="text-xs text-muted-foreground font-semibold">
-            Registered{' '}
-            {new Date(domain.registeredAt).toLocaleDateString(undefined, {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            })}
+    <div className="rounded-3xl border bg-card overflow-hidden hover:shadow-md transition-all">
+      <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={listing.imageUrl || '/placeholder.svg'}
+          alt={listing.title}
+          className="h-full w-full object-cover"
+          loading="lazy"
+        />
+        <div className="absolute top-3 left-3">
+          {isBooked ? (
+            <Badge variant="success" className="rounded-full font-bold">
+              <CheckCircle2 className="h-3 w-3" />
+              Booked by {listing.bookedByHandle ?? 'guest'}
+            </Badge>
+          ) : (
+            <Badge variant="secondary" className="rounded-full font-bold bg-background/95 backdrop-blur border">
+              <MapPin className="h-3 w-3" />
+              {listing.location}
+            </Badge>
+          )}
+        </div>
+      </div>
+      <div className="p-5 flex flex-col gap-3">
+        <div>
+          <h3 className="text-lg font-extrabold tracking-tight leading-snug">{listing.title}</h3>
+          <p className="text-xs text-muted-foreground font-semibold mt-0.5 flex items-center gap-1.5">
+            <MapPin className="h-3 w-3" />
+            {listing.location}
           </p>
         </div>
-        {isListed ? (
-          <Badge variant="success" className="shrink-0 font-bold">
-            <TagIcon className="h-3 w-3" />
-            Listed
-          </Badge>
-        ) : (
-          <Badge variant="secondary" className="shrink-0 font-bold">
-            Owned
-          </Badge>
-        )}
-      </div>
-      {isListed && (
-        <div className="rounded-xl bg-primary/10 px-4 py-3">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            Asking price
+        <div className="flex items-center justify-between gap-3 rounded-xl bg-secondary/60 px-4 py-3">
+          <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+            <CalendarDays className="h-3.5 w-3.5" />
+            <span>
+              {formatDateShort(listing.checkIn)} – {formatDateShort(listing.checkOut)} ·{' '}
+              {listing.nights} {listing.nights === 1 ? 'night' : 'nights'}
+            </span>
           </div>
-          <div className="text-2xl font-extrabold font-mono tabular-nums">
-            {formatMoney(domain.listingPriceCents ?? 0)}
+          <div className="text-right">
+            <div className="text-base font-extrabold font-mono tabular-nums">
+              {formatMoney(listing.totalPriceCents)}
+            </div>
+            <div className="text-[10px] font-semibold text-muted-foreground">
+              {formatMoney(listing.pricePerNightCents)} / night
+            </div>
           </div>
         </div>
-      )}
-      <div className="flex flex-wrap gap-2 mt-1">
-        <Button
-          onClick={onList}
-          className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90 h-9"
-          size="sm"
-        >
-          <Tag className="h-3.5 w-3.5" />
-          {isListed ? 'Update price' : 'List for sale'}
-        </Button>
-        {isListed && (
-          <Button
-            onClick={onUnlist}
-            variant="outline"
-            className="rounded-full font-bold border-2 h-9"
-            size="sm"
-          >
-            <X className="h-3.5 w-3.5" />
-            Unlist
-          </Button>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {!isBooked && onUnlist && (
+            <Button
+              onClick={onUnlist}
+              variant="outline"
+              className="rounded-full font-bold border h-9"
+              size="sm"
+            >
+              <X className="h-3.5 w-3.5" />
+              Remove listing
+            </Button>
+          )}
+          {isBooked && (
+            <span className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+              <Lock className="h-3.5 w-3.5" />
+              Funds settled to your wallet
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -402,34 +418,42 @@ function DomainRow({
 
 function LoadingState() {
   return (
-    <div className="rounded-2xl border-2 bg-card p-16 flex flex-col items-center gap-4 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-        <Globe2 className="h-6 w-6 text-muted-foreground" />
+    <div className="rounded-3xl border bg-card p-16 flex flex-col items-center gap-4 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
+        <Home className="h-6 w-6 text-muted-foreground" />
       </div>
-      <p className="text-sm text-muted-foreground">Loading your domains…</p>
+      <p className="text-sm text-muted-foreground">Loading your listings…</p>
     </div>
   );
 }
 
-function EmptyState({ onTransfer }: { onTransfer: () => void }) {
+function EmptyState({ onCreate }: { onCreate: () => void }) {
   return (
-    <div className="rounded-2xl border-2 bg-card p-16 flex flex-col items-center gap-4 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-        <Globe2 className="h-6 w-6 text-muted-foreground" />
+    <div className="rounded-3xl border bg-card p-16 flex flex-col items-center gap-4 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
+        <Home className="h-6 w-6 text-muted-foreground" />
       </div>
       <div>
-        <p className="text-lg font-extrabold">No domains yet</p>
-        <p className="text-sm text-muted-foreground mt-1">
-          Transfer in a domain to start listing it for sale.
+        <p className="text-lg font-extrabold">You&apos;re not hosting yet</p>
+        <p className="text-sm text-muted-foreground mt-1 max-w-md">
+          List your space to start earning. Once a guest books, funds land in your{' '}
+          {branding.productName} wallet automatically.
         </p>
       </div>
       <Button
-        onClick={onTransfer}
-        className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90"
+        onClick={onCreate}
+        className="rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90"
       >
         <Plus className="h-4 w-4" />
-        Transfer in your first domain
+        List your first home
       </Button>
     </div>
   );
+}
+
+function formatDateShort(iso: string) {
+  return new Date(iso + 'T00:00:00').toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+  });
 }

@@ -7,11 +7,11 @@ export default function SignupPage() {
     <main className="min-h-screen flex flex-col bg-background">
       <header className="border-b bg-card">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground text-base font-extrabold">
-              {branding.productName.charAt(0)}
-            </div>
-            <span className="text-lg font-extrabold tracking-tight">{branding.productName}</span>
+          <Link href="/" className="flex items-center gap-2">
+            <Mark className="h-8 w-8 text-primary" />
+            <span className="text-xl font-extrabold tracking-tight text-primary">
+              {branding.productName.toLowerCase()}
+            </span>
           </Link>
         </div>
       </header>
@@ -36,7 +36,7 @@ export default function SignupPage() {
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
               Create an {branding.payerSingular.toLowerCase()} in under two minutes. We&apos;ll spin up
-              your Good as Gold wallet, ready to fund and trade.
+              your {branding.productName} wallet, ready to fund, host, and travel.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
@@ -45,7 +45,7 @@ export default function SignupPage() {
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                Buy with wallet, sell to other accounts
+                Book stays and host your home — paid through one wallet
               </li>
               <li className="flex items-center gap-3">
                 <Check />
@@ -88,6 +88,14 @@ export default function SignupPage() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function Mark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 32 32" fill="currentColor" className={className} aria-hidden>
+      <path d="M16 2c2.5 0 4.6 1.7 5.5 4 .5 1.4 1.1 2.7 1.7 4 1.4 2.9 3 5.6 4.4 8.5 1 2 1.4 4.2.6 6.4-1 2.7-3.4 4.4-6.3 4.6-2.6.2-4.7-1-6.4-2.8-1.7 1.8-3.8 3-6.4 2.8-2.9-.2-5.3-1.9-6.3-4.6-.8-2.2-.4-4.4.6-6.4 1.4-2.9 3-5.6 4.4-8.5.6-1.3 1.2-2.6 1.7-4C11.4 3.7 13.5 2 16 2Zm0 4.4c-1.2 0-2 .9-2.5 2.1-.5 1.3-1 2.5-1.7 3.7-1.4 2.7-2.9 5.3-4.2 8-.6 1.2-.7 2.4-.2 3.6.6 1.5 2 2.4 3.7 2.4 1.6 0 3-.7 4.3-2-.6-.8-1.1-1.7-1.6-2.6-.7-1.4-.4-3 .8-3.9 1.2-1 3-.9 4.1.2 1.1 1.1 1.2 2.9.2 4.1-.5.6-.9 1.3-1.4 2-.1.1-.1.2 0 .3 1.3 1.2 2.7 1.9 4.3 1.9 1.7 0 3.1-.9 3.7-2.4.5-1.2.4-2.4-.2-3.6-1.3-2.7-2.8-5.3-4.2-8-.7-1.2-1.2-2.4-1.7-3.7-.5-1.2-1.3-2.1-2.5-2.1Z" />
+    </svg>
   );
 }
 
