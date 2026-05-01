@@ -97,6 +97,29 @@ export default function PayeesPage() {
           </div>
         )}
 
+        <div className="rounded-xl border-2 bg-secondary px-5 py-4 mb-6 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-primary mb-1">
+              Employee sign-in
+            </p>
+            <p className="text-sm font-bold leading-snug">
+              Share <code className="rounded bg-card border px-1.5 py-0.5 font-mono text-xs">/employee/login</code>{' '}
+              with your team.
+            </p>
+            <p className="text-xs text-muted-foreground mt-1 max-w-md leading-relaxed">
+              Each {branding.payeeSingular.toLowerCase()} signs in with the email below to add
+              or update their direct-deposit method.
+            </p>
+          </div>
+          <Link
+            href="/employee/login"
+            target="_blank"
+            className="inline-flex items-center rounded-full bg-foreground text-background px-4 h-9 text-xs font-bold hover:bg-foreground/90 transition-colors"
+          >
+            Open employee sign-in
+          </Link>
+        </div>
+
         <div className="rounded-2xl border-2 bg-card overflow-hidden">
           <div className="flex items-center justify-between gap-3 border-b-2 px-6 py-4">
             <div className="flex items-center gap-2">
@@ -194,16 +217,24 @@ export default function PayeesPage() {
                       {payee.phone}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={
-                          payee.paymentMethodType === 'bank_account' ? 'secondary' : 'success'
-                        }
-                        className="font-bold"
-                      >
-                        {payee.paymentMethodType === 'bank_account'
-                          ? 'Bank account'
-                          : 'Debit card'}
-                      </Badge>
+                      {!payee.paymentMethodId ? (
+                        <Badge variant="outline" className="font-bold border-dashed">
+                          Pending
+                        </Badge>
+                      ) : (
+                        <Badge
+                          variant={
+                            payee.paymentMethodType === 'bank_account'
+                              ? 'secondary'
+                              : 'success'
+                          }
+                          className="font-bold"
+                        >
+                          {payee.paymentMethodType === 'bank_account'
+                            ? 'Bank account'
+                            : 'Debit card'}
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       <button

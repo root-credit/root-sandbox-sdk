@@ -8,9 +8,9 @@ import {
   ArrowUpFromLine,
   Banknote,
   Users,
-  Wallet,
 } from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
+import { WalletHeroBalance, WalletStatCard } from '@/components/WalletStats';
 import { getCurrentSession } from '@/lib/session';
 import { branding } from '@/lib/branding';
 
@@ -43,19 +43,7 @@ export default async function DashboardPage() {
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-              <div className="flex flex-col justify-between rounded-2xl border-2 bg-foreground text-background px-5 py-4 sm:min-w-72">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-background/60">
-                  Gusto wallet
-                </span>
-                <div className="flex items-end gap-3 mt-1">
-                  <span className="text-3xl md:text-4xl font-black font-mono tabular-nums">
-                    $0.00
-                  </span>
-                  <span className="rounded-full bg-primary text-primary-foreground px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest mb-1">
-                    Live
-                  </span>
-                </div>
-              </div>
+              <WalletHeroBalance />
               <Link
                 href="/dashboard/payouts"
                 className="group flex flex-1 items-center justify-between rounded-2xl border-2 bg-card px-5 py-4 hover:border-foreground transition-colors"
@@ -112,7 +100,7 @@ export default async function DashboardPage() {
             At a glance
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="Gusto wallet" value="$0.00" icon={<Wallet className="h-4 w-4" />} />
+            <WalletStatCard />
             <StatCard
               label={branding.payeePlural}
               value="0"

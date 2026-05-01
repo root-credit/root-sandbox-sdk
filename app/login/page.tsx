@@ -70,6 +70,15 @@ export default function LoginPage() {
             >
               Open a {branding.productName} {branding.payerSingular.toLowerCase()} account
             </Link>
+            <p className="text-xs text-muted-foreground text-center mt-4 leading-relaxed">
+              Looking for your paycheck setup?{' '}
+              <Link
+                href="/employee/login"
+                className="font-bold text-foreground underline-offset-4 hover:underline"
+              >
+                Employee sign-in
+              </Link>
+            </p>
           </div>
         </div>
       </section>
