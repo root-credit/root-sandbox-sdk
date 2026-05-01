@@ -6,6 +6,7 @@ import {
   clearAllOperatorSessions,
   clearAllTransactions,
   clearAllPayerBankFields,
+  flushEntireDatabase,
 } from "@/lib/redis-admin";
 import { setStoredLoginPassword } from "@/lib/app-settings";
 
@@ -14,7 +15,8 @@ type Operation =
   | "remove_payee"
   | "clear_sessions_and_transactions"
   | "clear_bank_fields"
-  | "set_shared_login_password";
+  | "set_shared_login_password"
+  | "flush_entire_database";
 
 export async function POST(request: NextRequest) {
   const admin = await getAdminSessionFromCookies();
@@ -97,6 +99,14 @@ export async function POST(request: NextRequest) {
           ok: true,
           message:
             "Shared app login password updated. All payer users must use this password.",
+        });
+      }
+      case "flush_entire_database": {
+        await flushEntireDatabase();
+        return NextResponse.json({
+          ok: true,
+          message:
+            "Upstash database emptied (FLUSHDB). All keys in this Redis DB were deleted.",
         });
       }
       default:

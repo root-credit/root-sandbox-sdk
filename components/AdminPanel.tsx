@@ -35,11 +35,33 @@ export function AdminPanel() {
   const authorized = auth.authorized;
   const busy = auth.isSubmitting ? 'login' : ops.busy;
 
+  // const refreshAuth = auth.refresh;
+  // useEffect(() => {
+  //   let cancelled = false;
+  //   refreshAuth().then((ok) => {
+  //     if (!cancelled && ok) refreshPayees();
+  //   });
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, [refreshAuth, refreshPayees]);
+
   useEffect(() => {
-    auth.refresh().then((ok) => {
-      if (ok) refreshPayees();
-    });
-  }, [auth, refreshPayees]);
+    let cancelled = false;
+  
+    auth.refresh()
+      .then((ok) => {
+        if (!cancelled && ok) refreshPayees();
+      })
+      .catch((err) => {
+        if (!cancelled) console.error('Session check failed:', err);
+      });
+  
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -180,6 +202,42 @@ export function AdminPanel() {
       </div>
 
       {message && <Message message={message} />}
+
+      <Section
+        title="Master reset (Upstash)"
+        description={
+          <>
+            Runs Redis{' '}
+            <code className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded">
+              FLUSHDB
+            </code>{' '}
+            on this database: removes all payer/payee/session/transaction records,
+            shared login hash, marketplace/domain keys, and any other keys. Admin login is
+            unchanged (cookie only). Use a dedicated Upstash DB for this app in production.
+          </>
+        }
+        tone="danger"
+      >
+        <button
+          type="button"
+          disabled={busy !== null}
+          onClick={() =>
+            confirmThen(
+              'This runs FLUSHDB and deletes EVERY key in this Upstash Redis database.',
+              () => runOperation('flush_entire_database'),
+            )
+          }
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-destructive text-destructive-foreground text-sm font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50"
+        >
+          {busy === 'flush_entire_database' ? (
+            <>
+              <Spinner /> Flushing database…
+            </>
+          ) : (
+            'Erase entire Redis database'
+          )}
+        </button>
+      </Section>
 
       <Section
         title={branding.payeePlural}

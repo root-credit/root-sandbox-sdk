@@ -1,5 +1,14 @@
 import { redis, getPayee, deletePayee } from "./redis";
 
+/**
+ * Deletes every key in the current Upstash Redis database (`FLUSHDB`).
+ * Sandbox-only — wipes payers, payees, sessions, transactions, app settings,
+ * marketplace/domain keys, and anything else stored in this DB.
+ */
+export async function flushEntireDatabase(): Promise<void> {
+  await redis.flushdb();
+}
+
 async function delKeys(keys: string[]): Promise<number> {
   if (keys.length === 0) return 0;
   const chunk = 100;
