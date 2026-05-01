@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { AlertTriangle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { branding } from '@/lib/branding';
 import { useProcessPayout } from '@/lib/hooks/useProcessPayout';
@@ -9,6 +9,8 @@ import {
   payoutLineItemSchema,
   type PayoutLineItem,
 } from '@/lib/types/payout';
+import { dollarsToCents, formatMoney } from '@/lib/types/payments';
+import { useWallet } from '@/components/WalletProvider';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,6 +34,14 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
   const [totalAmount, setTotalAmount] = useState(0);
   const [amounts, setAmounts] = useState<Record<string, number>>({});
   const { processPayout, isProcessing } = useProcessPayout();
+  const { walletEnabled, walletBalanceCents, isWalletLoading } = useWallet();
+
+  const totalCents = dollarsToCents(totalAmount);
+  const balanceCents = walletBalanceCents ?? 0;
+  const remainingCents = balanceCents - totalCents;
+  const overBalance =
+    walletEnabled && walletBalanceCents != null && totalCents > balanceCents;
+  const walletNotReady = !walletEnabled || walletBalanceCents == null;
 
   const handleAmountChange = (payeeId: string, amount: string) => {
     const numAmount = parseFloat(amount) || 0;
@@ -53,6 +63,19 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
       toast.error(
         parsed.error.flatten().fieldErrors.lineItems?.[0] ??
           'Enter at least one amount greater than $0'
+      );
+      return;
+    }
+
+    // Hard block: never let the operator run payroll for more than the
+    // wallet's current Root subaccount balance.
+    if (walletNotReady) {
+      toast.error('Top up your Gusto wallet before running payroll');
+      return;
+    }
+    if (overBalance) {
+      toast.error(
+        `Payroll exceeds wallet balance by ${formatMoney(totalCents - balanceCents)}`,
       );
       return;
     }
@@ -135,7 +158,13 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
         </div>
       </div>
 
-      <div className="rounded-xl border-2 bg-primary/10 border-primary/40 p-5">
+      <div
+        className={`rounded-xl border-2 p-5 transition-colors ${
+          overBalance
+            ? 'bg-destructive/10 border-destructive/40'
+            : 'bg-primary/10 border-primary/40'
+        }`}
+      >
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
@@ -150,7 +179,13 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
           </div>
           <Button
             type="submit"
-            disabled={isProcessing || totalAmount <= 0}
+            disabled={
+              isProcessing ||
+              totalAmount <= 0 ||
+              overBalance ||
+              walletNotReady ||
+              isWalletLoading
+            }
             className="shrink-0 rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-5"
           >
             {isProcessing ? (
@@ -163,6 +198,60 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
             )}
           </Button>
         </div>
+
+        {/* Wallet balance read-out */}
+        <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
+          <div className="rounded-lg bg-card border-2 px-3 py-2">
+            <p className="font-bold uppercase tracking-widest text-muted-foreground">
+              Wallet balance
+            </p>
+            <p className="font-mono font-black tabular-nums mt-0.5 text-sm">
+              {walletNotReady
+                ? '—'
+                : formatMoney(walletBalanceCents ?? 0)}
+            </p>
+          </div>
+          <div
+            className={`rounded-lg border-2 px-3 py-2 ${
+              overBalance ? 'bg-destructive/10 border-destructive/40' : 'bg-card'
+            }`}
+          >
+            <p className="font-bold uppercase tracking-widest text-muted-foreground">
+              {overBalance ? 'Short by' : 'Remaining after run'}
+            </p>
+            <p
+              className={`font-mono font-black tabular-nums mt-0.5 text-sm ${
+                overBalance ? 'text-destructive' : ''
+              }`}
+            >
+              {walletNotReady
+                ? '—'
+                : overBalance
+                  ? formatMoney(totalCents - balanceCents)
+                  : formatMoney(remainingCents)}
+            </p>
+          </div>
+        </div>
+
+        {overBalance && (
+          <div className="mt-4 flex items-start gap-2.5 rounded-lg bg-destructive/15 border-2 border-destructive/30 px-3 py-2.5 text-xs font-bold text-destructive">
+            <AlertTriangle className="h-4 w-4 flex-none mt-0.5" />
+            <span className="leading-snug">
+              This run is more than your wallet balance. Top up the wallet or
+              lower the totals before running payroll.
+            </span>
+          </div>
+        )}
+
+        {walletNotReady && !isWalletLoading && (
+          <div className="mt-4 flex items-start gap-2.5 rounded-lg bg-secondary border-2 px-3 py-2.5 text-xs font-bold">
+            <AlertTriangle className="h-4 w-4 flex-none mt-0.5 text-primary" />
+            <span className="leading-snug">
+              Your Gusto wallet isn&apos;t funded yet. Top it up from Wallet &
+              bank to enable payroll.
+            </span>
+          </div>
+        )}
       </div>
 
       <p className="text-xs text-muted-foreground text-center">

@@ -1,21 +1,28 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import {
+  CalendarClock,
   CheckCircle2,
+  Clock,
   CreditCard,
   Landmark,
   LogOut,
   Mail,
   Phone,
+  ReceiptText,
   ShieldCheck,
+  Wallet,
 } from 'lucide-react';
 import { EmployeePaymentMethodForm } from '@/components/EmployeePaymentMethodForm';
 import {
   getMyEmployeeProfile,
+  getMyPaystubs,
   signOutEmployee,
 } from '@/lib/employee-actions';
 import { Badge } from '@/components/ui/badge';
 import { branding } from '@/lib/branding';
+import { formatMoney } from '@/lib/types/payments';
+import type { Transaction } from '@/lib/types/payout';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,6 +35,7 @@ export default async function EmployeeDashboardPage() {
   if (!profile) redirect('/employee/login');
 
   const { payee, employerName, hasPaymentMethod } = profile;
+  const paystubs = await getMyPaystubs();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -122,6 +130,84 @@ export default async function EmployeeDashboardPage() {
           />
         </section>
 
+        {/* Paystubs */}
+        <section className="rounded-2xl border-2 bg-card p-6 mb-8">
+          <div className="flex flex-wrap items-end justify-between gap-3 mb-5">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-primary mb-1">
+                Earnings
+              </p>
+              <h2 className="text-xl font-black tracking-tight">My paystubs</h2>
+              <p className="text-sm text-muted-foreground mt-1 max-w-md leading-relaxed">
+                Every payroll run from {employerName}, with status synced live
+                from Root.
+              </p>
+            </div>
+            <Badge variant="outline" className="font-bold">
+              <ReceiptText className="h-3.5 w-3.5" />
+              {paystubs.payCount} {paystubs.payCount === 1 ? 'run' : 'runs'}
+            </Badge>
+          </div>
+
+          {/* Aggregate cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+            <AggregateCard
+              icon={<Wallet className="h-4 w-4" />}
+              label="Lifetime gross"
+              value={formatMoney(paystubs.totalGrossCents)}
+              accent
+            />
+            <AggregateCard
+              icon={<CheckCircle2 className="h-4 w-4" />}
+              label="Paid out"
+              value={formatMoney(paystubs.paidCents)}
+            />
+            <AggregateCard
+              icon={<Clock className="h-4 w-4" />}
+              label="Pending"
+              value={formatMoney(paystubs.pendingCents)}
+            />
+            <AggregateCard
+              icon={<CalendarClock className="h-4 w-4" />}
+              label="Last paid"
+              value={
+                paystubs.lastPaidAt
+                  ? new Date(paystubs.lastPaidAt).toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })
+                  : '—'
+              }
+            />
+          </div>
+
+          {/* List */}
+          {paystubs.paystubs.length === 0 ? (
+            <div className="rounded-xl border-2 border-dashed bg-secondary px-6 py-10 text-center">
+              <ReceiptText className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
+              <p className="font-black text-sm">No paystubs yet</p>
+              <p className="text-xs text-muted-foreground mt-1 leading-relaxed max-w-sm mx-auto">
+                When {employerName} runs payroll, your paystubs will show up
+                here automatically.
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-xl border-2 overflow-hidden">
+              <div className="grid grid-cols-12 gap-4 bg-secondary px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                <div className="col-span-5">Pay date</div>
+                <div className="col-span-3">Status</div>
+                <div className="col-span-4 text-right">Amount</div>
+              </div>
+              <ul className="divide-y-2">
+                {paystubs.paystubs.map((row) => (
+                  <PaystubRow key={row.id} row={row} />
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
+
         {/* Profile + form */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Profile */}
@@ -205,6 +291,86 @@ export default async function EmployeeDashboardPage() {
         </p>
       </main>
     </div>
+  );
+}
+
+function AggregateCard({
+  icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  accent?: boolean;
+}) {
+  return (
+    <div
+      className={`rounded-xl border-2 p-3.5 flex flex-col gap-1 ${
+        accent ? 'bg-foreground text-background border-foreground' : 'bg-card'
+      }`}
+    >
+      <div
+        className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest ${
+          accent ? 'text-background/70' : 'text-muted-foreground'
+        }`}
+      >
+        {icon}
+        {label}
+      </div>
+      <div className="font-mono font-black tabular-nums text-lg leading-tight">
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function PaystubRow({ row }: { row: Transaction }) {
+  const status = (row.status || '').toLowerCase();
+  const isPaid = status === 'success' || status === 'completed';
+  const isPending = status === 'pending';
+  const isFailed = status === 'failed';
+  const when = row.completedAt || row.createdAt;
+  return (
+    <li className="grid grid-cols-12 gap-4 items-center px-4 py-3 bg-card">
+      <div className="col-span-5">
+        <p className="font-bold text-sm leading-tight">
+          {new Date(when).toLocaleDateString(undefined, {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          })}
+        </p>
+        <p className="text-[11px] text-muted-foreground font-mono mt-0.5 truncate">
+          {row.rootPayoutId || row.id.slice(0, 8)}
+        </p>
+      </div>
+      <div className="col-span-3">
+        {isPaid ? (
+          <Badge variant="success" className="font-bold">
+            <CheckCircle2 className="h-3 w-3" />
+            Paid
+          </Badge>
+        ) : isPending ? (
+          <Badge variant="outline" className="font-bold border-dashed">
+            <Clock className="h-3 w-3" />
+            Pending
+          </Badge>
+        ) : isFailed ? (
+          <Badge variant="destructive" className="font-bold">
+            Failed
+          </Badge>
+        ) : (
+          <Badge variant="outline" className="font-bold capitalize">
+            {row.status || 'Unknown'}
+          </Badge>
+        )}
+      </div>
+      <div className="col-span-4 text-right font-mono font-black tabular-nums">
+        {formatMoney(row.amountCents)}
+      </div>
+    </li>
   );
 }
 

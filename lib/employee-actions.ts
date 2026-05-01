@@ -29,6 +29,7 @@ import { revalidatePath } from 'next/cache';
 import {
   getPayee,
   getPayer,
+  getPayerTransactions,
   redis,
   setPayee,
   type PayeeRecord,
@@ -37,8 +38,11 @@ import {
 import {
   attachPayeeBankAccount,
   attachPayeeDebitCard,
+  getPayoutStatus,
 } from '@/lib/root-api';
 import { PaymentMethodType } from '@/lib/types/payments';
+import type { Money } from '@/lib/types/payments';
+import type { Transaction } from '@/lib/types/payout';
 
 const EMPLOYEE_COOKIE = 'emp_session';
 const EMPLOYEE_TTL_SEC = 86_400;
@@ -263,4 +267,78 @@ export async function attachMyEmployeePaymentMethod(
   revalidatePath('/dashboard/payees');
 
   return { success: true, paymentMethodId, paymentMethodType };
+}
+
+/**
+ * Paystub history for the signed-in employee.
+ *
+ * Source of truth:
+ *   - Ledger rows are read from Redis (`getPayerTransactions(payerId)`), the
+ *     same store the operator-side activity feed uses. We then filter to the
+ *     rows for the current employee (`payeeId`) only.
+ *   - Per-row status is hydrated live from Root via `getPayoutStatus(...)`,
+ *     identical to the pattern in `app/actions/transactions.ts`. This keeps
+ *     state authoritative on Root and avoids any new cache key.
+ */
+export type PaystubsSummary = {
+  paystubs: Transaction[];
+  totalGrossCents: Money;
+  paidCents: Money;
+  pendingCents: Money;
+  payCount: number;
+  lastPaidAt: number | null;
+};
+
+const SUCCESS_STATUSES = new Set(['success', 'completed']);
+const PENDING_STATUSES = new Set(['pending']);
+
+export async function getMyPaystubs(): Promise<PaystubsSummary> {
+  const session = await getCurrentEmployeeSession();
+  if (!session) {
+    throw new Error('Not signed in');
+  }
+
+  const all = (await getPayerTransactions(session.payerId)) as Transaction[];
+  const mine = all.filter((t) => t.payeeId === session.payeeId);
+
+  const hydrated = await Promise.all(
+    mine.map(async (t) => {
+      const payoutId = t.rootPayoutId?.trim();
+      if (!payoutId) return t;
+      try {
+        const remote = await getPayoutStatus(payoutId);
+        return { ...t, status: remote.status };
+      } catch {
+        return t;
+      }
+    }),
+  );
+
+  hydrated.sort((a, b) => b.createdAt - a.createdAt);
+
+  let paidCents: Money = 0;
+  let pendingCents: Money = 0;
+  let lastPaidAt: number | null = null;
+
+  for (const t of hydrated) {
+    const status = (t.status || '').toLowerCase();
+    if (SUCCESS_STATUSES.has(status)) {
+      paidCents += t.amountCents;
+      const completedAt = t.completedAt || t.createdAt;
+      if (lastPaidAt == null || completedAt > lastPaidAt) {
+        lastPaidAt = completedAt;
+      }
+    } else if (PENDING_STATUSES.has(status)) {
+      pendingCents += t.amountCents;
+    }
+  }
+
+  return {
+    paystubs: hydrated,
+    totalGrossCents: paidCents + pendingCents,
+    paidCents,
+    pendingCents,
+    payCount: hydrated.length,
+    lastPaidAt,
+  };
 }
