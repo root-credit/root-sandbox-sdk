@@ -4,30 +4,36 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* GoDaddy-inspired palette: bright teal primary, near-black ink, clean white,
-     soft gray neutrals, plus a warm accent for highlights. */
+  /* Dental Dynamics palette — Modern Healthcare / Warm Clinical
+     5 tokens total:
+       1. coral red primary (Dental Dynamics brand cue)
+       2. deep ink foreground (navy/charcoal)
+       3. clean white background
+       4. warm gray neutrals (card / muted / secondary share this family)
+       5. soft mint accent for calm highlights
+  */
   --background: oklch(1 0 0);
-  --foreground: oklch(0.16 0.01 240);
+  --foreground: oklch(0.2 0.025 255);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.01 240);
+  --card-foreground: oklch(0.2 0.025 255);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.01 240);
-  /* Vivid GoDaddy teal */
-  --primary: oklch(0.78 0.14 195);
-  --primary-foreground: oklch(0.16 0.01 240);
-  --secondary: oklch(0.97 0.005 240);
-  --secondary-foreground: oklch(0.2 0.01 240);
-  --muted: oklch(0.96 0.005 240);
-  --muted-foreground: oklch(0.46 0.01 240);
-  /* Warm accent — GoDaddy uses sunny yellows in marketing accents */
-  --accent: oklch(0.9 0.15 95);
-  --accent-foreground: oklch(0.2 0.04 80);
+  --popover-foreground: oklch(0.2 0.025 255);
+  /* Warm dental coral */
+  --primary: oklch(0.63 0.2 25);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.97 0.008 60);
+  --secondary-foreground: oklch(0.2 0.025 255);
+  --muted: oklch(0.97 0.008 60);
+  --muted-foreground: oklch(0.46 0.02 255);
+  /* Soft mint for calm dental highlights */
+  --accent: oklch(0.93 0.06 175);
+  --accent-foreground: oklch(0.25 0.04 200);
   --destructive: oklch(0.58 0.22 25);
   --destructive-foreground: oklch(0.99 0.005 0);
-  --border: oklch(0.92 0.005 240);
-  --input: oklch(0.92 0.005 240);
-  --ring: oklch(0.78 0.14 195);
-  --radius: 0.5rem;
+  --border: oklch(0.92 0.008 240);
+  --input: oklch(0.92 0.008 240);
+  --ring: oklch(0.63 0.2 25);
+  --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);

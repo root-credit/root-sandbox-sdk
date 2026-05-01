@@ -9,17 +9,17 @@ import { PayoutForm } from '@/components/PayoutForm';
 import { branding } from '@/lib/branding';
 import { useSession } from '@/lib/hooks/useSession';
 import { usePayees } from '@/lib/hooks/usePayees';
-import { useDomainStore } from '@/components/DomainStoreProvider';
+import { useServiceStore } from '@/components/ServiceStoreProvider';
 import { formatMoney } from '@/lib/types/payments';
 
-export default function CashOutPage() {
+export default function WithdrawPage() {
   const router = useRouter();
   const { session } = useSession();
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
 
   const payerId = session?.payerId ?? null;
   const { payees, isLoading, error, refresh } = usePayees(payerId);
-  const { walletBalanceCents } = useDomainStore();
+  const { walletBalanceCents } = useServiceStore();
 
   if (!session) return null;
 
@@ -40,7 +40,7 @@ export default function CashOutPage() {
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight">{branding.payoutNounPlural}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Move funds out of your Good as Gold wallet to a {branding.payeeSingular.toLowerCase()} —
+              Move funds out of your {branding.productName} wallet to a {branding.payeeSingular.toLowerCase()} —
               bank or debit card.
             </p>
           </div>
@@ -61,7 +61,7 @@ export default function CashOutPage() {
               {walletBalanceCents == null ? '—' : formatMoney(walletBalanceCents)}
             </div>
             <p className="text-sm text-background/70 mt-2 max-w-md">
-              Your GAG wallet balance. {branding.payoutNoun} requests pull from this balance.
+              Your {branding.productName} wallet balance. {branding.payoutNoun} requests draw from this balance.
             </p>
           </div>
           <Link
@@ -106,7 +106,7 @@ export default function CashOutPage() {
             items={[
               `Settles in roughly 5 seconds per ${branding.payeeSingular.toLowerCase()}`,
               `${branding.payeeSingular} payment methods must be linked first`,
-              'Funds pull from your GAG wallet balance',
+              `Funds draw from your ${branding.productName} wallet balance`,
               'Audit everything in Activity',
             ]}
           />

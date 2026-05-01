@@ -8,8 +8,15 @@ import { branding } from '@/lib/branding';
 import { getPayer } from '@/lib/redis';
 import { getSubaccountLedgerSnapshot } from '@/lib/root-api';
 import { formatMoney } from '@/lib/types/payments';
-import { getMyOwnedDomains } from '@/lib/godaddy-actions';
-import { Globe2, Tag, Wallet, ArrowDownToLine, ArrowUpFromLine, Activity } from 'lucide-react';
+import { getMyPostedServices } from '@/lib/staffing-actions';
+import {
+  Briefcase,
+  CalendarPlus,
+  Wallet,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  Activity,
+} from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,19 +28,19 @@ export default async function DashboardPage() {
   }
 
   const payer = await getPayer(session.payerId);
-  let gagWalletLabel = 'Not Activated';
+  let walletBalanceLabel = 'Not Activated';
   if (payer?.subaccountId) {
     try {
       const snap = await getSubaccountLedgerSnapshot(payer.subaccountId);
-      gagWalletLabel = formatMoney(snap.balanceCents);
+      walletBalanceLabel = formatMoney(snap.balanceCents);
     } catch {
-      gagWalletLabel = '—';
+      walletBalanceLabel = '—';
     }
   }
 
-  const ownedDomains = await getMyOwnedDomains();
-  const ownedDomainsCount = ownedDomains.length;
-  const listedForSaleCount = ownedDomains.filter((d) => d.listingPriceCents !== undefined).length;
+  const postedServices = await getMyPostedServices();
+  const liveCount = postedServices.filter((s) => s.status === 'available').length;
+  const bookedCount = postedServices.filter((s) => s.status === 'booked').length;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -44,7 +51,7 @@ export default async function DashboardPage() {
         <section className="rounded-3xl border-2 bg-card p-8 md:p-10 mb-8 relative overflow-hidden">
           <div className="absolute inset-0 -z-10">
             <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
-            <div className="absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
+            <div className="absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-accent/40 blur-3xl" />
           </div>
           <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground mb-5">
             {branding.productName} console
@@ -67,16 +74,16 @@ export default async function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <ActionTile
               href="/dashboard/marketplace"
-              title="Browse marketplace"
-              desc="Find a domain and buy with your wallet."
-              icon={<Globe2 className="h-5 w-5" />}
+              title="Find temp staff"
+              desc="Browse open shifts and hire by the hour."
+              icon={<Briefcase className="h-5 w-5" />}
               primary
             />
             <ActionTile
-              href="/dashboard/domains"
-              title="List a domain"
-              desc="Set an asking price and put it up for sale."
-              icon={<Tag className="h-5 w-5" />}
+              href="/dashboard/services"
+              title="Post a shift"
+              desc="List your availability with role, hours, and rate."
+              icon={<CalendarPlus className="h-5 w-5" />}
             />
             <ActionTile
               href="/dashboard/payer"
@@ -87,21 +94,33 @@ export default async function DashboardPage() {
             <ActionTile
               href="/dashboard/payouts"
               title={branding.payoutVerb}
-              desc={`Move funds out to a ${branding.payeeSingular.toLowerCase()}.`}
+              desc={`Move earnings to a ${branding.payeeSingular.toLowerCase()}.`}
               icon={<ArrowUpFromLine className="h-5 w-5" />}
             />
           </div>
         </section>
 
-        {/* Stats — GAG wallet from Root; domain counts match /dashboard/domains (Redis via getMyOwnedDomains) */}
+        {/* Stats — wallet from Root; shift counts from Redis */}
         <section className="mb-8">
           <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
             At a glance
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="GAG wallet" value={gagWalletLabel} icon={<Wallet className="h-4 w-4" />} />
-            <StatCard label="Owned domains" value={String(ownedDomainsCount)} icon={<Globe2 className="h-4 w-4" />} />
-            <StatCard label="Listed for sale" value={String(listedForSaleCount)} icon={<Tag className="h-4 w-4" />} />
+            <StatCard
+              label={`${branding.productName} wallet`}
+              value={walletBalanceLabel}
+              icon={<Wallet className="h-4 w-4" />}
+            />
+            <StatCard
+              label="Live shifts posted"
+              value={String(liveCount)}
+              icon={<CalendarPlus className="h-4 w-4" />}
+            />
+            <StatCard
+              label="Booked shifts"
+              value={String(bookedCount)}
+              icon={<Briefcase className="h-4 w-4" />}
+            />
             <StatCard
               label={branding.payoutNounPlural}
               value="$0.00"
@@ -115,19 +134,19 @@ export default async function DashboardPage() {
           <div className="border-b-2 px-6 py-5">
             <h2 className="text-xl font-extrabold tracking-tight">Modules</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Everything you need to run your domain business.
+              Everything you need to staff a chair or earn on your off days.
             </p>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <ModuleTile
               href="/dashboard/marketplace"
-              title="Marketplace"
-              desc="Browse every domain listed for sale by other accounts."
+              title="Find staff"
+              desc="Open shifts posted by other dental professionals."
             />
             <ModuleTile
-              href="/dashboard/domains"
-              title="My domains"
-              desc="See what you own. List or unlist any domain."
+              href="/dashboard/services"
+              title="My shifts"
+              desc="Shifts you've posted, plus the ones you've booked."
             />
             <ModuleTile
               href="/dashboard/payouts"
@@ -137,7 +156,7 @@ export default async function DashboardPage() {
             <ModuleTile
               href="/dashboard/payees"
               title={branding.payeePlural}
-              desc={`Manage banks and debit cards you ${branding.payoutVerb.toLowerCase()} to.`}
+              desc={`Banks and debit cards you ${branding.payoutVerb.toLowerCase()} to.`}
             />
             <ModuleTile
               href="/dashboard/transactions"
@@ -146,8 +165,8 @@ export default async function DashboardPage() {
             />
             <ModuleTile
               href="/dashboard/payer"
-              title={branding.payerSingular}
-              desc={`Profile, ${branding.funderShortLabel.toLowerCase()}, and GAG wallet settings.`}
+              title="Account"
+              desc={`Profile, ${branding.funderShortLabel.toLowerCase()}, and wallet settings.`}
             />
           </div>
         </section>

@@ -8,12 +8,12 @@ import { Button } from '@/components/ui/button';
 
 const NAV: { href: string; label: string }[] = [
   { href: '/dashboard', label: 'Overview' },
-  { href: '/dashboard/marketplace', label: 'Marketplace' },
-  { href: '/dashboard/domains', label: 'My domains' },
+  { href: '/dashboard/marketplace', label: 'Find staff' },
+  { href: '/dashboard/services', label: 'My shifts' },
   { href: '/dashboard/payouts', label: branding.payoutNounPlural },
   { href: '/dashboard/payees', label: branding.payeePlural },
   { href: '/dashboard/transactions', label: 'Activity' },
-  { href: '/dashboard/payer', label: branding.payerSingular },
+  { href: '/dashboard/payer', label: 'Account' },
 ];
 
 export function DashboardHeader({ email }: { email: string }) {
@@ -36,10 +36,10 @@ export function DashboardHeader({ email }: { email: string }) {
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="h-16 flex items-center justify-between gap-6">
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground text-base font-extrabold">
-              {branding.productName.charAt(0)}
-            </div>
-            <span className="text-lg font-extrabold tracking-tight">{branding.productName}</span>
+            <ToothMark />
+            <span className="text-lg font-extrabold tracking-tight">
+              {branding.productName}
+            </span>
           </Link>
 
           <div className="flex items-center gap-2">
@@ -79,5 +79,26 @@ export function DashboardHeader({ email }: { email: string }) {
         </nav>
       </div>
     </header>
+  );
+}
+
+function ToothMark() {
+  return (
+    <span
+      aria-hidden
+      className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-4 w-4"
+      >
+        <path d="M7.5 3C5.6 3 4 4.6 4 6.5c0 1.4.4 2.6.9 3.7.5 1.2.7 2.4.6 3.7l-.2 4.4c-.1 1.4 1 2.7 2.5 2.7 1.4 0 2.4-1.1 2.5-2.5l.3-3.5c.1-1 .9-1.7 1.9-1.7s1.8.7 1.9 1.7l.3 3.5c.1 1.4 1.1 2.5 2.5 2.5 1.5 0 2.6-1.3 2.5-2.7l-.2-4.4c-.1-1.3.1-2.5.6-3.7.5-1.1.9-2.3.9-3.7C20 4.6 18.4 3 16.5 3c-1.3 0-2.5.6-3.3 1.5L12 5.7l-1.2-1.2C10 3.6 8.8 3 7.5 3Z" />
+      </svg>
+    </span>
   );
 }

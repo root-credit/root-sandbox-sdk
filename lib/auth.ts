@@ -1,7 +1,8 @@
 import { randomUUID } from "crypto";
 import CryptoJS from "crypto-js";
 import { getPayerByEmail, setPayer } from "./redis";
-import { getOrCreateRootPayer } from "./root-api";
+import { createRootSubaccount, getOrCreateRootPayer } from "./root-api";
+import { branding } from "./branding";
 
 const AUTH_SECRET = process.env.AUTH_SECRET || "dev-secret-key-change-in-production";
 
@@ -47,12 +48,32 @@ export async function registerPayer(input: {
 
   const payerId = randomUUID();
 
+  // Auto-provision the user's Dental Dynamics wallet (Root subaccount)
+  // immediately on signup. The brief requires the wallet to exist as soon as
+  // the account exists; if Root is unreachable we still create the account so
+  // the user can retry from /dashboard/account later.
+  let subaccountId: string | undefined;
+  try {
+    const walletName = `${input.payerName} · ${branding.productName} wallet`.slice(
+      0,
+      128,
+    );
+    const sub = await createRootSubaccount(walletName);
+    subaccountId = sub.id;
+  } catch (err) {
+    console.warn(
+      "[v0] Failed to auto-provision wallet subaccount on signup:",
+      err instanceof Error ? err.message : err,
+    );
+  }
+
   await setPayer(payerId, {
     id: payerId,
     payerEmail: input.email,
     payerName: input.payerName,
     phone: input.phone,
     rootPayerId: rootPayer.id,
+    ...(subaccountId ? { subaccountId } : {}),
     createdAt: Date.now(),
     updatedAt: Date.now(),
   });
@@ -60,5 +81,6 @@ export async function registerPayer(input: {
   return {
     payerId,
     rootPayerId: rootPayer.id,
+    subaccountId,
   };
 }

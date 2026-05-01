@@ -26,14 +26,14 @@ export default async function PayerSettingsPage() {
             Console
           </Link>
           <span>/</span>
-          <span className="text-foreground font-bold">{branding.payerSingular}</span>
+          <span className="text-foreground font-bold">Account</span>
         </nav>
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">{branding.payerSingular}</h1>
+            <h1 className="text-4xl font-extrabold tracking-tight">Account</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Your profile, your {branding.funderShortLabel.toLowerCase()}, and the Good as Gold
-              wallet behind every domain trade.
+              Your profile, your {branding.funderShortLabel.toLowerCase()}, and the{' '}
+              {branding.productName} wallet behind every shift.
             </p>
           </div>
           {payer.bankAccountToken && (
@@ -55,7 +55,7 @@ export default async function PayerSettingsPage() {
             </p>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5">
-            <ProfileField label={`${branding.payerSingular} name`} value={payer.payerName} />
+            <ProfileField label="Full name" value={payer.payerName} />
             <ProfileField label="Email address" value={payer.payerEmail} mono />
             <ProfileField label="Phone number" value={payer.phone} mono />
             <ProfileField label="Root payer ID" value={payer.rootPayerId} mono small />
@@ -79,7 +79,7 @@ export default async function PayerSettingsPage() {
               </p>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-foreground">
                 {[
-                  `Fund your GAG wallet via ACH debit`,
+                  `Fund your ${branding.productName} wallet via ACH debit`,
                   'Fast and secure transfers',
                   'Support for checking and savings accounts',
                   'Direct integration with Root infrastructure',
