@@ -212,8 +212,8 @@ export function AdminPanel() {
               FLUSHDB
             </code>{' '}
             on this database: removes all payer/payee/session/transaction records,
-            shared login hash, marketplace/domain keys, and any other keys. Admin login is
-            unchanged (cookie only). Use a dedicated Upstash DB for this app in production.
+            shared login hash, and any other keys. Admin login is unchanged (cookie only).
+            Use a dedicated Upstash DB for this app in production.
           </>
         }
         tone="danger"

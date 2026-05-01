@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { CheckCircle2 } from 'lucide-react';
+import { Building2, CheckCircle2 } from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { BankAccountForm } from '@/components/BankAccountForm';
 import { PayerSubaccountSection } from '@/components/PayerSubaccountSection';
@@ -26,14 +26,15 @@ export default async function PayerSettingsPage() {
             Console
           </Link>
           <span>/</span>
-          <span className="text-foreground font-bold">{branding.payerSingular}</span>
+          <span className="text-foreground font-bold">Wallet &amp; bank</span>
         </nav>
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">{branding.payerSingular}</h1>
+            <h1 className="text-4xl font-black tracking-tight">Wallet &amp; bank</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Your profile, your {branding.funderShortLabel.toLowerCase()}, and the Good as Gold
-              wallet behind every domain trade.
+              Your {branding.payerSingular.toLowerCase()} profile, your{' '}
+              {branding.funderShortLabel.toLowerCase()}, and the Gusto wallet that powers
+              every payroll run.
             </p>
           </div>
           {payer.bankAccountToken && (
@@ -46,13 +47,18 @@ export default async function PayerSettingsPage() {
 
         {/* Profile */}
         <section className="rounded-2xl border-2 bg-card mb-6">
-          <div className="border-b-2 px-6 py-5">
-            <h2 className="text-xl font-extrabold tracking-tight">
-              {branding.payerSingular} information
-            </h2>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              The details we use across your console.
-            </p>
+          <div className="border-b-2 px-6 py-5 flex items-center gap-3">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Building2 className="h-5 w-5" />
+            </span>
+            <div>
+              <h2 className="text-xl font-black tracking-tight">
+                {branding.payerSingular} information
+              </h2>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                The details we use across your console.
+              </p>
+            </div>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5">
             <ProfileField label={`${branding.payerSingular} name`} value={payer.payerName} />
@@ -65,9 +71,9 @@ export default async function PayerSettingsPage() {
         {/* Bank account */}
         <section className="rounded-2xl border-2 bg-card mb-6">
           <div className="border-b-2 px-6 py-5">
-            <h2 className="text-xl font-extrabold tracking-tight">{branding.funderLabel}</h2>
+            <h2 className="text-xl font-black tracking-tight">{branding.funderLabel}</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Link your {branding.payerPossessive} bank to fund your Good as Gold wallet via ACH.
+              Link your {branding.payerPossessive} bank to fund your Gusto wallet via ACH.
             </p>
           </div>
           <div className="p-6 flex flex-col gap-6">
@@ -79,7 +85,7 @@ export default async function PayerSettingsPage() {
               </p>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-foreground">
                 {[
-                  `Fund your GAG wallet via ACH debit`,
+                  `Fund your Gusto wallet via ACH debit`,
                   'Fast and secure transfers',
                   'Support for checking and savings accounts',
                   'Direct integration with Root infrastructure',
@@ -94,7 +100,7 @@ export default async function PayerSettingsPage() {
           </div>
         </section>
 
-        {/* GAG wallet (subaccount) */}
+        {/* Gusto wallet (subaccount) */}
         <PayerSubaccountSection
           payerId={session.payerId}
           payerName={payer.payerName}

@@ -95,13 +95,13 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
     <form onSubmit={onSubmit} className="space-y-6">
       <div>
         <p className="text-xs font-bold uppercase tracking-widest text-primary mb-1">
-          {branding.payoutNoun}
+          This week&apos;s payroll
         </p>
-        <h3 className="text-lg font-extrabold tracking-tight mb-1">
-          Enter {branding.payoutVerb.toLowerCase()} amounts
+        <h3 className="text-lg font-black tracking-tight mb-1">
+          Enter pay amounts
         </h3>
         <p className="text-sm text-muted-foreground">
-          Set an amount for each {branding.payeeSingular.toLowerCase()}. Leave blank to skip.
+          Set this week&apos;s amount for each {branding.payeeSingular.toLowerCase()}. Leave blank to skip.
         </p>
 
         <div className="mt-4 rounded-xl border-2 overflow-hidden bg-card">
@@ -113,10 +113,10 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
               }`}
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground text-xs font-medium flex-none">
+                <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-secondary text-foreground text-xs font-black flex-none">
                   {payee.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase() || '?'}
                 </span>
-                <span className="font-medium truncate text-sm">{payee.name}</span>
+                <span className="font-bold truncate text-sm">{payee.name}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground font-mono text-sm">$</span>
@@ -139,20 +139,19 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-              {`Total ${branding.payoutVerb.toLowerCase()}`}
+              Total payroll
             </p>
-            <div className="text-4xl font-extrabold font-mono mt-1 tracking-tight tabular-nums">
+            <div className="text-4xl font-black font-mono mt-1 tracking-tight tabular-nums">
               ${totalAmount.toFixed(2)}
             </div>
             <p className="mt-1.5 text-xs text-muted-foreground font-semibold">
-              {fundedCount} of {payees.length} {branding.payeePlural.toLowerCase()} · settles via Root
-              rails
+              {fundedCount} of {payees.length} {branding.payeePlural.toLowerCase()} · settles via Root rails
             </p>
           </div>
           <Button
             type="submit"
             disabled={isProcessing || totalAmount <= 0}
-            className="shrink-0 rounded-full font-bold bg-foreground text-background hover:bg-foreground/90 h-11 px-5"
+            className="shrink-0 rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-5"
           >
             {isProcessing ? (
               <>
@@ -160,14 +159,14 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
                 Settling…
               </>
             ) : (
-              `Process ${branding.payoutNounPlural.toLowerCase()}`
+              'Run payroll'
             )}
           </Button>
         </div>
       </div>
 
       <p className="text-xs text-muted-foreground text-center">
-        {branding.payoutNounPlural} are processed immediately via Root&apos;s payment infrastructure.
+        Payroll runs are processed immediately via Root&apos;s payment infrastructure.
       </p>
     </form>
   );

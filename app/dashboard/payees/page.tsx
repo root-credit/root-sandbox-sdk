@@ -42,7 +42,7 @@ export default function PayeesPage() {
 
   async function handleDelete(payeeId: string) {
     if (!payerId) return;
-    if (!confirm(`Remove this ${branding.payeeSingular.toLowerCase()}?`)) return;
+    if (!confirm(`Remove this ${branding.payeeSingular.toLowerCase()} from the team?`)) return;
     try {
       await removePayee(payerId, payeeId);
       setPayees(payees.filter((p) => p.id !== payeeId));
@@ -56,33 +56,27 @@ export default function PayeesPage() {
       <DashboardHeader email={session.payerEmail} />
 
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
-        <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
-          <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
-            Console
-          </Link>
-          <span>/</span>
-          <span className="text-foreground font-bold">{branding.payeePlural}</span>
-        </nav>
+        <Breadcrumb here={branding.payeePlural} />
 
         <div className="mb-8 flex items-end justify-between gap-6 flex-wrap">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">{branding.payeePlural}</h1>
+            <h1 className="text-4xl font-black tracking-tight">{branding.payeePlural}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              The banks and debit cards you {branding.payoutVerb.toLowerCase()} to from your Good as Gold
-              wallet.
+              Your team roster. Each {branding.payeeSingular.toLowerCase()} signs in with the
+              email below and picks how they want to be paid — bank or debit card.
             </p>
           </div>
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90 h-11 px-5">
+              <Button className="rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-5">
                 <Plus className="h-4 w-4" />
                 Add {branding.payeeSingular.toLowerCase()}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-extrabold tracking-tight">
+                <DialogTitle className="text-2xl font-black tracking-tight">
                   Add {branding.payeeSingular.toLowerCase()}
                 </DialogTitle>
               </DialogHeader>
@@ -107,7 +101,7 @@ export default function PayeesPage() {
           <div className="flex items-center justify-between gap-3 border-b-2 px-6 py-4">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
-              <h2 className="font-extrabold tracking-tight">{branding.payeePlural}</h2>
+              <h2 className="font-black tracking-tight">{branding.payeePlural}</h2>
               {!isLoading && (
                 <span className="text-xs text-muted-foreground font-bold">
                   ({payees.length})
@@ -122,28 +116,27 @@ export default function PayeesPage() {
             </div>
           ) : payees.length === 0 ? (
             <div className="p-16 flex flex-col items-center gap-3 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
                 <Users className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-lg font-extrabold">
+                <p className="text-lg font-black">
                   No {branding.payeePlural.toLowerCase()} yet
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Add your first {branding.payeeSingular.toLowerCase()} to start{' '}
-                  {branding.payoutVerb.toLowerCase()}-ing.
+                  Add your first {branding.payeeSingular.toLowerCase()} to start running payroll.
                 </p>
               </div>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="mt-1 rounded-full font-bold bg-foreground text-background hover:bg-foreground/90">
+                  <Button className="mt-1 rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90">
                     <Plus className="h-4 w-4" />
                     Add your first {branding.payeeSingular.toLowerCase()}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-extrabold tracking-tight">
+                    <DialogTitle className="text-2xl font-black tracking-tight">
                       Add {branding.payeeSingular.toLowerCase()}
                     </DialogTitle>
                   </DialogHeader>
@@ -162,7 +155,7 @@ export default function PayeesPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="font-bold uppercase tracking-widest text-[10px]">
-                    Name
+                    {branding.payeeSingular}
                   </TableHead>
                   <TableHead className="font-bold uppercase tracking-widest text-[10px]">
                     Email
@@ -171,7 +164,7 @@ export default function PayeesPage() {
                     Phone
                   </TableHead>
                   <TableHead className="font-bold uppercase tracking-widest text-[10px]">
-                    Rail
+                    Payout method
                   </TableHead>
                   <TableHead className="text-right font-bold uppercase tracking-widest text-[10px]">
                     Actions
@@ -181,7 +174,19 @@ export default function PayeesPage() {
               <TableBody>
                 {payees.map((payee) => (
                   <TableRow key={payee.id}>
-                    <TableCell className="font-bold">{payee.name}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-foreground text-xs font-black flex-none">
+                          {payee.name
+                            .split(' ')
+                            .map((n) => n[0])
+                            .slice(0, 2)
+                            .join('')
+                            .toUpperCase() || '?'}
+                        </span>
+                        <span className="font-bold">{payee.name}</span>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-muted-foreground font-mono text-xs">
                       {payee.email}
                     </TableCell>
@@ -216,5 +221,17 @@ export default function PayeesPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+function Breadcrumb({ here }: { here: string }) {
+  return (
+    <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
+      <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
+        Console
+      </Link>
+      <span>/</span>
+      <span className="text-foreground font-bold">{here}</span>
+    </nav>
   );
 }

@@ -3,23 +3,23 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowUpFromLine } from 'lucide-react';
+import { ArrowUpFromLine, Wallet } from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { PayoutForm } from '@/components/PayoutForm';
 import { branding } from '@/lib/branding';
 import { useSession } from '@/lib/hooks/useSession';
 import { usePayees } from '@/lib/hooks/usePayees';
-import { useDomainStore } from '@/components/DomainStoreProvider';
+import { useWallet } from '@/components/WalletProvider';
 import { formatMoney } from '@/lib/types/payments';
 
-export default function CashOutPage() {
+export default function RunPayrollPage() {
   const router = useRouter();
   const { session } = useSession();
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
 
   const payerId = session?.payerId ?? null;
   const { payees, isLoading, error, refresh } = usePayees(payerId);
-  const { walletBalanceCents } = useDomainStore();
+  const { walletBalanceCents, walletEnabled, refreshWallet } = useWallet();
 
   if (!session) return null;
 
@@ -28,25 +28,19 @@ export default function CashOutPage() {
       <DashboardHeader email={session.payerEmail} />
 
       <main className="flex-1 mx-auto max-w-5xl w-full px-6 lg:px-10 py-8">
-        <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
-          <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
-            Console
-          </Link>
-          <span>/</span>
-          <span className="text-foreground font-bold">{branding.payoutNounPlural}</span>
-        </nav>
+        <Breadcrumb here="Run payroll" />
 
         <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">{branding.payoutNounPlural}</h1>
+            <h1 className="text-4xl font-black tracking-tight">Run payroll</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Move funds out of your Good as Gold wallet to a {branding.payeeSingular.toLowerCase()} —
-              bank or debit card.
+              Pay your team this week. Set the amount for each {branding.payeeSingular.toLowerCase()},
+              and Gusto routes the funds straight from your wallet to their bank or debit card.
             </p>
           </div>
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary px-4 py-2 text-xs font-bold uppercase tracking-widest">
+          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-4 py-2 text-xs font-bold uppercase tracking-widest">
             <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-            Rail live
+            Rails live
           </span>
         </div>
 
@@ -54,21 +48,25 @@ export default function CashOutPage() {
         <section className="rounded-2xl border-2 bg-foreground text-background p-6 mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-background/60 mb-2">
-              <ArrowUpFromLine className="h-3.5 w-3.5" />
-              Available to {branding.payoutVerb.toLowerCase()}
+              <Wallet className="h-3.5 w-3.5" />
+              Available in Gusto wallet
             </div>
-            <div className="text-4xl md:text-5xl font-extrabold font-mono tabular-nums">
-              {walletBalanceCents == null ? '—' : formatMoney(walletBalanceCents)}
+            <div className="text-4xl md:text-5xl font-black font-mono tabular-nums">
+              {!walletEnabled
+                ? 'Not enabled'
+                : walletBalanceCents == null
+                  ? '—'
+                  : formatMoney(walletBalanceCents)}
             </div>
             <p className="text-sm text-background/70 mt-2 max-w-md">
-              Your GAG wallet balance. {branding.payoutNoun} requests pull from this balance.
+              Your Gusto wallet balance. Payroll runs pull from this balance.
             </p>
           </div>
           <Link
-            href="/dashboard/payees"
-            className="rounded-full bg-primary text-primary-foreground px-5 h-11 text-sm font-bold inline-flex items-center hover:bg-primary/90 transition-colors"
+            href="/dashboard/payer"
+            className="inline-flex items-center rounded-full bg-primary text-primary-foreground px-5 h-11 text-sm font-bold hover:bg-primary/90 transition-colors"
           >
-            Manage {branding.payeePlural.toLowerCase()}
+            Top up wallet
           </Link>
         </section>
 
@@ -84,35 +82,54 @@ export default function CashOutPage() {
               Loading {branding.payeePlural.toLowerCase()}…
             </div>
           ) : (
-            <PayoutForm payerId={session.payerId} payees={payees} onSuccess={refresh} />
+            <PayoutForm
+              payerId={session.payerId}
+              payees={payees}
+              onSuccess={() => {
+                refresh();
+                refreshWallet();
+              }}
+            />
           )}
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InfoCard
             label="How it works"
-            title={`From wallet to ${branding.funderShortLabel.toLowerCase()}`}
+            title="From wallet to bank"
             items={[
-              `Pick the ${branding.payeeSingular.toLowerCase()} you're sending to`,
-              `Enter the amount to ${branding.payoutVerb.toLowerCase()}`,
-              `Press process — ${branding.productName} routes the transfer`,
-              'Receipts and ledger entries write automatically',
+              `Set this week's amount for each ${branding.payeeSingular.toLowerCase()}`,
+              'Press run — Gusto routes every transfer in parallel',
+              `Funds land in each ${branding.payeeSingular.toLowerCase()}'s chosen rail`,
+              'Receipts and ledger entries are written automatically',
             ]}
             ordered
           />
           <InfoCard
             label="Quick tips"
-            title={`Run a clean ${branding.payoutNoun.toLowerCase()}`}
+            title="Run a clean payroll"
             items={[
               `Settles in roughly 5 seconds per ${branding.payeeSingular.toLowerCase()}`,
-              `${branding.payeeSingular} payment methods must be linked first`,
-              'Funds pull from your GAG wallet balance',
+              `Each ${branding.payeeSingular.toLowerCase()} must have a payout method on file`,
+              'Funds pull from your Gusto wallet balance',
               'Audit everything in Activity',
             ]}
           />
         </div>
       </main>
     </div>
+  );
+}
+
+function Breadcrumb({ here }: { here: string }) {
+  return (
+    <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
+      <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
+        Console
+      </Link>
+      <span>/</span>
+      <span className="text-foreground font-bold">{here}</span>
+    </nav>
   );
 }
 
@@ -130,7 +147,7 @@ function InfoCard({
   return (
     <div className="rounded-2xl border-2 bg-card p-6">
       <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">{label}</p>
-      <h3 className="font-extrabold tracking-tight text-lg mb-4">{title}</h3>
+      <h3 className="font-black tracking-tight text-lg mb-4">{title}</h3>
       {ordered ? (
         <ol className="space-y-2.5 text-sm text-foreground">
           {items.map((it, i) => (

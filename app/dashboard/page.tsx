@@ -1,39 +1,24 @@
 import type { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import {
+  Activity,
+  ArrowDownToLine,
+  ArrowRight,
+  ArrowUpFromLine,
+  Banknote,
+  Users,
+  Wallet,
+} from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
-import { DashboardOverviewHero } from '@/components/DashboardOverviewHero';
 import { getCurrentSession } from '@/lib/session';
 import { branding } from '@/lib/branding';
-import { getPayer } from '@/lib/redis';
-import { getSubaccountLedgerSnapshot } from '@/lib/root-api';
-import { formatMoney } from '@/lib/types/payments';
-import { getMyOwnedDomains } from '@/lib/godaddy-actions';
-import { Globe2, Tag, Wallet, ArrowDownToLine, ArrowUpFromLine, Activity } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
   const session = await getCurrentSession();
-
-  if (!session) {
-    redirect('/login');
-  }
-
-  const payer = await getPayer(session.payerId);
-  let gagWalletLabel = 'Not Activated';
-  if (payer?.subaccountId) {
-    try {
-      const snap = await getSubaccountLedgerSnapshot(payer.subaccountId);
-      gagWalletLabel = formatMoney(snap.balanceCents);
-    } catch {
-      gagWalletLabel = '—';
-    }
-  }
-
-  const ownedDomains = await getMyOwnedDomains();
-  const ownedDomainsCount = ownedDomains.length;
-  const listedForSaleCount = ownedDomains.filter((d) => d.listingPriceCents !== undefined).length;
+  if (!session) redirect('/login');
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -41,22 +26,50 @@ export default async function DashboardPage() {
 
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
         {/* Hero */}
-        <section className="rounded-3xl border-2 bg-card p-8 md:p-10 mb-8 relative overflow-hidden">
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
-            <div className="absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
-          </div>
-          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground mb-5">
-            {branding.productName} console
-          </span>
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05] max-w-3xl">
-            {branding.consoleHeading}
-          </h1>
-          <p className="text-base md:text-lg text-muted-foreground mt-4 max-w-2xl leading-relaxed">
-            {branding.consoleSubheading}
-          </p>
+        <section className="rounded-3xl border-2 bg-secondary p-8 md:p-10 mb-8 relative overflow-hidden">
+          <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-primary/15 blur-3xl" aria-hidden />
+          <div className="absolute -bottom-20 -left-16 h-52 w-52 rounded-full bg-accent/40 blur-3xl" aria-hidden />
 
-          <DashboardOverviewHero />
+          <div className="relative">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-primary-foreground mb-5">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />
+              {branding.productName} console
+            </span>
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight text-balance leading-[1.05] max-w-3xl">
+              {branding.consoleHeading}
+            </h1>
+            <p className="text-base md:text-lg text-muted-foreground mt-4 max-w-2xl leading-relaxed">
+              {branding.consoleSubheading}
+            </p>
+
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-stretch">
+              <div className="flex flex-col justify-between rounded-2xl border-2 bg-foreground text-background px-5 py-4 sm:min-w-72">
+                <span className="text-[11px] font-bold uppercase tracking-widest text-background/60">
+                  Gusto wallet
+                </span>
+                <div className="flex items-end gap-3 mt-1">
+                  <span className="text-3xl md:text-4xl font-black font-mono tabular-nums">
+                    $0.00
+                  </span>
+                  <span className="rounded-full bg-primary text-primary-foreground px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest mb-1">
+                    Live
+                  </span>
+                </div>
+              </div>
+              <Link
+                href="/dashboard/payouts"
+                className="group flex flex-1 items-center justify-between rounded-2xl border-2 bg-card px-5 py-4 hover:border-foreground transition-colors"
+              >
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                    Next action
+                  </div>
+                  <div className="text-base font-extrabold">Run weekly payroll</div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-foreground group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </div>
         </section>
 
         {/* Quick actions */}
@@ -66,17 +79,17 @@ export default async function DashboardPage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <ActionTile
-              href="/dashboard/marketplace"
-              title="Browse marketplace"
-              desc="Find a domain and buy with your wallet."
-              icon={<Globe2 className="h-5 w-5" />}
+              href="/dashboard/payouts"
+              title="Run payroll"
+              desc={`Pay your ${branding.payeePlural.toLowerCase()} their weekly amounts.`}
+              icon={<ArrowUpFromLine className="h-5 w-5" />}
               primary
             />
             <ActionTile
-              href="/dashboard/domains"
-              title="List a domain"
-              desc="Set an asking price and put it up for sale."
-              icon={<Tag className="h-5 w-5" />}
+              href="/dashboard/payees"
+              title={`Add ${branding.payeeSingular.toLowerCase()}`}
+              desc="Onboard a new team member to the roster."
+              icon={<Users className="h-5 w-5" />}
             />
             <ActionTile
               href="/dashboard/payer"
@@ -85,26 +98,34 @@ export default async function DashboardPage() {
               icon={<ArrowDownToLine className="h-5 w-5" />}
             />
             <ActionTile
-              href="/dashboard/payouts"
-              title={branding.payoutVerb}
-              desc={`Move funds out to a ${branding.payeeSingular.toLowerCase()}.`}
-              icon={<ArrowUpFromLine className="h-5 w-5" />}
+              href="/dashboard/transactions"
+              title="View activity"
+              desc="Audit every payroll move with full receipts."
+              icon={<Activity className="h-5 w-5" />}
             />
           </div>
         </section>
 
-        {/* Stats — GAG wallet from Root; domain counts match /dashboard/domains (Redis via getMyOwnedDomains) */}
+        {/* Stats — static placeholders only, no data fetching on overview */}
         <section className="mb-8">
           <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
             At a glance
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="GAG wallet" value={gagWalletLabel} icon={<Wallet className="h-4 w-4" />} />
-            <StatCard label="Owned domains" value={String(ownedDomainsCount)} icon={<Globe2 className="h-4 w-4" />} />
-            <StatCard label="Listed for sale" value={String(listedForSaleCount)} icon={<Tag className="h-4 w-4" />} />
+            <StatCard label="Gusto wallet" value="$0.00" icon={<Wallet className="h-4 w-4" />} />
+            <StatCard
+              label={branding.payeePlural}
+              value="0"
+              icon={<Users className="h-4 w-4" />}
+            />
+            <StatCard
+              label="This week's payroll"
+              value="$0.00"
+              icon={<Banknote className="h-4 w-4" />}
+            />
             <StatCard
               label={branding.payoutNounPlural}
-              value="$0.00"
+              value="0"
               icon={<Activity className="h-4 w-4" />}
             />
           </div>
@@ -113,41 +134,31 @@ export default async function DashboardPage() {
         {/* Module tiles */}
         <section className="rounded-2xl border-2 bg-card overflow-hidden">
           <div className="border-b-2 px-6 py-5">
-            <h2 className="text-xl font-extrabold tracking-tight">Modules</h2>
+            <h2 className="text-xl font-black tracking-tight">Modules</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Everything you need to run your domain business.
+              Everything you need to run payroll on Gusto.
             </p>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <ModuleTile
-              href="/dashboard/marketplace"
-              title="Marketplace"
-              desc="Browse every domain listed for sale by other accounts."
-            />
-            <ModuleTile
-              href="/dashboard/domains"
-              title="My domains"
-              desc="See what you own. List or unlist any domain."
+              href="/dashboard/payees"
+              title={branding.payeePlural}
+              desc="Manage your team. Add, update, and remove employees."
             />
             <ModuleTile
               href="/dashboard/payouts"
-              title={branding.payoutNounPlural}
-              desc={`Move wallet funds to a ${branding.payeeSingular.toLowerCase()}.`}
-            />
-            <ModuleTile
-              href="/dashboard/payees"
-              title={branding.payeePlural}
-              desc={`Manage banks and debit cards you ${branding.payoutVerb.toLowerCase()} to.`}
+              title="Run payroll"
+              desc={`Pay every ${branding.payeeSingular.toLowerCase()} from your Gusto wallet in one click.`}
             />
             <ModuleTile
               href="/dashboard/transactions"
               title="Activity"
-              desc="Audit every wallet move with full receipts."
+              desc="Audit every wallet move with full receipts and statuses."
             />
             <ModuleTile
               href="/dashboard/payer"
-              title={branding.payerSingular}
-              desc={`Profile, ${branding.funderShortLabel.toLowerCase()}, and GAG wallet settings.`}
+              title="Wallet & bank"
+              desc={`Profile, ${branding.funderShortLabel.toLowerCase()}, and Gusto wallet settings.`}
             />
           </div>
         </section>
@@ -163,7 +174,7 @@ function StatCard({ label, value, icon }: { label: string; value: string; icon?:
         {icon}
         {label}
       </div>
-      <div className="text-3xl font-extrabold font-mono tabular-nums">{value}</div>
+      <div className="text-3xl font-black font-mono tabular-nums">{value}</div>
     </div>
   );
 }
@@ -192,7 +203,7 @@ function ActionTile({
     >
       <div
         className={`flex h-10 w-10 items-center justify-center rounded-full ${
-          primary ? 'bg-primary text-primary-foreground' : 'bg-primary/15 text-primary'
+          primary ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary'
         }`}
       >
         {icon}
@@ -208,11 +219,11 @@ function ActionTile({
         </p>
       </div>
       <div
-        className={`mt-auto text-xs font-bold uppercase tracking-widest ${
+        className={`mt-auto inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest ${
           primary ? 'text-background/75' : 'text-foreground'
         }`}
       >
-        Open →
+        Open <ArrowRight className="h-3 w-3" />
       </div>
     </Link>
   );
@@ -224,10 +235,10 @@ function ModuleTile({ href, title, desc }: { href: string; title: string; desc: 
       href={href}
       className="group block rounded-xl border-2 p-5 transition-all bg-card hover:border-foreground hover:shadow-md"
     >
-      <h3 className="font-extrabold tracking-tight mb-1.5">{title}</h3>
+      <h3 className="font-black tracking-tight mb-1.5">{title}</h3>
       <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
-      <div className="mt-4 text-xs font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
-        Open →
+      <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
+        Open <ArrowRight className="h-3 w-3" />
       </div>
     </Link>
   );

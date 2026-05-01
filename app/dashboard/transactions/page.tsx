@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Activity as ActivityIcon } from 'lucide-react';
+import { Activity as ActivityIcon, ArrowRight } from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { branding } from '@/lib/branding';
 import { useSession } from '@/lib/hooks/useSession';
@@ -39,19 +39,13 @@ export default function ActivityPage() {
       <DashboardHeader email={session.payerEmail} />
 
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
-        <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
-          <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
-            Console
-          </Link>
-          <span>/</span>
-          <span className="text-foreground font-bold">Activity</span>
-        </nav>
+        <Breadcrumb here="Activity" />
 
         <div className="mb-8">
-          <h1 className="text-4xl font-extrabold tracking-tight">Activity</h1>
+          <h1 className="text-4xl font-black tracking-tight">Activity</h1>
           <p className="text-base text-muted-foreground mt-2 max-w-xl">
-            Every {branding.payoutNoun.toLowerCase()}, every status, every receipt — written to
-            your ledger.
+            Every paycheck, every status, every receipt — written to your ledger as
+            payroll runs.
           </p>
         </div>
 
@@ -62,14 +56,8 @@ export default function ActivityPage() {
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <StatCard
-            label={`Total ${branding.payoutVerb.toLowerCase()}`}
-            value={formatMoney(totalPaidCents)}
-          />
-          <StatCard
-            label={`Successful ${branding.payoutNounPlural.toLowerCase()}`}
-            value={String(successfulTransactions)}
-          />
+          <StatCard label="Total paid out" value={formatMoney(totalPaidCents)} />
+          <StatCard label="Successful payments" value={String(successfulTransactions)} />
           <StatCard label="Total events" value={String(transactions.length)} />
         </div>
 
@@ -80,20 +68,20 @@ export default function ActivityPage() {
             </div>
           ) : transactions.length === 0 ? (
             <div className="p-16 flex flex-col items-center gap-3 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
                 <ActivityIcon className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-lg font-extrabold">No activity yet</p>
+                <p className="text-lg font-black">No activity yet</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Run your first {branding.payoutNoun.toLowerCase()} to populate the ledger.
+                  Run your first payroll to populate the ledger.
                 </p>
               </div>
               <Link
                 href="/dashboard/payouts"
-                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-foreground text-background px-5 h-11 text-sm font-bold hover:bg-foreground/90 transition-colors"
+                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-5 h-11 text-sm font-bold hover:bg-primary/90 transition-colors"
               >
-                Run your first {branding.payoutNoun.toLowerCase()} →
+                Run your first payroll <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           ) : (
@@ -120,11 +108,23 @@ export default function ActivityPage() {
               <TableBody>
                 {transactions.map((transaction) => (
                   <TableRow key={transaction.id}>
-                    <TableCell className="font-bold">{transaction.payeeName}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-foreground text-[10px] font-black flex-none">
+                          {transaction.payeeName
+                            .split(' ')
+                            .map((n) => n[0])
+                            .slice(0, 2)
+                            .join('')
+                            .toUpperCase() || '?'}
+                        </span>
+                        <span className="font-bold">{transaction.payeeName}</span>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-muted-foreground font-mono text-xs">
                       {transaction.payeeEmail}
                     </TableCell>
-                    <TableCell className="text-right font-mono tabular-nums font-extrabold">
+                    <TableCell className="text-right font-mono tabular-nums font-black">
                       ${centsToDollars(transaction.amountCents ?? 0).toFixed(2)}
                     </TableCell>
                     <TableCell>
@@ -150,13 +150,25 @@ export default function ActivityPage() {
   );
 }
 
+function Breadcrumb({ here }: { here: string }) {
+  return (
+    <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
+      <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
+        Console
+      </Link>
+      <span>/</span>
+      <span className="text-foreground font-bold">{here}</span>
+    </nav>
+  );
+}
+
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border-2 bg-card p-5 flex flex-col gap-2">
       <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
         {label}
       </div>
-      <div className="text-2xl font-extrabold font-mono tabular-nums">{value}</div>
+      <div className="text-2xl font-black font-mono tabular-nums">{value}</div>
     </div>
   );
 }

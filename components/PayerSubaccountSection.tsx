@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Wallet } from 'lucide-react';
 import { toast } from 'sonner';
 import { branding } from '@/lib/branding';
 import { useFundSubaccountPayin, usePayerSubaccountToggle } from '@/lib/hooks/usePayer';
@@ -11,16 +11,9 @@ import {
   fundSubaccountPayinInputSchema,
   type FundSubaccountPayinInput,
 } from '@/lib/types/fund';
-import { useDomainStore } from '@/components/DomainStoreProvider';
+import { useWallet } from '@/components/WalletProvider';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
@@ -42,9 +35,9 @@ export function PayerSubaccountSection({
   const { enableSubaccount, disableSubaccount, isSubmitting: toggleBusy } =
     usePayerSubaccountToggle();
   const { fundPayin, isSubmitting: payinBusy } = useFundSubaccountPayin();
-  const { refreshWallet } = useDomainStore();
+  const { refreshWallet } = useWallet();
 
-  const defaultSubaccountName = `${payerName} · ${branding.productName} GAG wallet`.slice(
+  const defaultSubaccountName = `${payerName} · ${branding.productName} wallet`.slice(
     0,
     128,
   );
@@ -54,10 +47,10 @@ export function PayerSubaccountSection({
     try {
       if (enable) {
         await enableSubaccount(payerId, defaultSubaccountName);
-        toast.success('Good as Gold wallet enabled');
+        toast.success(`${branding.productName} wallet enabled`);
       } else {
         await disableSubaccount(payerId);
-        toast.success('Good as Gold wallet disabled for this profile');
+        toast.success(`${branding.productName} wallet disabled for this profile`);
       }
       router.refresh();
       // Pull fresh balance (incoming - outgoing) from Root after the wallet
@@ -76,7 +69,7 @@ export function PayerSubaccountSection({
   } = useForm<FundSubaccountPayinInput>({
     resolver: zodResolver(fundSubaccountPayinInputSchema),
     defaultValues: {
-      amount: 10,
+      amount: 1000,
       rail: 'standard_ach',
     },
   });
@@ -99,19 +92,24 @@ export function PayerSubaccountSection({
   }
 
   return (
-    <Card className="mb-6 rounded-2xl border-2">
-      <CardHeader>
-        <CardTitle className="text-xl font-extrabold tracking-tight">Good as Gold wallet</CardTitle>
-        <CardDescription>
-          Your in-app balance for buying domains, receiving sales, and {branding.payoutVerb.toLowerCase()}-ing
-          to your {branding.payeePlural.toLowerCase()}. Powered by a Root subaccount.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-6">
-        <div className="flex flex-col gap-4 rounded-xl border-2 bg-secondary p-4 sm:flex-row sm:items-center sm:justify-between">
+    <section className="rounded-2xl border-2 bg-card mb-6">
+      <div className="border-b-2 px-6 py-5 flex items-center gap-3">
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <Wallet className="h-5 w-5" />
+        </span>
+        <div>
+          <h2 className="text-xl font-black tracking-tight">{branding.productName} wallet</h2>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Your in-app balance for funding payroll. Powered by a Root subaccount.
+          </p>
+        </div>
+      </div>
+
+      <div className="p-6 flex flex-col gap-6">
+        <div className="flex flex-col gap-4 rounded-xl border-2 bg-secondary p-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-bold">Enable Good as Gold wallet</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm font-bold">Enable {branding.productName} wallet</p>
+            <p className="text-xs text-muted-foreground max-w-md">
               Provisions a Root subaccount to back your wallet balance and ACH payins.
             </p>
           </div>
@@ -123,8 +121,8 @@ export function PayerSubaccountSection({
         </div>
 
         {subaccountEnabled && subaccountId ? (
-          <div className="rounded-xl border-2 bg-background px-3 py-2">
-            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+          <div className="rounded-xl border-2 bg-background px-4 py-3">
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
               Wallet (subaccount) ID
             </p>
             <p className="font-mono text-xs break-all text-muted-foreground">{subaccountId}</p>
@@ -132,17 +130,14 @@ export function PayerSubaccountSection({
         ) : null}
 
         {subaccountEnabled ? (
-          <div className="flex flex-col gap-4 rounded-xl border-2 bg-secondary p-4">
+          <div className="flex flex-col gap-4 rounded-xl border-2 bg-secondary p-5">
             <div>
-              <p className="text-sm font-bold">Top up GAG wallet (ACH pull)</p>
+              <p className="text-sm font-bold">Top up wallet (ACH pull)</p>
               <p className="text-xs text-muted-foreground mt-1">
                 Pull funds from your {branding.funderLabel.toLowerCase()} into your wallet using{' '}
                 <code className="rounded bg-muted px-1 py-0.5 text-[11px]">standard_ach</code>{' '}
                 or{' '}
-                <code className="rounded bg-muted px-1 py-0.5 text-[11px]">
-                  same_day_ach
-                </code>
-                .
+                <code className="rounded bg-muted px-1 py-0.5 text-[11px]">same_day_ach</code>.
               </p>
             </div>
 
@@ -173,7 +168,7 @@ export function PayerSubaccountSection({
                       id="payin-rail"
                       {...register('rail')}
                       className={cn(
-                        'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors',
+                        'flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors',
                         'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
                       )}
                     >
@@ -188,7 +183,7 @@ export function PayerSubaccountSection({
                 <Button
                   type="submit"
                   disabled={payinBusy}
-                  className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90"
+                  className="rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90"
                 >
                   {payinBusy ? (
                     <>
@@ -196,15 +191,15 @@ export function PayerSubaccountSection({
                       Topping up…
                     </>
                   ) : (
-                    'Top up GAG wallet'
+                    `Top up ${branding.productName} wallet`
                   )}
                 </Button>
               </form>
             )}
           </div>
         ) : null}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
