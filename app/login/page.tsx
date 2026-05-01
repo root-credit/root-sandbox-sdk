@@ -35,13 +35,13 @@ export default function LoginPage() {
               </span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              Sign in with the email you used when you opened your {branding.payerSingular.toLowerCase()}.
-              Your Good as Gold wallet, owned domains, and marketplace listings are waiting.
+              Sign in with the email you used when you opened your {branding.payerSingular.toLowerCase()} account.
+              Your {branding.productName} wallet, upcoming stays, and host listings are waiting.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
                 <Check />
-                One wallet for buying and selling
+                One wallet for booking and hosting
               </li>
               <li className="flex items-center gap-3">
                 <Check />
@@ -54,7 +54,7 @@ export default function LoginPage() {
             </ul>
           </div>
 
-          <div className="rounded-2xl border-2 bg-card p-7 shadow-xl">
+          <div className="rounded-2xl border bg-card p-7 shadow-xl">
             <div className="mb-6">
               <h2 className="text-2xl font-extrabold tracking-tight">Sign in</h2>
               <p className="text-base text-muted-foreground mt-1">
@@ -74,9 +74,9 @@ export default function LoginPage() {
             </div>
             <Link
               href="/signup"
-              className="flex w-full items-center justify-center rounded-full border-2 border-foreground h-11 px-5 text-sm font-bold transition-colors hover:bg-foreground hover:text-background"
+              className="flex w-full items-center justify-center rounded-full border border-foreground h-11 px-5 text-sm font-bold transition-colors hover:bg-foreground hover:text-background"
             >
-              Open a {branding.productName} {branding.payerSingular.toLowerCase()}
+              Open a {branding.productName} {branding.payerSingular.toLowerCase()} account
             </Link>
           </div>
         </div>

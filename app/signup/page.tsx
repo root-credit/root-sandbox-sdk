@@ -35,8 +35,8 @@ export default function SignupPage() {
               </span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              Create an {branding.payerSingular.toLowerCase()} in under two minutes. We&apos;ll spin up
-              your Good as Gold wallet, ready to fund and trade.
+              Create a {branding.payerSingular.toLowerCase()} account in under two minutes. We&apos;ll
+              spin up your {branding.productName} wallet, ready to fund, book, and host.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
@@ -45,7 +45,7 @@ export default function SignupPage() {
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                Buy with wallet, sell to other accounts
+                Book with your wallet, host with one tap
               </li>
               <li className="flex items-center gap-3">
                 <Check />
@@ -54,9 +54,9 @@ export default function SignupPage() {
             </ul>
           </div>
 
-          <div className="rounded-2xl border-2 bg-card p-7 shadow-xl">
+          <div className="rounded-2xl border bg-card p-7 shadow-xl">
             <div className="mb-6">
-              <h2 className="text-2xl font-extrabold tracking-tight">Create your {branding.payerSingular.toLowerCase()}</h2>
+              <h2 className="text-2xl font-extrabold tracking-tight">Create your {branding.payerSingular.toLowerCase()} account</h2>
               <p className="text-base text-muted-foreground mt-1">
                 Tell us a bit about yourself.
               </p>
@@ -74,7 +74,7 @@ export default function SignupPage() {
             </div>
             <Link
               href="/login"
-              className="flex w-full items-center justify-center rounded-full border-2 border-foreground h-11 px-5 text-sm font-bold transition-colors hover:bg-foreground hover:text-background"
+              className="flex w-full items-center justify-center rounded-full border border-foreground h-11 px-5 text-sm font-bold transition-colors hover:bg-foreground hover:text-background"
             >
               Sign in instead
             </Link>
