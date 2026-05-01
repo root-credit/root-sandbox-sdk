@@ -125,6 +125,10 @@ interface Subaccount {
     name: string;
     account_number?: string;
     routing_number?: string;
+    /** Lifetime incoming totals from Root (`GET /api/subaccounts/{id}`). */
+    total_incoming_cents?: number;
+    /** Lifetime outgoing totals from Root. */
+    total_outgoing_cents?: number;
     created_at?: string;
     updated_at?: string;
 }

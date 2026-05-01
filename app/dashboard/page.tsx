@@ -1,10 +1,17 @@
+import type { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardOverviewHero } from '@/components/DashboardOverviewHero';
 import { getCurrentSession } from '@/lib/session';
 import { branding } from '@/lib/branding';
+import { getPayer } from '@/lib/redis';
+import { getSubaccountLedgerSnapshot } from '@/lib/root-api';
+import { formatMoney } from '@/lib/types/payments';
+import { getMyOwnedDomains } from '@/lib/godaddy-actions';
 import { Globe2, Tag, Wallet, ArrowDownToLine, ArrowUpFromLine, Activity } from 'lucide-react';
+
+export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
   const session = await getCurrentSession();
@@ -12,6 +19,21 @@ export default async function DashboardPage() {
   if (!session) {
     redirect('/login');
   }
+
+  const payer = await getPayer(session.payerId);
+  let gagWalletLabel = 'Not Activated';
+  if (payer?.subaccountId) {
+    try {
+      const snap = await getSubaccountLedgerSnapshot(payer.subaccountId);
+      gagWalletLabel = formatMoney(snap.balanceCents);
+    } catch {
+      gagWalletLabel = '—';
+    }
+  }
+
+  const ownedDomains = await getMyOwnedDomains();
+  const ownedDomainsCount = ownedDomains.length;
+  const listedForSaleCount = ownedDomains.filter((d) => d.listingPriceCents !== undefined).length;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -71,15 +93,15 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-        {/* Stats — static placeholders per spec */}
+        {/* Stats — GAG wallet from Root; domain counts match /dashboard/domains (Redis via getMyOwnedDomains) */}
         <section className="mb-8">
           <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
             At a glance
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="GAG wallet" value="$0.00" icon={<Wallet className="h-4 w-4" />} />
-            <StatCard label="Owned domains" value="0" icon={<Globe2 className="h-4 w-4" />} />
-            <StatCard label="Listed for sale" value="0" icon={<Tag className="h-4 w-4" />} />
+            <StatCard label="GAG wallet" value={gagWalletLabel} icon={<Wallet className="h-4 w-4" />} />
+            <StatCard label="Owned domains" value={String(ownedDomainsCount)} icon={<Globe2 className="h-4 w-4" />} />
+            <StatCard label="Listed for sale" value={String(listedForSaleCount)} icon={<Tag className="h-4 w-4" />} />
             <StatCard
               label={branding.payoutNounPlural}
               value="$0.00"
@@ -134,7 +156,7 @@ export default async function DashboardPage() {
   );
 }
 
-function StatCard({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
+function StatCard({ label, value, icon }: { label: string; value: string; icon?: ReactNode }) {
   return (
     <div className="rounded-2xl border-2 bg-card p-5 flex flex-col gap-2">
       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">

@@ -77,7 +77,7 @@ export async function linkPayerBank(
     accountNumber: parsed.accountNumber,
     routingNumber: parsed.routingNumber,
   }, {
-    subaccountId: parsed.subaccountId,
+    subaccountId: parsed.subaccountId ?? payer.subaccountId,
   });
 
   await setPayer(payerId, {
@@ -191,14 +191,17 @@ export async function fundPayerSubaccountPayin(
   }
 
   const amount_in_cents = dollarsToCents(parsed.amount);
-  const payin = await createRootPayin({
-    payer_id: payer.rootPayerId,
-    amount_in_cents,
-    rail: parsed.rail,
-    subaccount_id,
-    auto_approve: true,
-    currency_code: 'USD',
-  });
+  const payin = await createRootPayin(
+    {
+      payer_id: payer.rootPayerId,
+      amount_in_cents,
+      rail: parsed.rail,
+      subaccount_id,
+      auto_approve: true,
+      currency_code: 'USD',
+    },
+    { defaultSubaccountId: payer.subaccountId ?? undefined },
+  );
 
   revalidatePath('/dashboard/payer');
 

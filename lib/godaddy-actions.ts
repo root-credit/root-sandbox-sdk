@@ -19,9 +19,12 @@
  */
 
 import { redis, getPayer } from '@/lib/redis';
-import { rootAPI } from '@/lib/root-api';
+import {
+  getSubaccountLedgerSnapshot,
+  moveRootSubaccountFunds,
+} from '@/lib/root-api';
 import { getCurrentSession } from '@/lib/session';
-import type { Money } from '@/lib/types/payments';
+import { formatMoney, type Money } from '@/lib/types/payments';
 
 export type OwnedDomainRecord = {
   id: string;
@@ -196,9 +199,8 @@ export async function unlistDomain(name: string): Promise<DomainMutationResult> 
 }
 
 /**
- * Buy a listed domain. Transfers ownership; settlement of funds between
- * buyer/seller wallets is out of scope for this MVP (a real implementation
- * would call `rootAPI.subaccounts.move(...)`).
+ * Buy a listed domain. Settles buyer → seller wallet via Root subaccount move,
+ * then transfers Redis ownership.
  */
 export async function buyDomain(name: string): Promise<DomainMutationResult> {
   const session = await getCurrentSession();
@@ -213,6 +215,46 @@ export async function buyDomain(name: string): Promise<DomainMutationResult> {
 
   const previousOwnerId = meta.ownerId;
   const buyerPayer = await getPayer(session.payerId);
+  const sellerPayer = await getPayer(previousOwnerId);
+
+  if (!buyerPayer?.subaccountId) {
+    return {
+      ok: false,
+      reason: 'Enable your GAG wallet before purchasing.',
+    };
+  }
+  if (!sellerPayer?.subaccountId) {
+    return {
+      ok: false,
+      reason: 'Seller has not enabled a wallet; purchase cannot settle.',
+    };
+  }
+
+  let buyerSnap;
+  try {
+    buyerSnap = await getSubaccountLedgerSnapshot(buyerPayer.subaccountId);
+  } catch {
+    return { ok: false, reason: 'Could not read your wallet balance. Try again.' };
+  }
+
+  if (buyerSnap.balanceCents < meta.listingPriceCents) {
+    return {
+      ok: false,
+      reason: `Insufficient wallet balance. You need ${formatMoney(meta.listingPriceCents)} available.`,
+    };
+  }
+
+  try {
+    await moveRootSubaccountFunds({
+      from_subaccount_id: buyerPayer.subaccountId,
+      to_subaccount_id: sellerPayer.subaccountId,
+      amount_in_cents: meta.listingPriceCents,
+    });
+  } catch (err) {
+    const msg =
+      err instanceof Error ? err.message : 'Wallet transfer failed.';
+    return { ok: false, reason: msg };
+  }
 
   meta.ownerId = session.payerId;
   meta.ownerHandle = handleFor(buyerPayer);
@@ -229,9 +271,8 @@ export async function buyDomain(name: string): Promise<DomainMutationResult> {
 }
 
 /**
- * Live GAG wallet balance: GET /api/subaccounts/{id} → `incoming - outgoing`.
- * The Root API surfaces lifetime totals (not a balance), and we never cache
- * the result here. Returns `null` when the caller has no subaccount yet.
+ * Live GAG wallet balance via {@link getSubaccountLedgerSnapshot} (`total_incoming_cents` /
+ * `total_outgoing_cents`). Not cached here. Returns disabled when no subaccount.
  */
 export type WalletStatus = {
   enabled: boolean;
@@ -263,40 +304,22 @@ export async function getMyWalletStatus(): Promise<WalletStatus> {
     };
   }
 
-  const sub = (await rootAPI.subaccounts.get(payer.subaccountId)) as unknown as Record<
-    string,
-    unknown
-  >;
-
-  const incoming = readCentsField(sub, [
-    'incoming_in_cents',
-    'incoming',
-    'total_incoming_in_cents',
-    'total_incoming',
-  ]);
-  const outgoing = readCentsField(sub, [
-    'outgoing_in_cents',
-    'outgoing',
-    'total_outgoing_in_cents',
-    'total_outgoing',
-  ]);
-
-  return {
-    enabled: true,
-    subaccountId: payer.subaccountId,
-    balanceCents: incoming - outgoing,
-    incomingCents: incoming,
-    outgoingCents: outgoing,
-  };
-}
-
-function readCentsField(obj: Record<string, unknown>, keys: string[]): Money {
-  for (const k of keys) {
-    const v = obj[k];
-    if (typeof v === 'number' && Number.isFinite(v)) return v;
-    if (typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v))) {
-      return Number(v);
-    }
+  try {
+    const snap = await getSubaccountLedgerSnapshot(payer.subaccountId);
+    return {
+      enabled: true,
+      subaccountId: payer.subaccountId,
+      balanceCents: snap.balanceCents,
+      incomingCents: snap.totalIncomingCents,
+      outgoingCents: snap.totalOutgoingCents,
+    };
+  } catch {
+    return {
+      enabled: true,
+      subaccountId: payer.subaccountId,
+      balanceCents: null,
+      incomingCents: null,
+      outgoingCents: null,
+    };
   }
-  return 0;
 }

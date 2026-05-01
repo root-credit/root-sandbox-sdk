@@ -65,7 +65,9 @@ export async function processPayout(
 
     try {
       const amountCents = dollarsToCents(item.amount);
-      const payout = await createPayout(payee.rootPayeeId, amountCents, rail);
+      const payout = await createPayout(payee.rootPayeeId, amountCents, rail, {
+        ...(payer.subaccountId ? { subaccountId: payer.subaccountId } : {}),
+      });
 
       const transactionId = randomUUID();
       await setTransaction(transactionId, {
