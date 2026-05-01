@@ -13,7 +13,7 @@
  */
 export const branding = {
   /** Top-level product name shown in nav, footer, browser title. */
-  productName: "GoDaddy",
+  productName: "Airbnb",
   /** One-line tagline used on landing + auth panels. */
   tagline: "Buy domains. Sell domains. Cash out instantly.",
   /** Payer entity (the user who logs in, funds the wallet, and trades domains). */
