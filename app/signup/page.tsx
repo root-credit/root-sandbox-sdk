@@ -19,7 +19,7 @@ export default function SignupPage() {
       <section className="flex-1 flex items-center relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <div className="absolute -top-24 -right-24 h-[24rem] w-[24rem] rounded-full bg-primary/20 blur-3xl" />
-          <div className="absolute -bottom-32 -left-24 h-[20rem] w-[20rem] rounded-full bg-accent/30 blur-3xl" />
+          <div className="absolute -bottom-32 -left-24 h-[20rem] w-[20rem] rounded-full bg-accent/50 blur-3xl" />
         </div>
 
         <div className="mx-auto w-full max-w-7xl px-6 py-16 grid gap-12 md:grid-cols-2 items-center">
@@ -31,12 +31,13 @@ export default function SignupPage() {
               Open your{' '}
               <span className="relative inline-block">
                 <span className="relative z-10">console.</span>
-                <span className="absolute inset-x-0 bottom-1 h-3 bg-primary -z-0" aria-hidden />
+                <span className="absolute inset-x-0 bottom-1 h-3 bg-primary/40 -z-0" aria-hidden />
               </span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              Create an {branding.payerSingular.toLowerCase()} in under two minutes. We&apos;ll spin up
-              your Good as Gold wallet, ready to fund and trade.
+              Create a {branding.payerSingular.toLowerCase()} in under two minutes. We&apos;ll spin
+              up your {branding.productName} wallet automatically — ready to fund and start booking
+              {' '}{branding.payeePlural.toLowerCase()}.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
@@ -45,7 +46,7 @@ export default function SignupPage() {
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                Buy with wallet, sell to other accounts
+                Book {branding.payeePlural.toLowerCase()} from a live talent marketplace
               </li>
               <li className="flex items-center gap-3">
                 <Check />
@@ -56,9 +57,11 @@ export default function SignupPage() {
 
           <div className="rounded-2xl border-2 bg-card p-7 shadow-xl">
             <div className="mb-6">
-              <h2 className="text-2xl font-extrabold tracking-tight">Create your {branding.payerSingular.toLowerCase()}</h2>
+              <h2 className="text-2xl font-extrabold tracking-tight">
+                Create your {branding.payerSingular.toLowerCase()}
+              </h2>
               <p className="text-base text-muted-foreground mt-1">
-                Tell us a bit about yourself.
+                Tell us a bit about your business.
               </p>
             </div>
             <SignupForm />

@@ -4,7 +4,7 @@
  * Reskinning rules:
  *   - Domain types and APIs (Payer, Payee, PaymentRail, etc.) MUST NOT change at file paths.
  *   - All user-visible labels for the active vertical live here.
- *   - Replace the values below to reskin from "GoDaddy domain trading" to any other
+ *   - Replace the values below to reskin from the active vertical to any other
  *     payouts vertical (marketplace settlements, payroll, freelance, refunds).
  *
  * v0 / LLM contract: when asked to "reskin the vertical" or "rename the product",
@@ -13,28 +13,28 @@
  */
 export const branding = {
   /** Top-level product name shown in nav, footer, browser title. */
-  productName: "GoDaddy",
+  productName: "Instawork",
   /** One-line tagline used on landing + auth panels. */
-  tagline: "Buy domains. Sell domains. Cash out instantly.",
-  /** Payer entity (the user who logs in, funds the wallet, and trades domains). */
-  payerSingular: "Account",
-  payerPlural: "Accounts",
-  /** Used in possessive contexts: e.g. "your account's bank". */
-  payerPossessive: "account's",
-  /** Payee entity (the destination where the user moves funds out of their wallet). */
-  payeeSingular: "Payout destination",
-  payeePlural: "Payout destinations",
-  /** Payout terminology — moving funds OUT of the GAG wallet. */
-  payoutVerb: "Cash out",
-  payoutNoun: "Cash-out",
-  payoutNounPlural: "Cash-outs",
+  tagline: "Staff your shifts. Pay your crew. Same day.",
+  /** Payer entity (the employer admin who funds the wallet and books shift workers). */
+  payerSingular: "Workplace",
+  payerPlural: "Workplaces",
+  /** Used in possessive contexts: e.g. "your workplace's bank". */
+  payerPossessive: "workplace's",
+  /** Payee entity (the destination where the workplace sends payouts after shifts). */
+  payeeSingular: "Shift worker",
+  payeePlural: "Shift workers",
+  /** Payout terminology — moving funds OUT of the Instawork wallet to a worker. */
+  payoutVerb: "Pay out",
+  payoutNoun: "Payout",
+  payoutNounPlural: "Payouts",
   /** Funding source label on the wallet settings screen. */
   funderLabel: "Linked bank account",
   funderShortLabel: "Bank account",
   /** Console heading displayed on the dashboard home. */
-  consoleHeading: "Welcome back. Your domain console awaits.",
+  consoleHeading: "Welcome back. Let's get your shifts staffed.",
   consoleSubheading:
-    "Manage your Good as Gold wallet, list domains for sale, and explore the marketplace from one console.",
+    "Fund your Instawork wallet, post open shifts to the marketplace, and pay your crew the moment a shift wraps.",
 } as const;
 
 export type Branding = typeof branding;

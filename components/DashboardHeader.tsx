@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 const NAV: { href: string; label: string }[] = [
   { href: '/dashboard', label: 'Overview' },
   { href: '/dashboard/marketplace', label: 'Marketplace' },
-  { href: '/dashboard/domains', label: 'My domains' },
+  { href: '/dashboard/domains', label: 'My crew' },
   { href: '/dashboard/payouts', label: branding.payoutNounPlural },
   { href: '/dashboard/payees', label: branding.payeePlural },
   { href: '/dashboard/transactions', label: 'Activity' },

@@ -1,6 +1,15 @@
 import type { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import {
+  Activity,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  ClipboardList,
+  HardHat,
+  Users,
+  Wallet,
+} from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardOverviewHero } from '@/components/DashboardOverviewHero';
 import { getCurrentSession } from '@/lib/session';
@@ -9,7 +18,6 @@ import { getPayer } from '@/lib/redis';
 import { getSubaccountLedgerSnapshot } from '@/lib/root-api';
 import { formatMoney } from '@/lib/types/payments';
 import { getMyOwnedDomains } from '@/lib/godaddy-actions';
-import { Globe2, Tag, Wallet, ArrowDownToLine, ArrowUpFromLine, Activity } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,19 +29,19 @@ export default async function DashboardPage() {
   }
 
   const payer = await getPayer(session.payerId);
-  let gagWalletLabel = 'Not Activated';
+  let walletLabel = 'Not activated';
   if (payer?.subaccountId) {
     try {
       const snap = await getSubaccountLedgerSnapshot(payer.subaccountId);
-      gagWalletLabel = formatMoney(snap.balanceCents);
+      walletLabel = formatMoney(snap.balanceCents);
     } catch {
-      gagWalletLabel = '—';
+      walletLabel = '—';
     }
   }
 
-  const ownedDomains = await getMyOwnedDomains();
-  const ownedDomainsCount = ownedDomains.length;
-  const listedForSaleCount = ownedDomains.filter((d) => d.listingPriceCents !== undefined).length;
+  const roster = await getMyOwnedDomains();
+  const rosterCount = roster.length;
+  const availableCount = roster.filter((d) => d.listingPriceCents !== undefined).length;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -43,8 +51,8 @@ export default async function DashboardPage() {
         {/* Hero */}
         <section className="rounded-3xl border-2 bg-card p-8 md:p-10 mb-8 relative overflow-hidden">
           <div className="absolute inset-0 -z-10">
-            <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
-            <div className="absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
+            <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
+            <div className="absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-accent/40 blur-3xl" />
           </div>
           <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground mb-5">
             {branding.productName} console
@@ -67,16 +75,16 @@ export default async function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <ActionTile
               href="/dashboard/marketplace"
-              title="Browse marketplace"
-              desc="Find a domain and buy with your wallet."
-              icon={<Globe2 className="h-5 w-5" />}
+              title="Browse talent"
+              desc={`Find a ${branding.payeeSingular.toLowerCase()} and book with your wallet.`}
+              icon={<HardHat className="h-5 w-5" />}
               primary
             />
             <ActionTile
               href="/dashboard/domains"
-              title="List a domain"
-              desc="Set an asking price and put it up for sale."
-              icon={<Tag className="h-5 w-5" />}
+              title="Post a shift"
+              desc="Mark a worker available to other workplaces."
+              icon={<ClipboardList className="h-5 w-5" />}
             />
             <ActionTile
               href="/dashboard/payer"
@@ -87,21 +95,33 @@ export default async function DashboardPage() {
             <ActionTile
               href="/dashboard/payouts"
               title={branding.payoutVerb}
-              desc={`Move funds out to a ${branding.payeeSingular.toLowerCase()}.`}
+              desc={`Move wages out to a ${branding.payeeSingular.toLowerCase()}.`}
               icon={<ArrowUpFromLine className="h-5 w-5" />}
             />
           </div>
         </section>
 
-        {/* Stats — GAG wallet from Root; domain counts match /dashboard/domains (Redis via getMyOwnedDomains) */}
+        {/* Stats — wallet from Root; roster counts match /dashboard/domains (Redis via getMyOwnedDomains) */}
         <section className="mb-8">
           <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
             At a glance
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="GAG wallet" value={gagWalletLabel} icon={<Wallet className="h-4 w-4" />} />
-            <StatCard label="Owned domains" value={String(ownedDomainsCount)} icon={<Globe2 className="h-4 w-4" />} />
-            <StatCard label="Listed for sale" value={String(listedForSaleCount)} icon={<Tag className="h-4 w-4" />} />
+            <StatCard
+              label={`${branding.productName} wallet`}
+              value={walletLabel}
+              icon={<Wallet className="h-4 w-4" />}
+            />
+            <StatCard
+              label="Crew roster"
+              value={String(rosterCount)}
+              icon={<Users className="h-4 w-4" />}
+            />
+            <StatCard
+              label="Posted to marketplace"
+              value={String(availableCount)}
+              icon={<ClipboardList className="h-4 w-4" />}
+            />
             <StatCard
               label={branding.payoutNounPlural}
               value="$0.00"
@@ -115,29 +135,29 @@ export default async function DashboardPage() {
           <div className="border-b-2 px-6 py-5">
             <h2 className="text-xl font-extrabold tracking-tight">Modules</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Everything you need to run your domain business.
+              Everything you need to run the staffing side of your business.
             </p>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <ModuleTile
               href="/dashboard/marketplace"
-              title="Marketplace"
-              desc="Browse every domain listed for sale by other accounts."
+              title="Talent marketplace"
+              desc={`Browse every ${branding.payeeSingular.toLowerCase()} available right now.`}
             />
             <ModuleTile
               href="/dashboard/domains"
-              title="My domains"
-              desc="See what you own. List or unlist any domain."
+              title="My crew"
+              desc="See your roster. Post or unlist any shift."
             />
             <ModuleTile
               href="/dashboard/payouts"
               title={branding.payoutNounPlural}
-              desc={`Move wallet funds to a ${branding.payeeSingular.toLowerCase()}.`}
+              desc={`Pay wages from your wallet to a ${branding.payeeSingular.toLowerCase()}.`}
             />
             <ModuleTile
               href="/dashboard/payees"
               title={branding.payeePlural}
-              desc={`Manage banks and debit cards you ${branding.payoutVerb.toLowerCase()} to.`}
+              desc={`Banks and debit cards you ${branding.payoutVerb.toLowerCase()} to.`}
             />
             <ModuleTile
               href="/dashboard/transactions"
@@ -147,7 +167,7 @@ export default async function DashboardPage() {
             <ModuleTile
               href="/dashboard/payer"
               title={branding.payerSingular}
-              desc={`Profile, ${branding.funderShortLabel.toLowerCase()}, and GAG wallet settings.`}
+              desc={`Profile, ${branding.funderShortLabel.toLowerCase()}, and wallet settings.`}
             />
           </div>
         </section>
@@ -186,13 +206,13 @@ function ActionTile({
       href={href}
       className={`group flex flex-col gap-3 rounded-2xl border-2 p-5 transition-all ${
         primary
-          ? 'bg-foreground text-background border-foreground hover:bg-foreground/90'
+          ? 'bg-primary text-primary-foreground border-primary hover:bg-primary/90'
           : 'bg-card hover:border-foreground hover:shadow-md'
       }`}
     >
       <div
         className={`flex h-10 w-10 items-center justify-center rounded-full ${
-          primary ? 'bg-primary text-primary-foreground' : 'bg-primary/15 text-primary'
+          primary ? 'bg-primary-foreground text-primary' : 'bg-primary/15 text-primary'
         }`}
       >
         {icon}
@@ -201,7 +221,7 @@ function ActionTile({
         <div className="text-base font-extrabold tracking-tight mb-0.5">{title}</div>
         <p
           className={`text-sm leading-snug ${
-            primary ? 'text-background/75' : 'text-muted-foreground'
+            primary ? 'text-primary-foreground/80' : 'text-muted-foreground'
           }`}
         >
           {desc}
@@ -209,7 +229,7 @@ function ActionTile({
       </div>
       <div
         className={`mt-auto text-xs font-bold uppercase tracking-widest ${
-          primary ? 'text-background/75' : 'text-foreground'
+          primary ? 'text-primary-foreground/80' : 'text-foreground'
         }`}
       >
         Open →

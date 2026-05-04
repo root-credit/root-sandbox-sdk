@@ -220,13 +220,13 @@ export async function buyDomain(name: string): Promise<DomainMutationResult> {
   if (!buyerPayer?.subaccountId) {
     return {
       ok: false,
-      reason: 'Enable your GAG wallet before purchasing.',
+      reason: 'Enable your wallet before booking.',
     };
   }
   if (!sellerPayer?.subaccountId) {
     return {
       ok: false,
-      reason: 'Seller has not enabled a wallet; purchase cannot settle.',
+      reason: 'Posting workplace has not enabled a wallet; booking cannot settle.',
     };
   }
 

@@ -12,7 +12,7 @@ import { usePayees } from '@/lib/hooks/usePayees';
 import { useDomainStore } from '@/components/DomainStoreProvider';
 import { formatMoney } from '@/lib/types/payments';
 
-export default function CashOutPage() {
+export default function PayoutsPage() {
   const router = useRouter();
   const { session } = useSession();
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
@@ -40,7 +40,8 @@ export default function CashOutPage() {
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight">{branding.payoutNounPlural}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Move funds out of your Good as Gold wallet to a {branding.payeeSingular.toLowerCase()} —
+              Approve completed shifts and {branding.payoutVerb.toLowerCase()} wages from your{' '}
+              {branding.productName} wallet to each {branding.payeeSingular.toLowerCase()}&apos;s
               bank or debit card.
             </p>
           </div>
@@ -61,7 +62,8 @@ export default function CashOutPage() {
               {walletBalanceCents == null ? '—' : formatMoney(walletBalanceCents)}
             </div>
             <p className="text-sm text-background/70 mt-2 max-w-md">
-              Your GAG wallet balance. {branding.payoutNoun} requests pull from this balance.
+              Your {branding.productName} wallet balance. {branding.payoutNounPlural} pull from this
+              balance.
             </p>
           </div>
           <Link
@@ -93,8 +95,8 @@ export default function CashOutPage() {
             label="How it works"
             title={`From wallet to ${branding.funderShortLabel.toLowerCase()}`}
             items={[
-              `Pick the ${branding.payeeSingular.toLowerCase()} you're sending to`,
-              `Enter the amount to ${branding.payoutVerb.toLowerCase()}`,
+              `Pick the ${branding.payeeSingular.toLowerCase()} you're paying`,
+              `Enter the wage to ${branding.payoutVerb.toLowerCase()}`,
               `Press process — ${branding.productName} routes the transfer`,
               'Receipts and ledger entries write automatically',
             ]}
@@ -106,7 +108,7 @@ export default function CashOutPage() {
             items={[
               `Settles in roughly 5 seconds per ${branding.payeeSingular.toLowerCase()}`,
               `${branding.payeeSingular} payment methods must be linked first`,
-              'Funds pull from your GAG wallet balance',
+              `Funds pull from your ${branding.productName} wallet balance`,
               'Audit everything in Activity',
             ]}
           />

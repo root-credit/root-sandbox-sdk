@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Globe2, Search, ShoppingCart, Wallet } from 'lucide-react';
+import { CalendarCheck, HardHat, Search, Wallet } from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { useDomainStore } from '@/components/DomainStoreProvider';
 import { useSession } from '@/lib/hooks/useSession';
@@ -27,7 +27,7 @@ export default function MarketplacePage() {
     buy,
   } = useDomainStore();
   const [query, setQuery] = useState('');
-  const [busyName, setBusyName] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -41,32 +41,34 @@ export default function MarketplacePage() {
 
   const balance = walletBalanceCents ?? 0;
 
-  async function handleBuy(domain: MarketplaceDomainRecord) {
+  async function handleBook(worker: MarketplaceDomainRecord) {
     if (!walletEnabled) {
-      toast.error('Set up your GAG wallet before buying.');
+      toast.error(`Activate your ${branding.productName} wallet before booking.`);
       return;
     }
-    if (balance < domain.priceCents) {
+    if (balance < worker.priceCents) {
       toast.error(
-        `Insufficient wallet balance. ${domain.name} costs ${formatMoney(domain.priceCents)}.`,
+        `Insufficient wallet balance. Booking ${formatWorkerName(worker.name)} costs ${formatMoney(worker.priceCents)}.`,
       );
       return;
     }
     if (
-      !confirm(`Buy ${domain.name} for ${formatMoney(domain.priceCents)} from your GAG wallet?`)
+      !confirm(
+        `Book ${formatWorkerName(worker.name)} for ${formatMoney(worker.priceCents)} from your ${branding.productName} wallet?`,
+      )
     ) {
       return;
     }
-    setBusyName(domain.id);
+    setBusyId(worker.id);
     try {
-      const result = await buy(domain.id);
+      const result = await buy(worker.id);
       if (result.ok) {
-        toast.success(`Acquired ${domain.name}. It's now in My domains.`);
+        toast.success(`Booked ${formatWorkerName(worker.name)}. They're now on your crew.`);
       } else {
         toast.error(result.reason);
       }
     } finally {
-      setBusyName(null);
+      setBusyId(null);
     }
   }
 
@@ -79,10 +81,11 @@ export default function MarketplacePage() {
 
         <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">Marketplace</h1>
+            <h1 className="text-4xl font-extrabold tracking-tight">Talent marketplace</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Browse domains listed for sale by other {branding.payerPlural.toLowerCase()}. Buy
-              with your GAG wallet — funds move instantly.
+              Browse {branding.payeePlural.toLowerCase()} posted by other{' '}
+              {branding.payerPlural.toLowerCase()}. Book a shift with your{' '}
+              {branding.productName} wallet — funds settle instantly worker-to-worker.
             </p>
           </div>
           <WalletPill walletBalanceCents={walletBalanceCents} walletEnabled={walletEnabled} />
@@ -93,7 +96,7 @@ export default function MarketplacePage() {
             <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search domains or sellers…"
+              placeholder={`Search ${branding.payeePlural.toLowerCase()} or workplaces…`}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="pl-9 h-11 rounded-full bg-card font-medium"
@@ -102,29 +105,29 @@ export default function MarketplacePage() {
         </div>
 
         {isDomainsLoading ? (
-          <ListingShell title="Loading marketplace…" body="Fetching active listings from Redis." />
+          <ListingShell title="Loading marketplace…" body="Fetching active shift postings." />
         ) : filtered.length === 0 ? (
           <ListingShell
             title={
               marketplaceDomains.length === 0
-                ? 'No domains listed yet'
+                ? 'No open shifts right now'
                 : 'No matches'
             }
             body={
               marketplaceDomains.length === 0
-                ? `As ${branding.payerPlural.toLowerCase()} transfer in domains and list them, they'll show up here.`
+                ? `As ${branding.payerPlural.toLowerCase()} post ${branding.payeePlural.toLowerCase()} for shifts, they'll appear here in real time.`
                 : 'Try a different search term.'
             }
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filtered.map((d) => (
-              <DomainCard
+              <WorkerCard
                 key={d.id}
-                domain={d}
+                worker={d}
                 affordable={walletEnabled && balance >= d.priceCents}
-                busy={busyName === d.id}
-                onBuy={() => handleBuy(d)}
+                busy={busyId === d.id}
+                onBook={() => handleBook(d)}
               />
             ))}
           </div>
@@ -160,7 +163,7 @@ function WalletPill({
       </span>
       <div className="flex flex-col leading-tight">
         <span className="text-[10px] font-bold uppercase tracking-widest text-background/60">
-          GAG wallet
+          {branding.productName} wallet
         </span>
         <span className="text-base font-extrabold font-mono tabular-nums">
           {!walletEnabled
@@ -178,7 +181,7 @@ function ListingShell({ title, body }: { title: string; body: string }) {
   return (
     <div className="rounded-2xl border-2 bg-card p-16 flex flex-col items-center gap-4 text-center">
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-        <Globe2 className="h-6 w-6 text-muted-foreground" />
+        <HardHat className="h-6 w-6 text-muted-foreground" />
       </div>
       <div>
         <p className="text-lg font-extrabold">{title}</p>
@@ -188,47 +191,83 @@ function ListingShell({ title, body }: { title: string; body: string }) {
   );
 }
 
-function DomainCard({
-  domain,
+function WorkerCard({
+  worker,
   affordable,
   busy,
-  onBuy,
+  onBook,
 }: {
-  domain: MarketplaceDomainRecord;
+  worker: MarketplaceDomainRecord;
   affordable: boolean;
   busy: boolean;
-  onBuy: () => void;
+  onBook: () => void;
 }) {
+  const display = formatWorkerName(worker.name);
+  const initials = display
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
   return (
     <article className="group flex flex-col rounded-2xl border-2 bg-card overflow-hidden hover:border-foreground hover:shadow-lg transition-all">
       <div className="px-5 py-5 flex flex-col gap-4 flex-1">
-        <div>
-          <h3 className="text-2xl font-extrabold font-mono tracking-tight break-all">
-            {domain.name}
-          </h3>
-          <p className="text-xs font-semibold text-muted-foreground mt-1">
-            Sold by {domain.sellerHandle}
-          </p>
+        <div className="flex items-start gap-4">
+          <span className="inline-flex h-12 w-12 flex-none items-center justify-center rounded-full bg-foreground text-background text-sm font-extrabold">
+            {initials || '??'}
+          </span>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-xl font-extrabold tracking-tight truncate">{display}</h3>
+            <p className="text-xs font-mono font-semibold text-muted-foreground mt-0.5 truncate">
+              {worker.name}
+            </p>
+            <p className="text-xs font-semibold text-muted-foreground mt-1.5">
+              Posted by {worker.sellerHandle}
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-foreground">
+            <CalendarCheck className="h-3 w-3" />
+            Available now
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            Vetted
+          </span>
         </div>
       </div>
       <div className="border-t-2 px-5 py-4 flex items-center justify-between gap-3 bg-secondary">
         <div>
           <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            Buy now
+            Day rate
           </div>
           <div className="text-xl font-extrabold font-mono tabular-nums">
-            {formatMoney(domain.priceCents)}
+            {formatMoney(worker.priceCents)}
           </div>
         </div>
         <Button
-          onClick={onBuy}
+          onClick={onBook}
           disabled={!affordable || busy}
-          className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90 disabled:bg-muted disabled:text-muted-foreground"
+          className="rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
         >
-          <ShoppingCart className="h-4 w-4" />
-          {busy ? 'Buying…' : affordable ? 'Buy' : 'Top up wallet'}
+          <CalendarCheck className="h-4 w-4" />
+          {busy ? 'Booking…' : affordable ? 'Book shift' : 'Top up wallet'}
         </Button>
       </div>
     </article>
   );
+}
+
+/**
+ * Worker handles in Redis follow the legacy domain-style format (e.g. `alex-rivera.shift`).
+ * For display, drop everything after the last dot and turn dashes into spaces.
+ */
+function formatWorkerName(handle: string): string {
+  const base = handle.split('.')[0] ?? handle;
+  return base
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
 }

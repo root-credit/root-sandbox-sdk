@@ -19,7 +19,7 @@ export default function LoginPage() {
       <section className="flex-1 flex items-center relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <div className="absolute -top-24 -right-24 h-[24rem] w-[24rem] rounded-full bg-primary/20 blur-3xl" />
-          <div className="absolute -bottom-32 -left-24 h-[20rem] w-[20rem] rounded-full bg-accent/30 blur-3xl" />
+          <div className="absolute -bottom-32 -left-24 h-[20rem] w-[20rem] rounded-full bg-accent/50 blur-3xl" />
         </div>
 
         <div className="mx-auto w-full max-w-7xl px-6 py-16 grid gap-12 md:grid-cols-2 items-center">
@@ -31,17 +31,18 @@ export default function LoginPage() {
               Welcome{' '}
               <span className="relative inline-block">
                 <span className="relative z-10">back.</span>
-                <span className="absolute inset-x-0 bottom-1 h-3 bg-primary -z-0" aria-hidden />
+                <span className="absolute inset-x-0 bottom-1 h-3 bg-primary/40 -z-0" aria-hidden />
               </span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              Sign in with the email you used when you opened your {branding.payerSingular.toLowerCase()}.
-              Your Good as Gold wallet, owned domains, and marketplace listings are waiting.
+              Sign in with the email you used when you opened your{' '}
+              {branding.payerSingular.toLowerCase()}. Your {branding.productName} wallet, booked
+              crew, and shift roster are waiting.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
                 <Check />
-                One wallet for buying and selling
+                One wallet for funding shifts and paying out
               </li>
               <li className="flex items-center gap-3">
                 <Check />
