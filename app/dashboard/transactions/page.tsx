@@ -50,8 +50,8 @@ export default function ActivityPage() {
         <div className="mb-8">
           <h1 className="text-4xl font-extrabold tracking-tight">Activity</h1>
           <p className="text-base text-muted-foreground mt-2 max-w-xl">
-            Every {branding.payoutNoun.toLowerCase()}, every status, every receipt — written to
-            your ledger.
+            Every shift {branding.payoutNoun.toLowerCase()}, every status, every receipt — written
+            to your ledger in real time.
           </p>
         </div>
 
@@ -91,7 +91,7 @@ export default function ActivityPage() {
               </div>
               <Link
                 href="/dashboard/payouts"
-                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-foreground text-background px-5 h-11 text-sm font-bold hover:bg-foreground/90 transition-colors"
+                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-5 h-11 text-sm font-bold hover:bg-primary/90 transition-colors"
               >
                 Run your first {branding.payoutNoun.toLowerCase()} →
               </Link>

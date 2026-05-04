@@ -68,14 +68,14 @@ export default function PayeesPage() {
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight">{branding.payeePlural}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              The banks and debit cards you {branding.payoutVerb.toLowerCase()} to from your Good as Gold
-              wallet.
+              The bank accounts and debit cards your crew uses to get paid for shifts —
+              every {branding.payoutVerb.toLowerCase()} runs from your {branding.productName} wallet.
             </p>
           </div>
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90 h-11 px-5">
+              <Button className="rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-5">
                 <Plus className="h-4 w-4" />
                 Add {branding.payeeSingular.toLowerCase()}
               </Button>
@@ -136,7 +136,7 @@ export default function PayeesPage() {
               </div>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="mt-1 rounded-full font-bold bg-foreground text-background hover:bg-foreground/90">
+                  <Button className="mt-1 rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90">
                     <Plus className="h-4 w-4" />
                     Add your first {branding.payeeSingular.toLowerCase()}
                   </Button>
