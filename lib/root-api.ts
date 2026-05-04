@@ -3,19 +3,88 @@ import {
   DEFAULT_BASE_URL,
   RootApiError,
   type CreatePayinBody,
+  Subaccount,
 } from "@root-credit/root-sdk";
 
 if (!process.env.ROOT_API_KEY) {
   throw new Error("Missing ROOT_API_KEY environment variable");
 }
 
+/**
+ * Lazily construct the Root client so importing this module during Next.js build
+ * does not require ROOT_API_KEY until a Root API call runs.
+ */
+let rootClient: Root | undefined;
 /** Same default host as the SDK; override with ROOT_BASE_URL for sandbox vs live. */
 const ROOT_API_BASE = process.env.ROOT_BASE_URL ?? DEFAULT_BASE_URL;
 
-export const rootAPI = new Root({
-  apiKey: process.env.ROOT_API_KEY,
-  baseUrl: ROOT_API_BASE,
+// export const rootAPI = new Root({
+//   apiKey: process.env.ROOT_API_KEY,
+//   baseUrl: ROOT_API_BASE,
+// });
+function getRootAPI(): Root {
+  if (!rootClient) {
+    const apiKey = process.env.ROOT_API_KEY?.trim();
+    if (!apiKey) {
+      throw new Error("Missing ROOT_API_KEY environment variable");
+    }
+    rootClient = new Root({
+      apiKey,
+      baseUrl: process.env.ROOT_BASE_URL ?? DEFAULT_BASE_URL,
+    });
+  }
+  return rootClient;
+}
+
+/** @deprecated Prefer {@link getRootAPI} — exported for rare escape hatches. */
+export const rootAPI = new Proxy({} as Root, {
+  get(_target, prop: keyof Root | symbol, receiver) {
+    const client = getRootAPI();
+    const value = Reflect.get(client, prop, receiver);
+    return typeof value === "function"
+      ? (value as (...args: unknown[]) => unknown).bind(client)
+      : value;
+  },
 });
+
+export type SubaccountLedgerSnapshot = {
+  id: string;
+  name: string;
+  totalIncomingCents: number;
+  totalOutgoingCents: number;
+  balanceCents: number;
+};
+
+function coerceCents(v: unknown): number {
+  if (typeof v === "number" && Number.isFinite(v)) return Math.trunc(v);
+  if (typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v))) {
+    return Math.trunc(Number(v));
+  }
+  return 0;
+}
+
+/**
+ * GET /api/subaccounts/{id} — wallet ledger totals (incoming/outgoing lifetime).
+ */
+export async function getSubaccountLedgerSnapshot(
+  subaccountId: string,
+): Promise<SubaccountLedgerSnapshot> {
+  const sub = await getRootAPI().subaccounts.get(subaccountId);
+  const row = sub as Subaccount & Record<string, unknown>;
+  const incoming = coerceCents(
+    row.total_incoming_cents ?? row.totalIncomingCents,
+  );
+  const outgoing = coerceCents(
+    row.total_outgoing_cents ?? row.totalOutgoingCents,
+  );
+  return {
+    id: sub.id,
+    name: sub.name,
+    totalIncomingCents: incoming,
+    totalOutgoingCents: outgoing,
+    balanceCents: incoming - outgoing,
+  };
+}
 
 export type PayoutRail =
   | "instant_bank"
@@ -233,10 +302,17 @@ export async function moveRootSubaccountFunds(args: {
   }
 }
 
-/** Create a payin (ACH pull into `subaccount_id`). Caller supplies full SDK body. */
-export async function createRootPayin(body: CreatePayinBody) {
+/** Create a payin (ACH pull into `subaccount_id`). Merges `defaultSubaccountId` when body omits `subaccount_id`. */
+export async function createRootPayin(
+  body: CreatePayinBody,
+  opts?: { defaultSubaccountId?: string },
+) {
   try {
-    const response = await rootAPI.payins.create(body);
+    const merged: CreatePayinBody = {
+      ...body,
+      subaccount_id: body.subaccount_id ?? opts?.defaultSubaccountId,
+    };
+    const response = await rootAPI.payins.create(merged);
     console.log("[v0] Created payin:", response.id);
     return response;
   } catch (error) {
@@ -301,13 +377,15 @@ export async function attachPayeeDebitCard(
 export async function createPayout(
   payeeId: string,
   amountCents: number,
-  rail: PayoutRail = "instant_bank"
+  rail: PayoutRail = "instant_bank",
+  opts?: { subaccountId?: string },
 ) {
   try {
     const response = await rootAPI.payouts.create({
       payee_id: payeeId,
       amount_in_cents: amountCents,
       rail,
+      ...(opts?.subaccountId ? { subaccount_id: opts.subaccountId } : {}),
       auto_approve: true,
       metadata: {
         type: "payout",

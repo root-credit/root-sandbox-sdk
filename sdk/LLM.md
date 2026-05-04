@@ -2,6 +2,16 @@
 
 > Paste this file (or its contents) into the v0 system prompt / project context so the model wires Root payments correctly on the first try.
 
+### Monorepo template (this repository)
+
+When you are working inside **this** payouts template repository (not greenfield v0 generation):
+
+- **Contract SSOT:** [`AGENTS.md`](../AGENTS.md) — layered architecture, forbidden patterns, hook/action tables.
+- **Integration surface:** [`lib/root-api.ts`](../lib/root-api.ts) is the server-only Root SDK entry; UI and mutations flow through [`app/actions/`](../app/actions/) and [`lib/hooks/`](../lib/hooks/) per AGENTS.
+- The **`app/lib/root.ts`** snippet below describes a minimal standalone layout; **this repo uses `lib/root-api.ts` instead** — follow AGENTS and existing actions rather than adding a second client module.
+
+For Cursor, optional procedural companions live under [`.cursor/skills/`](../.cursor/skills/) (domain `SKILL.md` files); they link here and to AGENTS instead of duplicating SDK types.
+
 You are generating a Next.js App Router demo app that talks to the Root sandbox.
 **You MUST use the `@root-credit/root-sdk` npm package for every Root API call.**
 Do **not** call `fetch` against `api.useroot.com` directly. Do **not** invent your own client.
@@ -115,6 +125,43 @@ await root.payers.attachPayByBank(
   { subaccount_id: subaccountId, is_default: true },
 )
 ```
+
+---
+
+## Payer, payee, and subaccount (SDK types)
+
+Canonical shapes live in [`sdk/src/types.ts`](./src/types.ts). Summarized for LLM prompts:
+
+### `Payer`
+
+`id`, `name`, `email`; optional `client_metadata`, `created_at`, `updated_at`. Party identity only — **subaccounts are separate objects**, not embedded on `Payer`.
+
+### `Payee`
+
+`id`, `name`, `email`; optional `metadata`, `created_at`, `updated_at`. Same idea: **no `subaccount_id` on the payee record**; routing of funds is on **`Payout`** / **`Payin`** bodies.
+
+### `Subaccount`
+
+`id`, `name`; optional `account_number`, `routing_number`; optional **`total_incoming_cents`** and **`total_outgoing_cents`** — lifetime totals when returned by **`GET /api/subaccounts/{id}`** (omit until the API populates them); optional `created_at`, `updated_at`.
+
+### `Payout`, `Payin`, `SubaccountMove`
+
+- **`Payout`** — optional **`subaccount_id`**: which subaccount the payout draws from.
+- **`Payin`** — optional **`subaccount_id`**: which subaccount receives the ACH-funded amount (`rail` is ACH-only: `'standard_ach'` | `'same_day_ach'`).
+- **`SubaccountMove`** — documents **`from_subaccount_id`**, **`to_subaccount_id`**, **`amount_in_cents`** for instant moves between subaccounts.
+
+### Monorepo template: `lib/root-api.ts` helpers
+
+In [**this repository**](../AGENTS.md), server code should call **`lib/root-api.ts`** instead of scattering Raw SDK usage. Subaccount-related wrappers mirror the types above:
+
+| Helper | Role |
+|--------|------|
+| **`getSubaccountLedgerSnapshot(subaccountId)`** | **`GET /api/subaccounts/{id}`**; reads **`total_incoming_cents` / `total_outgoing_cents`** (accepts **snake_case or camelCase** from JSON). Returns **`SubaccountLedgerSnapshot`**: `id`, `name`, `totalIncomingCents`, `totalOutgoingCents`, **`balanceCents`** (= incoming − outgoing). |
+| **`attachPayerBankAccount(payerId, bank, { subaccountId?, isDefault? })`** | **`attachPayByBank`** with query **`subaccount_id`** + **`is_default`** so the pay-by-bank PM can be scoped to a subaccount. |
+| **`createRootSubaccount(name)`** | **`POST /api/subaccounts/`**. |
+| **`moveRootSubaccountFunds({ from_subaccount_id, to_subaccount_id, amount_in_cents })`** | **`POST /api/subaccounts/move`**. |
+| **`createRootPayin(body, { defaultSubaccountId? })`** | Fills **`subaccount_id`** on the payin body from `body.subaccount_id ?? defaultSubaccountId`. |
+| **`createPayout(payeeId, amountCents, rail?, { subaccountId? })`** | Passes **`subaccount_id`** into **`payouts.create`** when `subaccountId` is set. |
 
 ---
 

@@ -10,9 +10,21 @@ alwaysApply: true
 
 When adding or editing presentation code:
 
-1. **Reach for `@/components/ui/*` first** — `Button`, `Input`, `Card`, `Label`, `Field` (+ `FieldLabel`, `FieldError`, `FieldGroup`, …), `Separator`, etc. Compose these before hand-rolling styled `div`/`button`/`input` stacks.
-2. **Do not weaken payments/API rules** — `.cursor/rules/payments.mdc` and `AGENTS.md` still govern hooks, actions, SDK usage, and money handling.
-3. **Copy/nouns** — keep following `.cursor/rules/branding.mdc` for vertical wording; UI primitives do not replace `lib/branding.ts`.
-4. **Forms** — use `react-hook-form` + Zod resolvers as today; pair inputs with `Field` / `FieldLabel` / `FieldError` and submit actions with `Button` (`type="submit"`).
+1. **Reach for `@/components/ui/*` first.** Installed components:
+   - `Button` — variants: default, destructive, outline, secondary, ghost, link
+   - `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`
+   - `Input`, `Label`, `Separator`
+   - `Table`, `TableHeader`, `TableBody`, `TableHead`, `TableRow`, `TableCell`
+   - `Badge` — variants: default, secondary, destructive, outline, success, warning
+   - `Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle`, `DialogTrigger`, `DialogDescription`, `DialogClose`
+   - Toasts: `import { toast } from 'sonner'` → `toast.success()` / `toast.error()`
+
+   **Do NOT** reference `Field`, `FieldLabel`, `FieldError`, `FieldGroup` — those were removed.
+
+2. **Forms** — use `react-hook-form` + `@hookform/resolvers/zod`. Pair inputs with `<Label>` + `<Input>` + inline error paragraph. Submit with `<Button type="submit">`.
+
+3. **Do not weaken payments/API rules** — `AGENTS.md` governs hooks, actions, SDK usage, and money handling.
+
+4. **Copy/nouns** — import from `lib/branding.ts`; never hardcode vertical-specific words.
 
 Place new shared primitives only under `components/ui/` (via `pnpm dlx shadcn@latest add …` when possible).

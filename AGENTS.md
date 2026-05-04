@@ -5,8 +5,10 @@ in this repository (Cursor, v0, Claude, Codex, ChatGPT, etc.). Read it once at t
 start of any task. Re-read it before generating new pages or refactoring.
 
 > **One-line mental model:**
-> v0 only writes UI. The contract layer (`lib/types`, `lib/hooks`, `app/actions`)
+> The AI agent only writes UI. The contract layer (`lib/types`, `lib/hooks`, `app/actions`)
 > handles every Root payments interaction deterministically.
+
+**Agent context files:** Agent-specific setup files ([`CLAUDE.md`](CLAUDE.md) for Claude Code, [`.windsurfrules`](.windsurfrules) for Windsurf, [`.github/copilot-instructions.md`](.github/copilot-instructions.md) for Copilot) point here. For Cursor, see [`.cursor/rules/`](.cursor/rules/) and `.cursor/skills/`.
 
 ## Hard rules
 
@@ -43,7 +45,7 @@ NEVER store secrets in client code or commit `.env.local`.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ v0 territory                                                │
+│ UI layer (agent-editable)                                   │
 │  app/* pages and components                                 │
 │  components/*                                               │
 └──────────────────────────┬──────────────────────────────────┘
@@ -70,7 +72,7 @@ NEVER store secrets in client code or commit `.env.local`.
 
 ## Contract surface table
 
-The full list of "things v0 may import". Anything else is implementation detail.
+The full list of "things the AI agent may import". Anything else is implementation detail.
 
 ### Domain types (`lib/types/*` — `import { … } from '@/lib/types'`)
 
@@ -212,15 +214,15 @@ Goal: react to payout completion / failure events from Root.
   server actions. They exist only for non-React HTTP clients (CLI scripts,
   external webhooks). Do NOT add new business logic to them.
 - The hardcoded admin email is `admin@root.credit`. The login route handler
-  short-circuits this email to bypass Redis. v0 should never special-case this
-  email in client code.
+  short-circuits this email to bypass Redis. The AI agent should never special-case
+  this email in client code.
 
 ## SDK reference
 
 For deeper details on the underlying `@root-credit/root-sdk` (payment objects,
 metadata fields, idempotency, error handling), read the SDK cheat sheet at
-[`sdk/LLM.md`](sdk/LLM.md). It's also mirrored at the repo root as
-[`LLM-SDK.md`](LLM-SDK.md) so v0's default context can include it.
+[`sdk/LLM.md`](sdk/LLM.md). Start with the **Monorepo template** section there for how **`lib/root-api.ts`**, **`app/actions`**, and **`lib/hooks`** map to this repo (vs. standalone `app/lib/root.ts`). It's also mirrored at the repo root as
+[`LLM-SDK.md`](LLM-SDK.md) so AI agents can pick it up automatically.
 
 ## When in doubt
 

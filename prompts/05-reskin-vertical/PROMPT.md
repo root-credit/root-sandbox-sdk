@@ -1,6 +1,6 @@
 # Prompt — Reskin to a different vertical
 
-Paste the block below into v0.
+Paste the block below into v0 or any LLM with this repo as context.
 
 ---
 
@@ -13,7 +13,6 @@ example a freelance marketplace where {payerSingular} is "Studio" and
 
 - `AGENTS.md` (the "Reskin a vertical" recipe)
 - `lib/branding.ts`
-- `.cursor/rules/branding.mdc`
 - `app/page.tsx` (landing — only marketing prose changes)
 - `app/layout.tsx` (metadata is already branded)
 

@@ -41,7 +41,7 @@ Create `app/dashboard/<your-feature>/page.tsx` (a `'use client'` component) that
 6. Shows the per-line `result.results` after success — green pill if status ===
    'success', red pill if 'failed', error message inline.
 
-Match the visual language of the existing dashboard (eyebrow text, gold accent
-on totals, sticky dark summary card).
+Match the visual style of the existing dashboard — use the same Card, Badge, and Button
+components and spacing patterns found in app/dashboard/payouts/page.tsx.
 
 Verify by running `pnpm verify-contract && pnpm typecheck`.
