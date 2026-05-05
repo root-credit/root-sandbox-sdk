@@ -125,7 +125,7 @@ export async function signInEmployee(
   const payee = await findPayeeByEmail(emailInput);
   if (!payee) {
     throw new Error(
-      'No employee account found with that email. Ask your employer to add you in their console.',
+      'No account found with that email. Ask your restaurant to add you in their console.',
     );
   }
 
@@ -193,7 +193,7 @@ export async function getMyEmployeeProfile(): Promise<EmployeeProfile | null> {
   const employer: PayerRecord | null = await getPayer(payee.payerId);
   return {
     payee,
-    employerName: employer?.payerName ?? 'Your employer',
+    employerName: employer?.payerName ?? 'Your restaurant',
     hasPaymentMethod: Boolean(
       payee.paymentMethodId && payee.paymentMethodId.length > 0,
     ),

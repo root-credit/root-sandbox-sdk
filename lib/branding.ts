@@ -10,33 +10,35 @@
  * edit ONLY this file. Do NOT rename Payer/Payee/Payout types in code, do NOT touch
  * Redis key prefixes, do NOT touch route handlers.
  *
- * Active vertical: Gusto — modern payroll. The payer is the employer admin who
- * funds a Gusto wallet from their bank and pays employees on a weekly schedule.
+ * Active vertical: Roosterwise — instant tip payouts for hospitality. The payer is
+ * the restaurant manager/operator who funds a Roosterwise wallet from the
+ * restaurant's operating account and pushes instant tip payouts to the crew at
+ * the end of every shift.
  */
 export const branding = {
   /** Top-level product name shown in nav, footer, browser title. */
-  productName: "Gusto",
+  productName: "Roosterwise",
   /** One-line tagline used on landing + auth panels. */
-  tagline: "Modern payroll. Direct deposits. One click.",
-  /** Payer entity (the employer admin who logs in, funds the wallet, runs payroll). */
-  payerSingular: "Employer",
-  payerPlural: "Employers",
-  /** Used in possessive contexts: e.g. "your employer's bank". */
-  payerPossessive: "employer's",
-  /** Payee entity (the employee who gets paid weekly). */
-  payeeSingular: "Employee",
-  payeePlural: "Employees",
-  /** Payout terminology — moving funds OUT of the Gusto wallet to employees. */
-  payoutVerb: "Pay out",
-  payoutNoun: "Payroll run",
-  payoutNounPlural: "Payroll runs",
+  tagline: "Instant tip payouts for your crew. After every shift.",
+  /** Payer entity (the restaurant manager who logs in, funds the wallet, sends tips). */
+  payerSingular: "Restaurant",
+  payerPlural: "Restaurants",
+  /** Used in possessive contexts: e.g. "your restaurant's operating account". */
+  payerPossessive: "restaurant's",
+  /** Payee entity (the worker — server, bartender, runner — who receives tips). */
+  payeeSingular: "Worker",
+  payeePlural: "Workers",
+  /** Payout terminology — moving funds OUT of the Roosterwise wallet to crew. */
+  payoutVerb: "Send tips",
+  payoutNoun: "Tip payout",
+  payoutNounPlural: "Tip payouts",
   /** Funding source label on the wallet settings screen. */
-  funderLabel: "Employer bank account",
-  funderShortLabel: "Bank account",
+  funderLabel: "Restaurant operating account",
+  funderShortLabel: "Operating account",
   /** Console heading displayed on the dashboard home. */
-  consoleHeading: "Welcome back. Your team is ready to be paid.",
+  consoleHeading: "Welcome back. Tonight's tips are ready to go.",
   consoleSubheading:
-    "Manage your team, fund your Gusto wallet from your bank, and run payroll in one click.",
+    "Manage your crew, fund your Roosterwise wallet from your operating account, and push instant tip payouts the moment a shift ends.",
 } as const;
 
 export type Branding = typeof branding;

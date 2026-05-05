@@ -33,8 +33,8 @@ export default async function PayerSettingsPage() {
             <h1 className="text-4xl font-black tracking-tight">Wallet &amp; bank</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
               Your {branding.payerSingular.toLowerCase()} profile, your{' '}
-              {branding.funderShortLabel.toLowerCase()}, and the Gusto wallet that powers
-              every payroll run.
+              {branding.funderShortLabel.toLowerCase()}, and the {branding.productName} wallet
+              that powers every tip payout.
             </p>
           </div>
           {payer.bankAccountToken && (
@@ -73,7 +73,8 @@ export default async function PayerSettingsPage() {
           <div className="border-b-2 px-6 py-5">
             <h2 className="text-xl font-black tracking-tight">{branding.funderLabel}</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Link your {branding.payerPossessive} bank to fund your Gusto wallet via ACH.
+              Link your {branding.payerPossessive} {branding.funderShortLabel.toLowerCase()} to
+              fund your {branding.productName} wallet via ACH.
             </p>
           </div>
           <div className="p-6 flex flex-col gap-6">
@@ -85,7 +86,7 @@ export default async function PayerSettingsPage() {
               </p>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-foreground">
                 {[
-                  `Fund your Gusto wallet via ACH debit`,
+                  `Fund your ${branding.productName} wallet via ACH debit`,
                   'Fast and secure transfers',
                   'Support for checking and savings accounts',
                   'Direct integration with Root infrastructure',
@@ -100,7 +101,7 @@ export default async function PayerSettingsPage() {
           </div>
         </section>
 
-        {/* Gusto wallet (subaccount) */}
+        {/* Roosterwise wallet (subaccount) */}
         <PayerSubaccountSection
           payerId={session.payerId}
           payerName={payer.payerName}

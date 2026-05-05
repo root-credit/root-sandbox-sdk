@@ -41,13 +41,13 @@ export function EmployeeLoginForm() {
           id="email"
           type="email"
           autoComplete="email"
-          placeholder="you@company.com"
+          placeholder="you@restaurant.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
         <p className="text-[11px] text-muted-foreground">
-          Use the email your employer added you with.
+          Use the email your restaurant added you with.
         </p>
       </div>
 

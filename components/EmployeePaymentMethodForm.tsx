@@ -90,8 +90,8 @@ export function EmployeePaymentMethodForm({
       await attachMyEmployeePaymentMethod(input);
       toast.success(
         hasExisting
-          ? 'Direct deposit method updated'
-          : 'Direct deposit method added',
+          ? 'Tip payout method updated'
+          : 'Tip payout method added',
       );
       router.refresh();
     } catch (err) {
@@ -252,9 +252,9 @@ export function EmployeePaymentMethodForm({
             Saving…
           </>
         ) : hasExisting ? (
-          'Update direct deposit'
+          'Update tip payout method'
         ) : (
-          'Save direct deposit'
+          'Save tip payout method'
         )}
       </Button>
     </form>

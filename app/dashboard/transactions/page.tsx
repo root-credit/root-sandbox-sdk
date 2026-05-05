@@ -44,8 +44,8 @@ export default function ActivityPage() {
         <div className="mb-8">
           <h1 className="text-4xl font-black tracking-tight">Activity</h1>
           <p className="text-base text-muted-foreground mt-2 max-w-xl">
-            Every paycheck, every status, every receipt — written to your ledger as
-            payroll runs.
+            Every tip payout, every status, every receipt — written to your ledger
+            as soon as it lands.
           </p>
         </div>
 
@@ -74,14 +74,14 @@ export default function ActivityPage() {
               <div>
                 <p className="text-lg font-black">No activity yet</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Run your first payroll to populate the ledger.
+                  Send your first tip payout to populate the ledger.
                 </p>
               </div>
               <Link
                 href="/dashboard/payouts"
                 className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-5 h-11 text-sm font-bold hover:bg-primary/90 transition-colors"
               >
-                Run your first payroll <ArrowRight className="h-3.5 w-3.5" />
+                Send your first tip payout <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           ) : (

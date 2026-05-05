@@ -22,7 +22,7 @@ import { branding } from '@/lib/branding';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: `My pay · ${branding.productName}`,
+  title: `My tips · ${branding.productName}`,
 };
 
 export default async function EmployeeDashboardPage() {
@@ -40,7 +40,7 @@ export default async function EmployeeDashboardPage() {
           <Link href="/" className="flex items-center gap-2">
             <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center">
               <span className="text-primary-foreground text-xs font-black tracking-tight">
-                G
+                {branding.productName.charAt(0)}
               </span>
             </div>
             <span className="font-black tracking-tight text-lg">
@@ -75,14 +75,14 @@ export default async function EmployeeDashboardPage() {
           <div className="relative">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-primary-foreground mb-5">
               <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />
-              My pay
+              My tips
             </span>
             <h1 className="text-3xl md:text-5xl font-black tracking-tight text-balance leading-[1.05] max-w-3xl">
               Welcome back, {payee.name.split(' ')[0]}.
             </h1>
             <p className="text-base md:text-lg text-muted-foreground mt-4 max-w-2xl leading-relaxed">
               You&apos;re part of <strong className="text-foreground">{employerName}</strong>&apos;s
-              team on {branding.productName}. Manage how your paychecks reach you below.
+              crew on {branding.productName}. Manage where your tips land below.
             </p>
           </div>
         </section>
@@ -90,7 +90,7 @@ export default async function EmployeeDashboardPage() {
         {/* Status row */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <StatusCard
-            label="Direct deposit"
+            label="Payout method"
             value={hasPaymentMethod ? 'Set up' : 'Not set up'}
             icon={
               hasPaymentMethod ? (
@@ -119,13 +119,13 @@ export default async function EmployeeDashboardPage() {
             }
           />
           <StatusCard
-            label="Employer"
+            label={branding.payerSingular}
             value={employerName}
             icon={<ShieldCheck className="h-4 w-4" />}
           />
         </section>
 
-        {/* Paystubs (live-updating client island) */}
+        {/* Tip history (live-updating client island) */}
         <EmployeePaystubsSection
           initialData={paystubs}
           employerName={employerName}
@@ -179,12 +179,12 @@ export default async function EmployeeDashboardPage() {
             <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
               <div>
                 <p className="text-xs font-bold uppercase tracking-widest text-primary mb-1">
-                  Direct deposit
+                  Tip payouts
                 </p>
                 <h2 className="text-xl font-black tracking-tight">
                   {hasPaymentMethod
-                    ? 'Update direct deposit'
-                    : 'Set up direct deposit'}
+                    ? 'Update where tips land'
+                    : 'Choose where tips land'}
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1 max-w-md leading-relaxed">
                   Pick how you want to be paid. Bank accounts use ACH or instant

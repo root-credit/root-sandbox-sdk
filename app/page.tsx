@@ -10,7 +10,7 @@ export default function LandingPage() {
       <div className="bg-foreground text-background">
         <div className="mx-auto max-w-7xl px-6 py-2.5 flex items-center justify-center gap-2 text-xs sm:text-sm font-medium">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-          New: weekly payroll on Gusto, with direct deposit on us.{' '}
+          New: instant tip payouts after every shift on {branding.productName}.{' '}
           <Link href="/signup" className="underline underline-offset-4 font-bold hover:text-primary">
             Get started
           </Link>
@@ -32,12 +32,12 @@ export default function LandingPage() {
               Features
             </a>
             <a href="#wallet" className="hover:text-primary transition-colors">
-              Gusto wallet
+              Tip wallet
             </a>
           </nav>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" className="font-bold hidden sm:inline-flex" asChild>
-              <Link href="/employee/login">I&apos;m an employee</Link>
+              <Link href="/employee/login">I&apos;m a {branding.payeeSingular.toLowerCase()}</Link>
             </Button>
             <Button variant="ghost" size="sm" className="font-bold" asChild>
               <Link href="/login">Sign in</Link>
@@ -59,30 +59,29 @@ export default function LandingPage() {
           <div className="flex flex-col gap-6">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-primary">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              People-first payroll
+              Built for hospitality
             </span>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-balance leading-[1.02] text-foreground">
-              Payroll your team will{' '}
-              <span className="text-primary">love.</span>
+              Tips, in their hands{' '}
+              <span className="text-primary">tonight.</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              {branding.productName} pairs an employer wallet with one-click payroll —
-              fund from your bank, list your team, and pay out weekly to the bank or
-              debit card every employee chose.
+              {branding.productName} pairs a {branding.payerSingular.toLowerCase()} wallet with one-tap
+              tip payouts — fund from your operating account, list your crew, and push instant
+              tips to the bank or debit card every {branding.payeeSingular.toLowerCase()} chose.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
                 <Check />
-                Fund the Gusto wallet with one ACH pull
+                Fund the {branding.productName} wallet with one ACH pull
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                Add your team — set their weekly pay, we handle the rails
+                Add your crew — servers, bartenders, runners, kitchen
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                {branding.payoutVerb} to a {branding.funderShortLabel.toLowerCase()} or debit card —
-                employee&apos;s choice
+                Drop in tonight&apos;s tip totals and {branding.payoutVerb.toLowerCase()} instantly
               </li>
             </ul>
             <div className="flex flex-wrap gap-3 pt-2">
@@ -92,7 +91,7 @@ export default function LandingPage() {
                 asChild
               >
                 <Link href="/signup">
-                  Open an {branding.payerSingular.toLowerCase()} account
+                  Onboard your {branding.payerSingular.toLowerCase()}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -107,7 +106,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Hero showcase — payroll preview card */}
+          {/* Hero showcase — tonight's tip run preview card */}
           <div className="relative">
             <div className="absolute -top-6 -right-6 h-24 w-24 rounded-2xl bg-accent rotate-6 -z-10" aria-hidden />
             <div className="absolute -bottom-8 -left-6 h-20 w-20 rounded-2xl bg-primary/20 -rotate-6 -z-10" aria-hidden />
@@ -115,10 +114,10 @@ export default function LandingPage() {
               <div className="flex items-center justify-between mb-5">
                 <div>
                   <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                    This week&apos;s payroll
+                    Tonight&apos;s tip pool · Fri close
                   </div>
                   <div className="text-3xl font-black font-mono tabular-nums mt-1">
-                    $12,480.00
+                    $1,847.00
                   </div>
                 </div>
                 <span className="inline-flex items-center justify-center rounded-full bg-primary/10 text-primary px-3 py-1 text-[11px] font-bold uppercase tracking-widest">
@@ -127,24 +126,24 @@ export default function LandingPage() {
               </div>
 
               <div className="grid grid-cols-1 gap-2.5 mb-5">
-                <EmployeeRow name="Alex Rivera" amount="$2,400.00" rail="Bank" />
-                <EmployeeRow name="Priya Shah" amount="$3,120.00" rail="Bank" featured />
-                <EmployeeRow name="Marcus Lee" amount="$2,800.00" rail="Card" />
-                <EmployeeRow name="Jamie Cole" amount="$4,160.00" rail="Bank" />
+                <CrewRow name="Alex Rivera" role="Server" amount="$412.00" rail="Card" />
+                <CrewRow name="Priya Shah" role="Bartender" amount="$528.00" rail="Bank" featured />
+                <CrewRow name="Marcus Lee" role="Runner" amount="$284.00" rail="Card" />
+                <CrewRow name="Jamie Cole" role="Kitchen" amount="$623.00" rail="Bank" />
               </div>
 
               <div className="flex items-center justify-between rounded-xl bg-foreground text-background px-4 py-3.5">
                 <div>
                   <div className="text-[11px] font-bold uppercase tracking-widest text-background/60">
-                    Gusto wallet
+                    {branding.productName} wallet
                   </div>
-                  <div className="text-xl font-black font-mono tabular-nums">$28,540.00</div>
+                  <div className="text-xl font-black font-mono tabular-nums">$8,420.00</div>
                 </div>
                 <button
                   type="button"
                   className="rounded-full bg-primary text-primary-foreground px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest"
                 >
-                  Run payroll
+                  {branding.payoutVerb}
                 </button>
               </div>
             </div>
@@ -160,31 +159,31 @@ export default function LandingPage() {
               How it works
             </p>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-balance leading-[1.05]">
-              Three steps. Zero spreadsheets.
+              Three steps. Zero envelopes.
             </h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-lg">
-              Open an {branding.payerSingular.toLowerCase()} account, fund your wallet, and pay
-              your team — every Friday, like clockwork.
+              Onboard your {branding.payerSingular.toLowerCase()}, fund your wallet, and pay your crew
+              the moment last call hits — no spreadsheets, no week-long waits.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Step
               n="01"
-              title="Fund your Gusto wallet"
-              body={`Link your ${branding.funderShortLabel.toLowerCase()} once, then pull funds via ACH into your Gusto wallet — your in-platform balance.`}
+              title={`Fund your ${branding.productName} wallet`}
+              body={`Link your ${branding.funderShortLabel.toLowerCase()} once, then pull funds via ACH into your ${branding.productName} wallet — your in-platform tip pool.`}
               icon={<Wallet className="h-5 w-5" />}
             />
             <Step
               n="02"
-              title="Add your team"
-              body="Add each employee with their weekly pay. They sign in with the same email and pick how they want to be paid — bank or debit card."
+              title="Add your crew"
+              body={`Add each ${branding.payeeSingular.toLowerCase()} with their role. They sign in with the same email and pick how they want to be paid — bank account or debit card.`}
               icon={<Users className="h-5 w-5" />}
             />
             <Step
               n="03"
-              title="Run payroll"
-              body="One click sends every employee their weekly pay from your wallet directly to their bank or card."
+              title="Send tonight's tips"
+              body={`Drop in tonight's tip totals per ${branding.payeeSingular.toLowerCase()} and tap send. Funds land instantly — no waiting for next Friday.`}
               icon={<Zap className="h-5 w-5" />}
             />
           </div>
@@ -199,7 +198,7 @@ export default function LandingPage() {
               Features
             </p>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-balance leading-[1.05]">
-              Built for founders who hate paperwork.
+              Built for the pace of the floor.
             </h2>
           </div>
 
@@ -207,31 +206,31 @@ export default function LandingPage() {
             <FeatureCard
               icon={<Wallet className="h-5 w-5" />}
               code="WALLET"
-              title="Gusto wallet"
+              title={`${branding.productName} wallet`}
               features={[
-                'Funded via ACH from your linked bank',
-                'Single in-app balance for every payroll run',
+                `Funded via ACH from your ${branding.funderShortLabel.toLowerCase()}`,
+                'Single in-app balance for every shift',
                 'Real-time balance after every transfer',
                 'No idle reconciliation — moves are instant',
               ]}
             />
             <FeatureCard
               icon={<Users className="h-5 w-5" />}
-              code="TEAM"
-              title="Team roster"
+              code="CREW"
+              title="Crew roster"
               features={[
-                'Add employees with weekly pay amounts',
-                'Employees sign in with their email',
+                `Add ${branding.payeePlural.toLowerCase()} with their role and contact`,
+                `Each ${branding.payeeSingular.toLowerCase()} signs in with their email`,
                 'They pick bank or debit card payout',
-                'Update pay rates any time — takes effect next run',
+                'Update or remove crew any time',
               ]}
             />
             <FeatureCard
               icon={<Banknote className="h-5 w-5" />}
-              code="PAYROLL"
-              title="One-click payroll"
+              code="TIPS"
+              title="Instant tip payouts"
               features={[
-                'Pay your full team in one click',
+                `Drop in tonight's tip totals per ${branding.payeeSingular.toLowerCase()}`,
                 `Routes via Root rails to each ${branding.payeeSingular.toLowerCase()}`,
                 'Bank-grade security on every transfer',
                 'Full activity ledger with receipts',
@@ -245,15 +244,15 @@ export default function LandingPage() {
       <section id="wallet" className="bg-foreground text-background py-20 md:py-28">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="text-xs font-bold uppercase tracking-widest text-primary mb-4">
-            Gusto wallet
+            {branding.productName} wallet
           </p>
           <h2 className="text-4xl md:text-5xl font-black tracking-tight text-balance mb-5 leading-[1.05]">
-            One wallet. Every paycheck. Always on time.
+            One wallet. Every shift. Tips out tonight.
           </h2>
           <p className="text-lg text-background/80 leading-relaxed max-w-xl mx-auto mb-8">
-            The Gusto wallet is the heart of every {branding.payerSingular.toLowerCase()}.
-            Fund it from your bank, run payroll out of it, audit every move — all on one
-            ledger, all sandbox-safe.
+            The {branding.productName} wallet is the heart of every {branding.payerSingular.toLowerCase()}.
+            Fund it from your {branding.funderShortLabel.toLowerCase()}, push tip payouts out of it,
+            audit every move — all on one ledger, all sandbox-safe.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button
@@ -325,13 +324,15 @@ function Check() {
   );
 }
 
-function EmployeeRow({
+function CrewRow({
   name,
+  role,
   amount,
   rail,
   featured,
 }: {
   name: string;
+  role: string;
   amount: string;
   rail: string;
   featured?: boolean;
@@ -353,7 +354,7 @@ function EmployeeRow({
         <div className="min-w-0">
           <div className="font-bold truncate text-sm">{name}</div>
           <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            {rail}
+            {role} · {rail}
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowUpFromLine, Wallet } from 'lucide-react';
+import { Wallet } from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { PayoutForm } from '@/components/PayoutForm';
 import { branding } from '@/lib/branding';
@@ -12,7 +12,7 @@ import { usePayees } from '@/lib/hooks/usePayees';
 import { useWallet } from '@/components/WalletProvider';
 import { formatMoney } from '@/lib/types/payments';
 
-export default function RunPayrollPage() {
+export default function SendTipsPage() {
   const router = useRouter();
   const { session } = useSession();
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
@@ -28,14 +28,15 @@ export default function RunPayrollPage() {
       <DashboardHeader email={session.payerEmail} />
 
       <main className="flex-1 mx-auto max-w-5xl w-full px-6 lg:px-10 py-8">
-        <Breadcrumb here="Run payroll" />
+        <Breadcrumb here={branding.payoutVerb} />
 
         <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-black tracking-tight">Run payroll</h1>
+            <h1 className="text-4xl font-black tracking-tight">{branding.payoutVerb}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Pay your team this week. Set the amount for each {branding.payeeSingular.toLowerCase()},
-              and Gusto routes the funds straight from your wallet to their bank or debit card.
+              Drop in tonight&apos;s tip totals for each {branding.payeeSingular.toLowerCase()}.
+              {' '}{branding.productName} routes the funds straight from your wallet to their bank
+              or debit card — instantly.
             </p>
           </div>
           <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-4 py-2 text-xs font-bold uppercase tracking-widest">
@@ -49,7 +50,7 @@ export default function RunPayrollPage() {
           <div>
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-background/60 mb-2">
               <Wallet className="h-3.5 w-3.5" />
-              Available in Gusto wallet
+              Available in {branding.productName} wallet
             </div>
             <div className="text-4xl md:text-5xl font-black font-mono tabular-nums">
               {!walletEnabled
@@ -59,7 +60,7 @@ export default function RunPayrollPage() {
                   : formatMoney(walletBalanceCents)}
             </div>
             <p className="text-sm text-background/70 mt-2 max-w-md">
-              Your Gusto wallet balance. Payroll runs pull from this balance.
+              Your {branding.productName} wallet balance. Tip payouts pull from this balance.
             </p>
           </div>
           <Link
@@ -96,10 +97,10 @@ export default function RunPayrollPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InfoCard
             label="How it works"
-            title="From wallet to bank"
+            title="From wallet to crew"
             items={[
-              `Set this week's amount for each ${branding.payeeSingular.toLowerCase()}`,
-              'Press run — Gusto routes every transfer in parallel',
+              `Drop in tonight's tip total for each ${branding.payeeSingular.toLowerCase()}`,
+              `Tap ${branding.payoutVerb.toLowerCase()} — ${branding.productName} routes every transfer in parallel`,
               `Funds land in each ${branding.payeeSingular.toLowerCase()}'s chosen rail`,
               'Receipts and ledger entries are written automatically',
             ]}
@@ -107,11 +108,11 @@ export default function RunPayrollPage() {
           />
           <InfoCard
             label="Quick tips"
-            title="Run a clean payroll"
+            title="Run a clean tip-out"
             items={[
               `Settles in roughly 5 seconds per ${branding.payeeSingular.toLowerCase()}`,
               `Each ${branding.payeeSingular.toLowerCase()} must have a payout method on file`,
-              'Funds pull from your Gusto wallet balance',
+              `Funds pull from your ${branding.productName} wallet balance`,
               'Audit everything in Activity',
             ]}
           />

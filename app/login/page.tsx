@@ -27,13 +27,14 @@ export default function LoginPage() {
               Welcome <span className="text-primary">back.</span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              Sign in with the email tied to your {branding.productName} account. Employers
-              land in the console — employees go straight to their pay settings.
+              Sign in with the email tied to your {branding.productName} account. Restaurant
+              managers land in the console — {branding.payeePlural.toLowerCase()} go straight to
+              their tip settings.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
                 <Check />
-                One wallet for every payroll run
+                One wallet for every shift&apos;s tip-out
               </li>
               <li className="flex items-center gap-3">
                 <Check />
@@ -71,12 +72,12 @@ export default function LoginPage() {
               Open a {branding.productName} {branding.payerSingular.toLowerCase()} account
             </Link>
             <p className="text-xs text-muted-foreground text-center mt-4 leading-relaxed">
-              Looking for your paycheck setup?{' '}
+              Looking for your tip setup?{' '}
               <Link
                 href="/employee/login"
                 className="font-bold text-foreground underline-offset-4 hover:underline"
               >
-                Employee sign-in
+                {branding.payeeSingular} sign-in
               </Link>
             </p>
           </div>

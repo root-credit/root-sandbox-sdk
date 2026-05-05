@@ -67,15 +67,15 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
       return;
     }
 
-    // Hard block: never let the operator run payroll for more than the
+    // Hard block: never let the operator send tips for more than the
     // wallet's current Root subaccount balance.
     if (walletNotReady) {
-      toast.error('Top up your Gusto wallet before running payroll');
+      toast.error(`Top up your ${branding.productName} wallet before sending tips`);
       return;
     }
     if (overBalance) {
       toast.error(
-        `Payroll exceeds wallet balance by ${formatMoney(totalCents - balanceCents)}`,
+        `Tip total exceeds wallet balance by ${formatMoney(totalCents - balanceCents)}`,
       );
       return;
     }
@@ -83,7 +83,7 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
     try {
       await processPayout({ payerId, lineItems: parsed.data.lineItems, totalAmount });
       toast.success(
-        `${branding.payoutVerb} $${totalAmount.toFixed(2)} to ${parsed.data.lineItems.length} ${branding.payeeSingular.toLowerCase()}(s)`
+        `${branding.payoutVerb} — $${totalAmount.toFixed(2)} to ${parsed.data.lineItems.length} ${branding.payeeSingular.toLowerCase()}(s)`
       );
       setAmounts({});
       setTotalAmount(0);
@@ -118,13 +118,13 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
     <form onSubmit={onSubmit} className="space-y-6">
       <div>
         <p className="text-xs font-bold uppercase tracking-widest text-primary mb-1">
-          This week&apos;s payroll
+          Tonight&apos;s tip pool
         </p>
         <h3 className="text-lg font-black tracking-tight mb-1">
-          Enter pay amounts
+          Enter tip amounts
         </h3>
         <p className="text-sm text-muted-foreground">
-          Set this week&apos;s amount for each {branding.payeeSingular.toLowerCase()}. Leave blank to skip.
+          Set tonight&apos;s tip total for each {branding.payeeSingular.toLowerCase()}. Leave blank to skip.
         </p>
 
         <div className="mt-4 rounded-xl border-2 overflow-hidden bg-card">
@@ -168,7 +168,7 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-              Total payroll
+              Total tip pool
             </p>
             <div className="text-4xl font-black font-mono mt-1 tracking-tight tabular-nums">
               ${totalAmount.toFixed(2)}
@@ -194,7 +194,7 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
                 Settling…
               </>
             ) : (
-              'Run payroll'
+              branding.payoutVerb
             )}
           </Button>
         </div>
@@ -237,8 +237,8 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
           <div className="mt-4 flex items-start gap-2.5 rounded-lg bg-destructive/15 border-2 border-destructive/30 px-3 py-2.5 text-xs font-bold text-destructive">
             <AlertTriangle className="h-4 w-4 flex-none mt-0.5" />
             <span className="leading-snug">
-              This run is more than your wallet balance. Top up the wallet or
-              lower the totals before running payroll.
+              This tip-out is more than your wallet balance. Top up the wallet
+              or lower the totals before sending tips.
             </span>
           </div>
         )}
@@ -247,15 +247,15 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
           <div className="mt-4 flex items-start gap-2.5 rounded-lg bg-secondary border-2 px-3 py-2.5 text-xs font-bold">
             <AlertTriangle className="h-4 w-4 flex-none mt-0.5 text-primary" />
             <span className="leading-snug">
-              Your Gusto wallet isn&apos;t funded yet. Top it up from Wallet &
-              bank to enable payroll.
+              Your {branding.productName} wallet isn&apos;t funded yet. Top it
+              up from Wallet & bank to enable tip payouts.
             </span>
           </div>
         )}
       </div>
 
       <p className="text-xs text-muted-foreground text-center">
-        Payroll runs are processed immediately via Root&apos;s payment infrastructure.
+        Tip payouts are processed immediately via Root&apos;s payment infrastructure.
       </p>
     </form>
   );

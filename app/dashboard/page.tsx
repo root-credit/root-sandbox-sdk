@@ -52,7 +52,9 @@ export default async function DashboardPage() {
                   <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
                     Next action
                   </div>
-                  <div className="text-base font-extrabold">Run weekly payroll</div>
+                  <div className="text-base font-extrabold">
+                    {branding.payoutVerb} for tonight&apos;s shift
+                  </div>
                 </div>
                 <ArrowRight className="h-5 w-5 text-foreground group-hover:translate-x-1 transition-transform" />
               </Link>
@@ -68,15 +70,15 @@ export default async function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <ActionTile
               href="/dashboard/payouts"
-              title="Run payroll"
-              desc={`Pay your ${branding.payeePlural.toLowerCase()} their weekly amounts.`}
+              title={branding.payoutVerb}
+              desc={`Push tonight's tips to your ${branding.payeePlural.toLowerCase()}.`}
               icon={<ArrowUpFromLine className="h-5 w-5" />}
               primary
             />
             <ActionTile
               href="/dashboard/payees"
               title={`Add ${branding.payeeSingular.toLowerCase()}`}
-              desc="Onboard a new team member to the roster."
+              desc="Onboard a new crew member to the roster."
               icon={<Users className="h-5 w-5" />}
             />
             <ActionTile
@@ -88,7 +90,7 @@ export default async function DashboardPage() {
             <ActionTile
               href="/dashboard/transactions"
               title="View activity"
-              desc="Audit every payroll move with full receipts."
+              desc="Audit every tip payout with full receipts."
               icon={<Activity className="h-5 w-5" />}
             />
           </div>
@@ -107,7 +109,7 @@ export default async function DashboardPage() {
               icon={<Users className="h-4 w-4" />}
             />
             <StatCard
-              label="This week's payroll"
+              label="Tonight's tip pool"
               value="$0.00"
               icon={<Banknote className="h-4 w-4" />}
             />
@@ -124,19 +126,19 @@ export default async function DashboardPage() {
           <div className="border-b-2 px-6 py-5">
             <h2 className="text-xl font-black tracking-tight">Modules</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Everything you need to run payroll on Gusto.
+              Everything you need to push tips out the door.
             </p>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <ModuleTile
               href="/dashboard/payees"
-              title={branding.payeePlural}
-              desc="Manage your team. Add, update, and remove employees."
+              title="Crew"
+              desc={`Manage your roster. Add, update, and remove ${branding.payeePlural.toLowerCase()}.`}
             />
             <ModuleTile
               href="/dashboard/payouts"
-              title="Run payroll"
-              desc={`Pay every ${branding.payeeSingular.toLowerCase()} from your Gusto wallet in one click.`}
+              title={branding.payoutVerb}
+              desc={`Push tonight's tip totals to every ${branding.payeeSingular.toLowerCase()} in one tap.`}
             />
             <ModuleTile
               href="/dashboard/transactions"
@@ -146,7 +148,7 @@ export default async function DashboardPage() {
             <ModuleTile
               href="/dashboard/payer"
               title="Wallet & bank"
-              desc={`Profile, ${branding.funderShortLabel.toLowerCase()}, and Gusto wallet settings.`}
+              desc={`Profile, ${branding.funderShortLabel.toLowerCase()}, and ${branding.productName} wallet settings.`}
             />
           </div>
         </section>

@@ -60,10 +60,11 @@ export default function PayeesPage() {
 
         <div className="mb-8 flex items-end justify-between gap-6 flex-wrap">
           <div>
-            <h1 className="text-4xl font-black tracking-tight">{branding.payeePlural}</h1>
+            <h1 className="text-4xl font-black tracking-tight">Crew</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Your team roster. Each {branding.payeeSingular.toLowerCase()} signs in with the
-              email below and picks how they want to be paid — bank or debit card.
+              Your {branding.payerSingular.toLowerCase()} roster — servers, bartenders, runners,
+              kitchen. Each {branding.payeeSingular.toLowerCase()} signs in with the email below and
+              picks how they want to receive tips — bank or debit card.
             </p>
           </div>
 
@@ -100,15 +101,15 @@ export default function PayeesPage() {
         <div className="rounded-xl border-2 bg-secondary px-5 py-4 mb-6 flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-primary mb-1">
-              Employee sign-in
+              {branding.payeeSingular} sign-in
             </p>
             <p className="text-sm font-bold leading-snug">
               Share <code className="rounded bg-card border px-1.5 py-0.5 font-mono text-xs">/employee/login</code>{' '}
-              with your team.
+              with your crew.
             </p>
             <p className="text-xs text-muted-foreground mt-1 max-w-md leading-relaxed">
               Each {branding.payeeSingular.toLowerCase()} signs in with the email below to add
-              or update their direct-deposit method.
+              or update where their tips land.
             </p>
           </div>
           <Link
@@ -116,7 +117,7 @@ export default function PayeesPage() {
             target="_blank"
             className="inline-flex items-center rounded-full bg-foreground text-background px-4 h-9 text-xs font-bold hover:bg-foreground/90 transition-colors"
           >
-            Open employee sign-in
+            Open {branding.payeeSingular.toLowerCase()} sign-in
           </Link>
         </div>
 
@@ -124,7 +125,7 @@ export default function PayeesPage() {
           <div className="flex items-center justify-between gap-3 border-b-2 px-6 py-4">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
-              <h2 className="font-black tracking-tight">{branding.payeePlural}</h2>
+              <h2 className="font-black tracking-tight">Crew</h2>
               {!isLoading && (
                 <span className="text-xs text-muted-foreground font-bold">
                   ({payees.length})
@@ -147,7 +148,7 @@ export default function PayeesPage() {
                   No {branding.payeePlural.toLowerCase()} yet
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Add your first {branding.payeeSingular.toLowerCase()} to start running payroll.
+                  Add your first {branding.payeeSingular.toLowerCase()} to start sending tips.
                 </p>
               </div>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

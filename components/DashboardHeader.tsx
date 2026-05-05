@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button';
 
 const NAV: { href: string; label: string }[] = [
   { href: '/dashboard', label: 'Overview' },
-  { href: '/dashboard/payees', label: branding.payeePlural },
-  { href: '/dashboard/payouts', label: 'Run payroll' },
+  { href: '/dashboard/payees', label: 'Crew' },
+  { href: '/dashboard/payouts', label: 'Send tips' },
   { href: '/dashboard/transactions', label: 'Activity' },
   { href: '/dashboard/payer', label: 'Wallet & bank' },
 ];

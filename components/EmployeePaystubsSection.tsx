@@ -90,23 +90,23 @@ export function EmployeePaystubsSection({ initialData, employerName }: Props) {
           <p className="text-xs font-bold uppercase tracking-widest text-primary mb-1">
             Earnings
           </p>
-          <h2 className="text-xl font-black tracking-tight">My paystubs</h2>
+          <h2 className="text-xl font-black tracking-tight">My tip history</h2>
           <p className="text-sm text-muted-foreground mt-1 max-w-md leading-relaxed">
-            Every payroll run from {employerName}, with status synced live from
+            Every tip payout from {employerName}, with status synced live from
             Root.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="font-bold">
             <ReceiptText className="h-3.5 w-3.5" />
-            {data.payCount} {data.payCount === 1 ? 'run' : 'runs'}
+            {data.payCount} {data.payCount === 1 ? 'payout' : 'payouts'}
           </Badge>
           <button
             type="button"
             onClick={() => void refresh()}
             disabled={isRefreshing}
             className="inline-flex items-center gap-1.5 rounded-full border-2 px-3 h-8 text-[11px] font-bold uppercase tracking-widest hover:bg-secondary transition-colors disabled:opacity-50"
-            aria-label="Refresh paystubs"
+            aria-label="Refresh tip history"
           >
             <RefreshCw
               className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`}
@@ -152,16 +152,16 @@ export function EmployeePaystubsSection({ initialData, employerName }: Props) {
       {data.paystubs.length === 0 ? (
         <div className="rounded-xl border-2 border-dashed bg-secondary px-6 py-10 text-center">
           <ReceiptText className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
-          <p className="font-black text-sm">No paystubs yet</p>
+          <p className="font-black text-sm">No tips yet</p>
           <p className="text-xs text-muted-foreground mt-1 leading-relaxed max-w-sm mx-auto">
-            When {employerName} runs payroll, your paystubs will show up here
+            When {employerName} sends out tips, every payout shows up here
             automatically.
           </p>
         </div>
       ) : (
         <div className="rounded-xl border-2 overflow-hidden">
           <div className="grid grid-cols-12 gap-4 bg-secondary px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            <div className="col-span-5">Pay date</div>
+            <div className="col-span-5">Shift date</div>
             <div className="col-span-3">Status</div>
             <div className="col-span-4 text-right">Amount</div>
           </div>

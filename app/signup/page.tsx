@@ -27,8 +27,9 @@ export default function SignupPage() {
               Open your <span className="text-primary">console.</span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              Create an {branding.payerSingular.toLowerCase()} account in under two minutes.
-              We&apos;ll spin up your Gusto wallet, ready to fund and run payroll.
+              Onboard your {branding.payerSingular.toLowerCase()} in under two minutes. We&apos;ll
+              spin up your {branding.productName} wallet, ready to fund and start paying out
+              tips tonight.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
@@ -37,11 +38,11 @@ export default function SignupPage() {
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                Add unlimited {branding.payeePlural.toLowerCase()}
+                Add unlimited {branding.payeePlural.toLowerCase()} — front and back of house
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                {branding.payoutVerb} to bank or debit card — your team picks
+                {branding.payoutVerb} to bank or debit card — your crew picks
               </li>
             </ul>
           </div>

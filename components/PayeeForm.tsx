@@ -96,7 +96,7 @@ export function PayeeForm({ payerId, onSuccess }: PayeeFormProps) {
             phone: data.phone,
           });
           toast.success(
-            `${branding.payeeSingular} added — they'll set up direct deposit when they sign in.`,
+            `${branding.payeeSingular} added — they'll pick where tips land when they sign in.`,
           );
         } finally {
           setIsAddingWithoutPayment(false);
@@ -169,7 +169,7 @@ export function PayeeForm({ payerId, onSuccess }: PayeeFormProps) {
       {/* Payment timing */}
       <div className="flex flex-col gap-3">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Direct deposit
+          Tip payout method
         </p>
         <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label="Payment timing">
           <RadioCard
@@ -187,7 +187,7 @@ export function PayeeForm({ payerId, onSuccess }: PayeeFormProps) {
             onSelect={() =>
               setValue('paymentMode', 'later', { shouldDirty: true, shouldValidate: true })
             }
-            title="Let employee add it"
+            title={`Let ${branding.payeeSingular.toLowerCase()} add it`}
             desc="They'll sign in and set it up themselves."
           />
         </div>
@@ -336,9 +336,9 @@ export function PayeeForm({ payerId, onSuccess }: PayeeFormProps) {
         <div className="rounded-lg border bg-secondary p-4 text-sm text-foreground">
           <p className="font-bold">No payment info needed right now.</p>
           <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-            We&apos;ll send your {branding.payeeSingular.toLowerCase()} to the employee sign-in
-            page. They&apos;ll log in with the email above and choose how to receive their pay
-            — bank account or debit card.
+            We&apos;ll send your {branding.payeeSingular.toLowerCase()} to the {branding.payeeSingular.toLowerCase()}{' '}
+            sign-in page. They&apos;ll log in with the email above and choose how to receive
+            their tips — bank account or debit card.
           </p>
         </div>
       )}

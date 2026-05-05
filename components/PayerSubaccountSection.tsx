@@ -100,7 +100,7 @@ export function PayerSubaccountSection({
         <div>
           <h2 className="text-xl font-black tracking-tight">{branding.productName} wallet</h2>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Your in-app balance for funding payroll. Powered by a Root subaccount.
+            Your in-app balance for tip payouts. Powered by a Root subaccount.
           </p>
         </div>
       </div>

@@ -4,30 +4,30 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Gusto-inspired palette: warm coral primary, near-black ink, clean white,
-     warm cream neutrals, plus a soft amber accent for highlights.
-     5 colors total — coral, ink, white, cream, amber. */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.18 0.01 60);
+  /* Roosterwise palette — hospitality, confident, warm.
+     5 colors total: rooster crimson primary, deep ink, warm cream background,
+     clean white surfaces, gold amber accent for highlights. */
+  --background: oklch(0.985 0.008 75);
+  --foreground: oklch(0.18 0.012 50);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.01 60);
+  --card-foreground: oklch(0.18 0.012 50);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.01 60);
-  /* Gusto coral — warm, friendly, punchy */
-  --primary: oklch(0.7 0.18 32);
-  --primary-foreground: oklch(0.99 0.005 60);
-  --secondary: oklch(0.97 0.015 70);
-  --secondary-foreground: oklch(0.22 0.01 60);
-  --muted: oklch(0.96 0.008 65);
-  --muted-foreground: oklch(0.48 0.015 60);
-  /* Soft amber accent — sun-warmed sand, used sparingly for highlights */
-  --accent: oklch(0.92 0.08 75);
-  --accent-foreground: oklch(0.28 0.06 55);
-  --destructive: oklch(0.58 0.22 25);
+  --popover-foreground: oklch(0.18 0.012 50);
+  /* Rooster crimson — confident, hospitality-coded */
+  --primary: oklch(0.55 0.21 28);
+  --primary-foreground: oklch(0.99 0.005 75);
+  --secondary: oklch(0.955 0.02 75);
+  --secondary-foreground: oklch(0.22 0.012 50);
+  --muted: oklch(0.95 0.014 70);
+  --muted-foreground: oklch(0.46 0.015 50);
+  /* Gold amber accent — sun-warmed, used sparingly for highlights */
+  --accent: oklch(0.88 0.13 85);
+  --accent-foreground: oklch(0.28 0.06 50);
+  --destructive: oklch(0.55 0.22 22);
   --destructive-foreground: oklch(0.99 0.005 0);
-  --border: oklch(0.92 0.01 65);
-  --input: oklch(0.92 0.01 65);
-  --ring: oklch(0.7 0.18 32);
+  --border: oklch(0.91 0.012 70);
+  --input: oklch(0.91 0.012 70);
+  --ring: oklch(0.55 0.21 28);
   --radius: 0.75rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
