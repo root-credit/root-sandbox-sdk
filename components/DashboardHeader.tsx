@@ -7,13 +7,11 @@ import { useLogout } from '@/lib/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 
 const NAV: { href: string; label: string }[] = [
-  { href: '/dashboard', label: 'Overview' },
-  { href: '/dashboard/marketplace', label: 'Marketplace' },
-  { href: '/dashboard/domains', label: 'My domains' },
-  { href: '/dashboard/payouts', label: branding.payoutNounPlural },
-  { href: '/dashboard/payees', label: branding.payeePlural },
+  { href: '/dashboard', label: 'Home' },
+  { href: '/dashboard/payouts', label: 'Send & Request' },
   { href: '/dashboard/transactions', label: 'Activity' },
-  { href: '/dashboard/payer', label: branding.payerSingular },
+  { href: '/dashboard/payees', label: branding.payeePlural },
+  { href: '/dashboard/payer', label: 'Wallet' },
 ];
 
 export function DashboardHeader({ email }: { email: string }) {
@@ -35,16 +33,18 @@ export function DashboardHeader({ email }: { email: string }) {
     <header className="sticky top-0 z-30 border-b bg-card">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="h-16 flex items-center justify-between gap-6">
-          <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground text-base font-extrabold">
-              {branding.productName.charAt(0)}
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground text-lg font-extrabold">
+              V
             </div>
-            <span className="text-lg font-extrabold tracking-tight">{branding.productName}</span>
+            <span className="text-xl font-extrabold tracking-tight text-primary">
+              {branding.productName}
+            </span>
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="hidden sm:flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-xs font-semibold text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
               {email}
             </span>
             <Button
@@ -54,7 +54,7 @@ export function DashboardHeader({ email }: { email: string }) {
               disabled={isSubmitting}
               className="font-semibold rounded-full"
             >
-              {isSubmitting ? 'Signing out…' : 'Sign out'}
+              {isSubmitting ? 'Logging out...' : 'Log out'}
             </Button>
           </div>
         </div>
@@ -66,9 +66,9 @@ export function DashboardHeader({ email }: { email: string }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative px-3 py-3 text-sm whitespace-nowrap border-b-2 transition-colors ${
+                className={`relative px-4 py-3 text-sm whitespace-nowrap border-b-2 transition-colors ${
                   active
-                    ? 'text-foreground border-primary font-bold'
+                    ? 'text-primary border-primary font-bold'
                     : 'text-muted-foreground border-transparent hover:text-foreground hover:border-border font-semibold'
                 }`}
               >

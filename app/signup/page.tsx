@@ -7,56 +7,56 @@ export default function SignupPage() {
     <main className="min-h-screen flex flex-col bg-background">
       <header className="border-b bg-card">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground text-base font-extrabold">
-              {branding.productName.charAt(0)}
+          <Link href="/" className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground text-lg font-extrabold">
+              V
             </div>
-            <span className="text-lg font-extrabold tracking-tight">{branding.productName}</span>
+            <span className="text-xl font-extrabold tracking-tight text-primary">
+              {branding.productName}
+            </span>
           </Link>
         </div>
       </header>
 
       <section className="flex-1 flex items-center relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
-          <div className="absolute -top-24 -right-24 h-[24rem] w-[24rem] rounded-full bg-primary/20 blur-3xl" />
-          <div className="absolute -bottom-32 -left-24 h-[20rem] w-[20rem] rounded-full bg-accent/30 blur-3xl" />
+          <div className="absolute -top-24 -right-24 h-[24rem] w-[24rem] rounded-full bg-primary/15 blur-3xl" />
+          <div className="absolute -bottom-32 -left-24 h-[20rem] w-[20rem] rounded-full bg-accent/20 blur-3xl" />
         </div>
 
         <div className="mx-auto w-full max-w-7xl px-6 py-16 grid gap-12 md:grid-cols-2 items-center">
           <div className="flex flex-col gap-6">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-primary-foreground">
-              New {branding.payerSingular.toLowerCase()}
+              Get started
             </span>
             <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-balance leading-[1.02]">
-              Open your{' '}
-              <span className="relative inline-block">
-                <span className="relative z-10">console.</span>
-                <span className="absolute inset-x-0 bottom-1 h-3 bg-primary -z-0" aria-hidden />
+              Join{' '}
+              <span className="text-primary">
+                {branding.productName}.
               </span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              Create an {branding.payerSingular.toLowerCase()} in under two minutes. We&apos;ll spin up
-              your Good as Gold wallet, ready to fund and trade.
+              Create your account in under two minutes and start sending money to friends and family.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
                 <Check />
-                Same-day onboarding, sandbox-safe
+                Free to sign up
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                Buy with wallet, sell to other accounts
+                Send money to anyone
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                {branding.payoutVerb} to {branding.payeePlural.toLowerCase()} — bank or card
+                {branding.payoutVerb} to your bank or card
               </li>
             </ul>
           </div>
 
-          <div className="rounded-2xl border-2 bg-card p-7 shadow-xl">
+          <div className="rounded-2xl border bg-card p-7 shadow-xl">
             <div className="mb-6">
-              <h2 className="text-2xl font-extrabold tracking-tight">Create your {branding.payerSingular.toLowerCase()}</h2>
+              <h2 className="text-2xl font-extrabold tracking-tight">Create your account</h2>
               <p className="text-base text-muted-foreground mt-1">
                 Tell us a bit about yourself.
               </p>
@@ -68,15 +68,15 @@ export default function SignupPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground font-bold tracking-widest">
-                  Already onboarded?
+                  Already have an account?
                 </span>
               </div>
             </div>
             <Link
               href="/login"
-              className="flex w-full items-center justify-center rounded-full border-2 border-foreground h-11 px-5 text-sm font-bold transition-colors hover:bg-foreground hover:text-background"
+              className="flex w-full items-center justify-center rounded-full border-2 border-primary h-11 px-5 text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
             >
-              Sign in instead
+              Log in
             </Link>
           </div>
         </div>

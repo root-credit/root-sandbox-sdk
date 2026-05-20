@@ -4,30 +4,30 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* GoDaddy-inspired palette: bright teal primary, near-black ink, clean white,
-     soft gray neutrals, plus a warm accent for highlights. */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.16 0.01 240);
+  /* Venmo-inspired palette: signature blue primary, clean white background,
+     soft gray neutrals, and a fresh teal accent for highlights. */
+  --background: oklch(0.995 0 0);
+  --foreground: oklch(0.15 0.01 250);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.01 240);
+  --card-foreground: oklch(0.15 0.01 250);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.01 240);
-  /* Vivid GoDaddy teal */
-  --primary: oklch(0.78 0.14 195);
-  --primary-foreground: oklch(0.16 0.01 240);
-  --secondary: oklch(0.97 0.005 240);
-  --secondary-foreground: oklch(0.2 0.01 240);
-  --muted: oklch(0.96 0.005 240);
-  --muted-foreground: oklch(0.46 0.01 240);
-  /* Warm accent — GoDaddy uses sunny yellows in marketing accents */
-  --accent: oklch(0.9 0.15 95);
-  --accent-foreground: oklch(0.2 0.04 80);
+  --popover-foreground: oklch(0.15 0.01 250);
+  /* Venmo signature blue */
+  --primary: oklch(0.55 0.2 250);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.97 0.005 250);
+  --secondary-foreground: oklch(0.2 0.01 250);
+  --muted: oklch(0.96 0.005 250);
+  --muted-foreground: oklch(0.45 0.01 250);
+  /* Fresh teal accent for success states and highlights */
+  --accent: oklch(0.75 0.15 175);
+  --accent-foreground: oklch(0.15 0.04 175);
   --destructive: oklch(0.58 0.22 25);
   --destructive-foreground: oklch(0.99 0.005 0);
-  --border: oklch(0.92 0.005 240);
-  --input: oklch(0.92 0.005 240);
-  --ring: oklch(0.78 0.14 195);
-  --radius: 0.5rem;
+  --border: oklch(0.92 0.005 250);
+  --input: oklch(0.92 0.005 250);
+  --ring: oklch(0.55 0.2 250);
+  --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);

@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Activity as ActivityIcon } from 'lucide-react';
+import { Activity as ActivityIcon, Send, ArrowDownToLine } from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { branding } from '@/lib/branding';
 import { useSession } from '@/lib/hooks/useSession';
@@ -41,7 +41,7 @@ export default function ActivityPage() {
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
         <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
           <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
-            Console
+            Home
           </Link>
           <span>/</span>
           <span className="text-foreground font-bold">Activity</span>
@@ -50,33 +50,38 @@ export default function ActivityPage() {
         <div className="mb-8">
           <h1 className="text-4xl font-extrabold tracking-tight">Activity</h1>
           <p className="text-base text-muted-foreground mt-2 max-w-xl">
-            Every {branding.payoutNoun.toLowerCase()}, every status, every receipt — written to
-            your ledger.
+            Your complete transaction history. Every payment, every transfer, all in one place.
           </p>
         </div>
 
         {error && (
-          <div className="rounded-xl border-2 border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
+          <div className="rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
             {error}
           </div>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <StatCard
-            label={`Total ${branding.payoutVerb.toLowerCase()}`}
+            label="Total sent"
             value={formatMoney(totalPaidCents)}
+            icon={<Send className="h-4 w-4" />}
           />
           <StatCard
-            label={`Successful ${branding.payoutNounPlural.toLowerCase()}`}
+            label="Completed"
             value={String(successfulTransactions)}
+            icon={<ActivityIcon className="h-4 w-4" />}
           />
-          <StatCard label="Total events" value={String(transactions.length)} />
+          <StatCard 
+            label="All transactions" 
+            value={String(transactions.length)} 
+            icon={<ArrowDownToLine className="h-4 w-4" />}
+          />
         </div>
 
-        <div className="rounded-2xl border-2 bg-card overflow-hidden">
+        <div className="rounded-2xl border bg-card overflow-hidden">
           {isLoading ? (
             <div className="p-12 text-center text-sm text-muted-foreground font-semibold">
-              Loading activity…
+              Loading activity...
             </div>
           ) : transactions.length === 0 ? (
             <div className="p-16 flex flex-col items-center gap-3 text-center">
@@ -86,14 +91,15 @@ export default function ActivityPage() {
               <div>
                 <p className="text-lg font-extrabold">No activity yet</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Run your first {branding.payoutNoun.toLowerCase()} to populate the ledger.
+                  Send your first payment to see it here.
                 </p>
               </div>
               <Link
                 href="/dashboard/payouts"
-                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-foreground text-background px-5 h-11 text-sm font-bold hover:bg-foreground/90 transition-colors"
+                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-5 h-11 text-sm font-bold hover:bg-primary/90 transition-colors"
               >
-                Run your first {branding.payoutNoun.toLowerCase()} →
+                <Send className="h-4 w-4" />
+                Send money
               </Link>
             </div>
           ) : (
@@ -101,7 +107,7 @@ export default function ActivityPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="font-bold uppercase tracking-widest text-[10px]">
-                    {branding.payeeSingular}
+                    Recipient
                   </TableHead>
                   <TableHead className="font-bold uppercase tracking-widest text-[10px]">
                     Email
@@ -150,10 +156,11 @@ export default function ActivityPage() {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
+function StatCard({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border-2 bg-card p-5 flex flex-col gap-2">
-      <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+    <div className="rounded-2xl border bg-card p-5 flex flex-col gap-2">
+      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        {icon}
         {label}
       </div>
       <div className="text-2xl font-extrabold font-mono tabular-nums">{value}</div>
@@ -172,16 +179,16 @@ function StatusBadge({ status }: { status: string }) {
     string,
     { label: string; variant: 'success' | 'warning' | 'destructive' | 'secondary' }
   > = {
-    settled: { label: 'Settled', variant: 'success' },
-    completed: { label: 'Settled', variant: 'success' },
-    success: { label: 'Settled', variant: 'success' },
-    initiated: { label: 'Initiated', variant: 'warning' },
+    settled: { label: 'Completed', variant: 'success' },
+    completed: { label: 'Completed', variant: 'success' },
+    success: { label: 'Completed', variant: 'success' },
+    initiated: { label: 'Pending', variant: 'warning' },
     processing: { label: 'Processing', variant: 'warning' },
     approved: { label: 'Approved', variant: 'warning' },
     created: { label: 'Created', variant: 'warning' },
     debited: { label: 'Debited', variant: 'warning' },
     pending: { label: 'Pending', variant: 'warning' },
-    needs_review: { label: 'Needs review', variant: 'warning' },
+    needs_review: { label: 'Review', variant: 'warning' },
     failed: { label: 'Failed', variant: 'destructive' },
     canceled: { label: 'Canceled', variant: 'secondary' },
   };
