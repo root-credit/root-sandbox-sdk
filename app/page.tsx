@@ -119,7 +119,7 @@ export default function LandingPage() {
               <div className="mt-5 flex items-center justify-between rounded-2xl bg-primary text-primary-foreground px-5 py-4">
                 <div>
                   <div className="text-xs font-bold uppercase tracking-widest text-primary-foreground/60">
-                    Your balance
+                    {branding.walletName}
                   </div>
                   <div className="text-3xl font-extrabold font-mono tabular-nums">$1,847.50</div>
                 </div>
@@ -222,7 +222,7 @@ export default function LandingPage() {
             One place for all your payments.
           </h2>
           <p className="text-lg text-background/70 leading-relaxed max-w-xl mx-auto mb-8">
-            Your {branding.productName} wallet holds your balance. Send money from it, receive
+            Your {branding.walletName} holds your funds. Send money from it, receive
             payments into it, cash out from it — everything in one place.
           </p>
           <div className="flex flex-wrap justify-center gap-3">

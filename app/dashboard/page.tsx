@@ -94,7 +94,7 @@ export default async function DashboardPage() {
             At a glance
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="Wallet balance" value={walletLabel} icon={<Wallet className="h-4 w-4" />} />
+            <StatCard label={branding.walletName} value={walletLabel} icon={<Wallet className="h-4 w-4" />} />
             <StatCard label="Total sent" value="$0.00" icon={<Send className="h-4 w-4" />} />
             <StatCard label="Total received" value="$0.00" icon={<ArrowDownToLine className="h-4 w-4" />} />
             <StatCard

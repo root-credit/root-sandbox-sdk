@@ -54,13 +54,13 @@ export default function SendMoneyPage() {
           <div>
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary-foreground/60 mb-2">
               <Wallet className="h-3.5 w-3.5" />
-              Available balance
+              {branding.walletName}
             </div>
             <div className="text-4xl md:text-5xl font-extrabold font-mono tabular-nums">
               {walletBalanceCents == null ? '—' : formatMoney(walletBalanceCents)}
             </div>
             <p className="text-sm text-primary-foreground/70 mt-2 max-w-md">
-              Your {branding.productName} wallet balance. Payments come from this balance.
+              Your {branding.walletName}. Payments come from this balance.
             </p>
           </div>
           <div className="flex gap-2">

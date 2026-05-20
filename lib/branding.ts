@@ -16,6 +16,8 @@ export const branding = {
   productName: "Venmo",
   /** One-line tagline used on landing + auth panels. */
   tagline: "Send and receive money with friends and family.",
+  /** Wallet/subaccount label shown on dashboard, wallet tab, and balance references. */
+  walletName: "Venmo Balance",
   /** Payer entity (the user who logs in, funds the wallet, and sends money). */
   payerSingular: "Account",
   payerPlural: "Accounts",

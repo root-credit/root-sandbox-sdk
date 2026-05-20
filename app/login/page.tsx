@@ -36,7 +36,7 @@ export default function LoginPage() {
               </span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              Sign in to send money, check your balance, and manage your payments.
+              Sign in to send money, check your {branding.walletName}, and manage your payments.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
@@ -45,7 +45,7 @@ export default function LoginPage() {
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                Check your balance anytime
+                Check your {branding.walletName} anytime
               </li>
               <li className="flex items-center gap-3">
                 <Check />

@@ -11,7 +11,7 @@ const NAV: { href: string; label: string }[] = [
   { href: '/dashboard/payouts', label: 'Send & Request' },
   { href: '/dashboard/transactions', label: 'Activity' },
   { href: '/dashboard/payees', label: branding.payeePlural },
-  { href: '/dashboard/payer', label: 'Wallet' },
+  { href: '/dashboard/payer', label: branding.walletName },
 ];
 
 export function DashboardHeader({ email }: { email: string }) {

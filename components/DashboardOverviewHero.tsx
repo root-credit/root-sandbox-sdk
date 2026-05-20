@@ -1,6 +1,7 @@
 'use client';
 
 import { useDomainStore } from '@/components/DomainStoreProvider';
+import { branding } from '@/lib/branding';
 import { formatMoney } from '@/lib/types/payments';
 
 /**
@@ -26,7 +27,7 @@ export function DashboardOverviewHero() {
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-widest text-primary-foreground/60">
-            Your balance
+            {branding.walletName}
           </span>
           <div className="flex items-end gap-3 mt-1">
             <span className="text-4xl md:text-5xl font-extrabold font-mono tabular-nums">
