@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowUpFromLine } from 'lucide-react';
+import { ArrowUpFromLine, Wallet } from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { PayoutForm } from '@/components/PayoutForm';
 import { branding } from '@/lib/branding';
@@ -12,7 +12,7 @@ import { usePayees } from '@/lib/hooks/usePayees';
 import { useDomainStore } from '@/components/DomainStoreProvider';
 import { formatMoney } from '@/lib/types/payments';
 
-export default function CashOutPage() {
+export default function PayoutsPage() {
   const router = useRouter();
   const { session } = useSession();
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
@@ -29,59 +29,58 @@ export default function CashOutPage() {
 
       <main className="flex-1 mx-auto max-w-5xl w-full px-6 lg:px-10 py-8">
         <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
-          <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
-            Console
+          <Link href="/dashboard" className="hover:text-foreground transition-colors font-medium">
+            Dashboard
           </Link>
           <span>/</span>
-          <span className="text-foreground font-bold">{branding.payoutNounPlural}</span>
+          <span className="text-foreground font-semibold">{branding.payoutNounPlural}</span>
         </nav>
 
         <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">{branding.payoutNounPlural}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{branding.payoutNounPlural}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Move funds out of your Good as Gold wallet to a {branding.payeeSingular.toLowerCase()} —
-              bank or debit card.
+              Move your earnings from the {branding.walletName} to a {branding.payeeSingular.toLowerCase()} — bank or debit card.
             </p>
           </div>
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary px-4 py-2 text-xs font-bold uppercase tracking-widest">
+          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-4 py-2 text-xs font-bold uppercase tracking-widest">
             <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
             Rail live
           </span>
         </div>
 
         {/* Wallet summary */}
-        <section className="rounded-2xl border-2 bg-foreground text-background p-6 mb-6 flex flex-wrap items-end justify-between gap-4">
+        <section className="rounded-3xl bg-primary text-primary-foreground p-6 mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-background/60 mb-2">
-              <ArrowUpFromLine className="h-3.5 w-3.5" />
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary-foreground/70 mb-2">
+              <Wallet className="h-4 w-4" />
               Available to {branding.payoutVerb.toLowerCase()}
             </div>
-            <div className="text-4xl md:text-5xl font-extrabold font-mono tabular-nums">
+            <div className="text-4xl md:text-5xl font-bold font-mono tabular-nums">
               {walletBalanceCents == null ? '—' : formatMoney(walletBalanceCents)}
             </div>
-            <p className="text-sm text-background/70 mt-2 max-w-md">
-              Your GAG wallet balance. {branding.payoutNoun} requests pull from this balance.
+            <p className="text-sm text-primary-foreground/70 mt-2 max-w-md">
+              Your {branding.walletName} balance. {branding.payoutNoun} requests pull from this balance.
             </p>
           </div>
           <Link
             href="/dashboard/payees"
-            className="rounded-full bg-primary text-primary-foreground px-5 h-11 text-sm font-bold inline-flex items-center hover:bg-primary/90 transition-colors"
+            className="rounded-full bg-primary-foreground text-primary px-5 h-11 text-sm font-semibold inline-flex items-center hover:bg-primary-foreground/90 transition-colors"
           >
             Manage {branding.payeePlural.toLowerCase()}
           </Link>
         </section>
 
         {error && (
-          <div className="rounded-xl border-2 border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
+          <div className="rounded-2xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive mb-6">
             {error}
           </div>
         )}
 
-        <section className="rounded-2xl border-2 bg-card p-6 mb-6">
+        <section className="rounded-3xl border bg-card p-6 mb-6">
           {isLoading ? (
-            <div className="text-center text-sm text-muted-foreground py-10 font-semibold">
-              Loading {branding.payeePlural.toLowerCase()}…
+            <div className="text-center text-sm text-muted-foreground py-10 font-medium">
+              Loading {branding.payeePlural.toLowerCase()}...
             </div>
           ) : (
             <PayoutForm payerId={session.payerId} payees={payees} onSuccess={refresh} />
@@ -106,7 +105,7 @@ export default function CashOutPage() {
             items={[
               `Settles in roughly 5 seconds per ${branding.payeeSingular.toLowerCase()}`,
               `${branding.payeeSingular} payment methods must be linked first`,
-              'Funds pull from your GAG wallet balance',
+              `Funds pull from your ${branding.walletName} balance`,
               'Audit everything in Activity',
             ]}
           />
@@ -128,9 +127,9 @@ function InfoCard({
   ordered?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border-2 bg-card p-6">
+    <div className="rounded-2xl border bg-card p-6">
       <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">{label}</p>
-      <h3 className="font-extrabold tracking-tight text-lg mb-4">{title}</h3>
+      <h3 className="font-bold tracking-tight text-lg mb-4">{title}</h3>
       {ordered ? (
         <ol className="space-y-2.5 text-sm text-foreground">
           {items.map((it, i) => (

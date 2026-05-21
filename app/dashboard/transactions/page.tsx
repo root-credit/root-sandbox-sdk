@@ -40,23 +40,22 @@ export default function ActivityPage() {
 
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
         <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
-          <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
-            Console
+          <Link href="/dashboard" className="hover:text-foreground transition-colors font-medium">
+            Dashboard
           </Link>
           <span>/</span>
-          <span className="text-foreground font-bold">Activity</span>
+          <span className="text-foreground font-semibold">Activity</span>
         </nav>
 
         <div className="mb-8">
-          <h1 className="text-4xl font-extrabold tracking-tight">Activity</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Activity</h1>
           <p className="text-base text-muted-foreground mt-2 max-w-xl">
-            Every {branding.payoutNoun.toLowerCase()}, every status, every receipt — written to
-            your ledger.
+            Every {branding.payoutNoun.toLowerCase()}, every status, every receipt — written to your ledger.
           </p>
         </div>
 
         {error && (
-          <div className="rounded-xl border-2 border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
+          <div className="rounded-2xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive mb-6">
             {error}
           </div>
         )}
@@ -73,25 +72,25 @@ export default function ActivityPage() {
           <StatCard label="Total events" value={String(transactions.length)} />
         </div>
 
-        <div className="rounded-2xl border-2 bg-card overflow-hidden">
+        <div className="rounded-3xl border bg-card overflow-hidden">
           {isLoading ? (
-            <div className="p-12 text-center text-sm text-muted-foreground font-semibold">
-              Loading activity…
+            <div className="p-12 text-center text-sm text-muted-foreground font-medium">
+              Loading activity...
             </div>
           ) : transactions.length === 0 ? (
             <div className="p-16 flex flex-col items-center gap-3 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
                 <ActivityIcon className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-lg font-extrabold">No activity yet</p>
+                <p className="text-lg font-bold">No activity yet</p>
                 <p className="text-sm text-muted-foreground mt-1">
                   Run your first {branding.payoutNoun.toLowerCase()} to populate the ledger.
                 </p>
               </div>
               <Link
                 href="/dashboard/payouts"
-                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-foreground text-background px-5 h-11 text-sm font-bold hover:bg-foreground/90 transition-colors"
+                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-5 h-11 text-sm font-semibold hover:bg-primary/90 transition-colors"
               >
                 Run your first {branding.payoutNoun.toLowerCase()} →
               </Link>
@@ -100,19 +99,19 @@ export default function ActivityPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="font-semibold uppercase tracking-widest text-[10px]">
                     {branding.payeeSingular}
                   </TableHead>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="font-semibold uppercase tracking-widest text-[10px]">
                     Email
                   </TableHead>
-                  <TableHead className="text-right font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="text-right font-semibold uppercase tracking-widest text-[10px]">
                     Amount
                   </TableHead>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="font-semibold uppercase tracking-widest text-[10px]">
                     Status
                   </TableHead>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="font-semibold uppercase tracking-widest text-[10px]">
                     Date
                   </TableHead>
                 </TableRow>
@@ -120,17 +119,17 @@ export default function ActivityPage() {
               <TableBody>
                 {transactions.map((transaction) => (
                   <TableRow key={transaction.id}>
-                    <TableCell className="font-bold">{transaction.payeeName}</TableCell>
+                    <TableCell className="font-semibold">{transaction.payeeName}</TableCell>
                     <TableCell className="text-muted-foreground font-mono text-xs">
                       {transaction.payeeEmail}
                     </TableCell>
-                    <TableCell className="text-right font-mono tabular-nums font-extrabold">
+                    <TableCell className="text-right font-mono tabular-nums font-bold">
                       ${centsToDollars(transaction.amountCents ?? 0).toFixed(2)}
                     </TableCell>
                     <TableCell>
                       <StatusBadge status={transaction.status} />
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-xs font-semibold">
+                    <TableCell className="text-muted-foreground text-xs font-medium">
                       {new Date(transaction.createdAt).toLocaleDateString(undefined, {
                         year: 'numeric',
                         month: 'short',
@@ -152,11 +151,11 @@ export default function ActivityPage() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border-2 bg-card p-5 flex flex-col gap-2">
-      <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+    <div className="rounded-2xl border bg-card p-5 flex flex-col gap-2">
+      <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
         {label}
       </div>
-      <div className="text-2xl font-extrabold font-mono tabular-nums">{value}</div>
+      <div className="text-2xl font-bold font-mono tabular-nums">{value}</div>
     </div>
   );
 }
@@ -190,7 +189,7 @@ function StatusBadge({ status }: { status: string }) {
     variant: 'secondary' as const,
   };
   return (
-    <Badge variant={variant} className="font-bold">
+    <Badge variant={variant} className="font-semibold">
       {label}
     </Badge>
   );
