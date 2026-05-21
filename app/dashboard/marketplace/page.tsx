@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Building2, Search, Calendar, Wallet, MapPin, Star, Home } from 'lucide-react';
+import { Building2, Search, Calendar, Wallet, Star, Home } from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { useDomainStore } from '@/components/DomainStoreProvider';
 import { useSession } from '@/lib/hooks/useSession';
@@ -35,8 +35,7 @@ export default function MarketplacePage() {
     return marketplaceDomains.filter(
       (d) => 
         d.name.toLowerCase().includes(q) || 
-        d.sellerHandle.toLowerCase().includes(q) ||
-        (d.location && d.location.toLowerCase().includes(q)),
+        d.sellerHandle.toLowerCase().includes(q),
     );
   }, [marketplaceDomains, query]);
 
@@ -95,7 +94,7 @@ export default function MarketplacePage() {
             <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search by name, location, or host..."
+              placeholder="Search by name or host..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="pl-9 h-11 rounded-full bg-card font-medium"
@@ -214,12 +213,6 @@ function PropertyCard({
             <h3 className="text-lg font-bold tracking-tight truncate">
               {property.name}
             </h3>
-            {property.location && (
-              <p className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5">
-                <MapPin className="h-3 w-3" />
-                {property.location}
-              </p>
-            )}
           </div>
           <div className="flex items-center gap-1 text-sm shrink-0">
             <Star className="h-4 w-4 fill-primary text-primary" />

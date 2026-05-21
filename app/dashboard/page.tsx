@@ -9,7 +9,7 @@ import { getPayer } from '@/lib/redis';
 import { getSubaccountLedgerSnapshot } from '@/lib/root-api';
 import { formatMoney } from '@/lib/types/payments';
 import { getMyOwnedDomains } from '@/lib/godaddy-actions';
-import { Globe2, Tag, Wallet, ArrowDownToLine, ArrowUpFromLine, Activity } from 'lucide-react';
+import { Home, Tag, Wallet, ArrowDownToLine, ArrowUpFromLine, Activity } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,19 +21,19 @@ export default async function DashboardPage() {
   }
 
   const payer = await getPayer(session.payerId);
-  let gagWalletLabel = 'Not Activated';
+  let walletLabel = 'Not Activated';
   if (payer?.subaccountId) {
     try {
       const snap = await getSubaccountLedgerSnapshot(payer.subaccountId);
-      gagWalletLabel = formatMoney(snap.balanceCents);
+      walletLabel = formatMoney(snap.balanceCents);
     } catch {
-      gagWalletLabel = '—';
+      walletLabel = '—';
     }
   }
 
-  const ownedDomains = await getMyOwnedDomains();
-  const ownedDomainsCount = ownedDomains.length;
-  const listedForSaleCount = ownedDomains.filter((d) => d.listingPriceCents !== undefined).length;
+  const ownedProperties = await getMyOwnedDomains();
+  const ownedPropertiesCount = ownedProperties.length;
+  const listedForRentCount = ownedProperties.filter((d) => d.listingPriceCents !== undefined).length;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -47,7 +47,7 @@ export default async function DashboardPage() {
             <div className="absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
           </div>
           <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground mb-5">
-            {branding.productName} console
+            {branding.productName} Dashboard
           </span>
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05] max-w-3xl">
             {branding.consoleHeading}
@@ -67,15 +67,15 @@ export default async function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <ActionTile
               href="/dashboard/marketplace"
-              title="Browse marketplace"
-              desc="Find a domain and buy with your wallet."
-              icon={<Globe2 className="h-5 w-5" />}
+              title="Explore stays"
+              desc="Find a property and book with your wallet."
+              icon={<Home className="h-5 w-5" />}
               primary
             />
             <ActionTile
               href="/dashboard/domains"
-              title="List a domain"
-              desc="Set an asking price and put it up for sale."
+              title="List a property"
+              desc="Set a nightly rate and start hosting."
               icon={<Tag className="h-5 w-5" />}
             />
             <ActionTile
@@ -93,15 +93,15 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-        {/* Stats — GAG wallet from Root; domain counts match /dashboard/domains (Redis via getMyOwnedDomains) */}
+        {/* Stats */}
         <section className="mb-8">
           <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
             At a glance
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="GAG wallet" value={gagWalletLabel} icon={<Wallet className="h-4 w-4" />} />
-            <StatCard label="Owned domains" value={String(ownedDomainsCount)} icon={<Globe2 className="h-4 w-4" />} />
-            <StatCard label="Listed for sale" value={String(listedForSaleCount)} icon={<Tag className="h-4 w-4" />} />
+            <StatCard label={branding.walletName} value={walletLabel} icon={<Wallet className="h-4 w-4" />} />
+            <StatCard label="My properties" value={String(ownedPropertiesCount)} icon={<Home className="h-4 w-4" />} />
+            <StatCard label="Listed for rent" value={String(listedForRentCount)} icon={<Tag className="h-4 w-4" />} />
             <StatCard
               label={branding.payoutNounPlural}
               value="$0.00"
@@ -113,21 +113,21 @@ export default async function DashboardPage() {
         {/* Module tiles */}
         <section className="rounded-2xl border-2 bg-card overflow-hidden">
           <div className="border-b-2 px-6 py-5">
-            <h2 className="text-xl font-extrabold tracking-tight">Modules</h2>
+            <h2 className="text-xl font-extrabold tracking-tight">Features</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Everything you need to run your domain business.
+              Everything you need to host and travel.
             </p>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <ModuleTile
               href="/dashboard/marketplace"
-              title="Marketplace"
-              desc="Browse every domain listed for sale by other accounts."
+              title="Explore stays"
+              desc="Browse properties listed by other hosts."
             />
             <ModuleTile
               href="/dashboard/domains"
-              title="My domains"
-              desc="See what you own. List or unlist any domain."
+              title="My Properties"
+              desc="See what you own. List or unlist any property."
             />
             <ModuleTile
               href="/dashboard/payouts"
@@ -147,7 +147,7 @@ export default async function DashboardPage() {
             <ModuleTile
               href="/dashboard/payer"
               title={branding.payerSingular}
-              desc={`Profile, ${branding.funderShortLabel.toLowerCase()}, and GAG wallet settings.`}
+              desc={`Profile, ${branding.funderShortLabel.toLowerCase()}, and ${branding.walletName} settings.`}
             />
           </div>
         </section>
@@ -186,13 +186,13 @@ function ActionTile({
       href={href}
       className={`group flex flex-col gap-3 rounded-2xl border-2 p-5 transition-all ${
         primary
-          ? 'bg-foreground text-background border-foreground hover:bg-foreground/90'
-          : 'bg-card hover:border-foreground hover:shadow-md'
+          ? 'bg-primary text-primary-foreground border-primary hover:bg-primary/90'
+          : 'bg-card hover:border-primary hover:shadow-md'
       }`}
     >
       <div
         className={`flex h-10 w-10 items-center justify-center rounded-full ${
-          primary ? 'bg-primary text-primary-foreground' : 'bg-primary/15 text-primary'
+          primary ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-primary/15 text-primary'
         }`}
       >
         {icon}
@@ -201,7 +201,7 @@ function ActionTile({
         <div className="text-base font-extrabold tracking-tight mb-0.5">{title}</div>
         <p
           className={`text-sm leading-snug ${
-            primary ? 'text-background/75' : 'text-muted-foreground'
+            primary ? 'text-primary-foreground/75' : 'text-muted-foreground'
           }`}
         >
           {desc}
@@ -209,7 +209,7 @@ function ActionTile({
       </div>
       <div
         className={`mt-auto text-xs font-bold uppercase tracking-widest ${
-          primary ? 'text-background/75' : 'text-foreground'
+          primary ? 'text-primary-foreground/75' : 'text-foreground'
         }`}
       >
         Open →
@@ -222,7 +222,7 @@ function ModuleTile({ href, title, desc }: { href: string; title: string; desc: 
   return (
     <Link
       href={href}
-      className="group block rounded-xl border-2 p-5 transition-all bg-card hover:border-foreground hover:shadow-md"
+      className="group block rounded-xl border-2 p-5 transition-all bg-card hover:border-primary hover:shadow-md"
     >
       <h3 className="font-extrabold tracking-tight mb-1.5">{title}</h3>
       <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>

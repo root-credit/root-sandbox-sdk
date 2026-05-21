@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button';
 
 const NAV: { href: string; label: string }[] = [
   { href: '/dashboard', label: 'Overview' },
-  { href: '/dashboard/marketplace', label: 'Marketplace' },
-  { href: '/dashboard/domains', label: 'My domains' },
+  { href: '/dashboard/marketplace', label: 'Explore' },
+  { href: '/dashboard/domains', label: 'My Properties' },
   { href: '/dashboard/payouts', label: branding.payoutNounPlural },
   { href: '/dashboard/payees', label: branding.payeePlural },
   { href: '/dashboard/transactions', label: 'Activity' },
@@ -36,10 +36,10 @@ export function DashboardHeader({ email }: { email: string }) {
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="h-16 flex items-center justify-between gap-6">
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground text-base font-extrabold">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground text-base font-extrabold">
               {branding.productName.charAt(0)}
             </div>
-            <span className="text-lg font-extrabold tracking-tight">{branding.productName}</span>
+            <span className="text-lg font-extrabold tracking-tight text-primary">{branding.productName}</span>
           </Link>
 
           <div className="flex items-center gap-2">

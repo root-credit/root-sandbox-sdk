@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Building2, Plus, Calendar, MapPin, X, Home } from 'lucide-react';
+import { Building2, Plus, Calendar, X, Home } from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { useDomainStore } from '@/components/DomainStoreProvider';
 import { useSession } from '@/lib/hooks/useSession';
@@ -32,14 +32,10 @@ export default function MyPropertiesPage() {
   const { ownedDomains, isDomainsLoading, transferIn, listForSale, unlist } = useDomainStore();
   const [createOpen, setCreateOpen] = useState(false);
   const [propertyName, setPropertyName] = useState('');
-  const [propertyLocation, setPropertyLocation] = useState('');
   const [createBusy, setCreateBusy] = useState(false);
 
   const [listingProperty, setListingProperty] = useState<OwnedDomainRecord | null>(null);
   const [listingPrice, setListingPrice] = useState('');
-  const [listingLocation, setListingLocation] = useState('');
-  const [availableFrom, setAvailableFrom] = useState('');
-  const [availableTo, setAvailableTo] = useState('');
   const [listingBusy, setListingBusy] = useState(false);
 
   if (!session) return null;
@@ -51,12 +47,11 @@ export default function MyPropertiesPage() {
     if (createBusy) return;
     setCreateBusy(true);
     try {
-      const result = await transferIn(propertyName, { location: propertyLocation });
+      const result = await transferIn(propertyName);
       if (result.ok) {
         toast.success(`Property "${result.domain?.name ?? ''}" created successfully.`);
         setCreateOpen(false);
         setPropertyName('');
-        setPropertyLocation('');
       } else {
         toast.error(result.reason);
       }
@@ -72,9 +67,6 @@ export default function MyPropertiesPage() {
         ? (property.listingPriceCents / 100).toFixed(2)
         : '',
     );
-    setListingLocation(property.location || '');
-    setAvailableFrom(property.availableFrom || '');
-    setAvailableTo(property.availableTo || '');
   }
 
   async function handleConfirmListing() {
@@ -87,19 +79,11 @@ export default function MyPropertiesPage() {
     const cents = dollarsToCents(dollars);
     setListingBusy(true);
     try {
-      const result = await listForSale(listingProperty.name, cents, {
-        location: listingLocation,
-        nightlyRateCents: cents,
-        availableFrom,
-        availableTo,
-      });
+      const result = await listForSale(listingProperty.name, cents);
       if (result.ok) {
         toast.success(`"${listingProperty.name}" listed for ${formatMoney(cents)}/night.`);
         setListingProperty(null);
         setListingPrice('');
-        setListingLocation('');
-        setAvailableFrom('');
-        setAvailableTo('');
       } else {
         toast.error(result.reason);
       }
@@ -205,21 +189,14 @@ export default function MyPropertiesPage() {
               <Label htmlFor="property-name">Property name</Label>
               <Input
                 id="property-name"
-                placeholder="Modern Loft in Downtown"
+                placeholder="modern-loft.nyc"
                 value={propertyName}
                 onChange={(e) => setPropertyName(e.target.value)}
                 disabled={createBusy}
               />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="property-location">Location</Label>
-              <Input
-                id="property-location"
-                placeholder="New York, NY"
-                value={propertyLocation}
-                onChange={(e) => setPropertyLocation(e.target.value)}
-                disabled={createBusy}
-              />
+              <p className="text-xs text-muted-foreground">
+                Use a unique identifier like a domain (e.g., beach-house.miami)
+              </p>
             </div>
           </div>
           <DialogFooter>
@@ -248,9 +225,6 @@ export default function MyPropertiesPage() {
           if (!open) {
             setListingProperty(null);
             setListingPrice('');
-            setListingLocation('');
-            setAvailableFrom('');
-            setAvailableTo('');
           }
         }}
       >
@@ -280,38 +254,6 @@ export default function MyPropertiesPage() {
                   value={listingPrice}
                   onChange={(e) => setListingPrice(e.target.value)}
                   className="pl-7 font-mono"
-                  disabled={listingBusy}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="listing-location">Location</Label>
-              <Input
-                id="listing-location"
-                placeholder="New York, NY"
-                value={listingLocation}
-                onChange={(e) => setListingLocation(e.target.value)}
-                disabled={listingBusy}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="available-from">Available from</Label>
-                <Input
-                  id="available-from"
-                  type="date"
-                  value={availableFrom}
-                  onChange={(e) => setAvailableFrom(e.target.value)}
-                  disabled={listingBusy}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="available-to">Available to</Label>
-                <Input
-                  id="available-to"
-                  type="date"
-                  value={availableTo}
-                  onChange={(e) => setAvailableTo(e.target.value)}
                   disabled={listingBusy}
                 />
               </div>
@@ -408,14 +350,8 @@ function PropertyRow({
             </h3>
           </div>
           <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium">
-            {property.location && (
-              <span className="flex items-center gap-1">
-                <MapPin className="h-3 w-3" />
-                {property.location}
-              </span>
-            )}
             <span>
-              Listed{' '}
+              Added{' '}
               {new Date(property.registeredAt).toLocaleDateString(undefined, {
                 year: 'numeric',
                 month: 'short',

@@ -13,28 +13,30 @@
  */
 export const branding = {
   /** Top-level product name shown in nav, footer, browser title. */
-  productName: "GoDaddy",
+  productName: "Airbnb",
   /** One-line tagline used on landing + auth panels. */
-  tagline: "Buy domains. Sell domains. Cash out instantly.",
-  /** Payer entity (the user who logs in, funds the wallet, and trades domains). */
-  payerSingular: "Account",
-  payerPlural: "Accounts",
-  /** Used in possessive contexts: e.g. "your account's bank". */
-  payerPossessive: "account's",
+  tagline: "List your space. Book unique stays. Get paid instantly.",
+  /** Payer entity (the user who logs in, funds the wallet, and books stays). */
+  payerSingular: "Guest",
+  payerPlural: "Guests",
+  /** Used in possessive contexts: e.g. "your guest's bank". */
+  payerPossessive: "guest's",
   /** Payee entity (the destination where the user moves funds out of their wallet). */
   payeeSingular: "Payout destination",
   payeePlural: "Payout destinations",
-  /** Payout terminology — moving funds OUT of the GAG wallet. */
-  payoutVerb: "Cash out",
-  payoutNoun: "Cash-out",
-  payoutNounPlural: "Cash-outs",
+  /** Payout terminology — moving funds OUT of the Airbnb Wallet. */
+  payoutVerb: "Pay out",
+  payoutNoun: "Payout",
+  payoutNounPlural: "Payouts",
   /** Funding source label on the wallet settings screen. */
-  funderLabel: "Linked bank account",
+  funderLabel: "User's bank account",
   funderShortLabel: "Bank account",
   /** Console heading displayed on the dashboard home. */
-  consoleHeading: "Welcome back. Your domain console awaits.",
+  consoleHeading: "Welcome back. Your travel dashboard awaits.",
   consoleSubheading:
-    "Manage your Good as Gold wallet, list domains for sale, and explore the marketplace from one console.",
+    "Manage your Airbnb Wallet, list properties for rent, and discover unique stays from one place.",
+  /** Wallet name - the label shown on wallet tab, balance card, and subaccount references. */
+  walletName: "Airbnb Wallet",
 } as const;
 
 export type Branding = typeof branding;

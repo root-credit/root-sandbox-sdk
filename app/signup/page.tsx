@@ -8,10 +8,10 @@ export default function SignupPage() {
       <header className="border-b bg-card">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground text-base font-extrabold">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground text-base font-extrabold">
               {branding.productName.charAt(0)}
             </div>
-            <span className="text-lg font-extrabold tracking-tight">{branding.productName}</span>
+            <span className="text-lg font-extrabold tracking-tight text-primary">{branding.productName}</span>
           </Link>
         </div>
       </header>
@@ -28,15 +28,15 @@ export default function SignupPage() {
               New {branding.payerSingular.toLowerCase()}
             </span>
             <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-balance leading-[1.02]">
-              Open your{' '}
+              Start your{' '}
               <span className="relative inline-block">
-                <span className="relative z-10">console.</span>
-                <span className="absolute inset-x-0 bottom-1 h-3 bg-primary -z-0" aria-hidden />
+                <span className="relative z-10">hosting journey.</span>
+                <span className="absolute inset-x-0 bottom-1 h-3 bg-primary/30 -z-0" aria-hidden />
               </span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              Create an {branding.payerSingular.toLowerCase()} in under two minutes. We&apos;ll spin up
-              your Good as Gold wallet, ready to fund and trade.
+              Create an account in under two minutes. We&apos;ll set up
+              your {branding.walletName}, ready to fund and start hosting or booking.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
@@ -45,7 +45,7 @@ export default function SignupPage() {
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                Buy with wallet, sell to other accounts
+                List properties, book unique stays
               </li>
               <li className="flex items-center gap-3">
                 <Check />
@@ -54,9 +54,9 @@ export default function SignupPage() {
             </ul>
           </div>
 
-          <div className="rounded-2xl border-2 bg-card p-7 shadow-xl">
+          <div className="rounded-3xl border-2 bg-card p-7 shadow-xl">
             <div className="mb-6">
-              <h2 className="text-2xl font-extrabold tracking-tight">Create your {branding.payerSingular.toLowerCase()}</h2>
+              <h2 className="text-2xl font-extrabold tracking-tight">Create your account</h2>
               <p className="text-base text-muted-foreground mt-1">
                 Tell us a bit about yourself.
               </p>
@@ -68,7 +68,7 @@ export default function SignupPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground font-bold tracking-widest">
-                  Already onboarded?
+                  Already have an account?
                 </span>
               </div>
             </div>
