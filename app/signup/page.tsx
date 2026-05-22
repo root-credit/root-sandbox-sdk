@@ -7,11 +7,15 @@ export default function SignupPage() {
     <main className="min-h-screen flex flex-col bg-background">
       <header className="border-b bg-card">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground text-base font-extrabold">
-              {branding.productName.charAt(0)}
-            </div>
-            <span className="text-lg font-extrabold tracking-tight text-primary">{branding.productName}</span>
+          <Link href="/" className="flex items-center gap-2">
+            <img
+              src="https://logo.clearbit.com/airbnb.com"
+              alt={branding.productName}
+              height={28}
+              width={28}
+              className="h-7 w-auto"
+            />
+            <span className="text-lg font-bold tracking-tight text-foreground">{branding.productName}</span>
           </Link>
         </div>
       </header>

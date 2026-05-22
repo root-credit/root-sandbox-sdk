@@ -18,11 +18,15 @@ export default function LandingPage() {
       {/* Header */}
       <header className="border-b bg-card sticky top-0 z-30">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground text-base font-extrabold">
-              {branding.productName.charAt(0)}
-            </div>
-            <span className="text-lg font-extrabold tracking-tight text-primary">{branding.productName}</span>
+          <Link href="/" className="flex items-center gap-2">
+            <img
+              src="https://logo.clearbit.com/airbnb.com"
+              alt={branding.productName}
+              height={28}
+              width={28}
+              className="h-7 w-auto"
+            />
+            <span className="text-lg font-bold tracking-tight text-foreground">{branding.productName}</span>
           </Link>
           <nav className="hidden md:flex items-center gap-7 text-sm font-semibold text-foreground">
             <a href="#how-it-works" className="hover:text-primary transition-colors">
@@ -142,13 +146,13 @@ export default function LandingPage() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="border-t bg-secondary py-20 md:py-24">
+      <section id="how-it-works" className="border-t bg-muted py-20 md:py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-12 max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">
               How it works
             </p>
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05]">
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05] text-foreground">
               Three steps. Start earning.
             </h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-lg">
@@ -257,11 +261,15 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t bg-card">
         <div className="mx-auto max-w-7xl px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-extrabold">
-              {branding.productName.charAt(0)}
-            </div>
-            <span className="text-sm font-bold text-primary">{branding.productName}</span>
+          <div className="flex items-center gap-2">
+            <img
+              src="https://logo.clearbit.com/airbnb.com"
+              alt={branding.productName}
+              height={28}
+              width={28}
+              className="h-7 w-auto"
+            />
+            <span className="text-sm font-bold text-foreground">{branding.productName}</span>
           </div>
           <p className="text-xs text-muted-foreground text-center">
             {'© '}

@@ -4,73 +4,85 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Airbnb-inspired palette: coral/rausch primary, clean white background,
-     near-black text, soft gray neutrals, plus teal accent for highlights. */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.16 0.01 240);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.01 240);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.01 240);
-  /* Airbnb Rausch coral — the signature pink-red */
-  --primary: oklch(0.65 0.2 15);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.97 0.005 240);
-  --secondary-foreground: oklch(0.2 0.01 240);
-  --muted: oklch(0.96 0.005 240);
-  --muted-foreground: oklch(0.46 0.01 240);
-  /* Teal accent — complementary to the coral */
-  --accent: oklch(0.75 0.12 180);
-  --accent-foreground: oklch(0.16 0.01 240);
-  --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(0.99 0.005 0);
-  --border: oklch(0.92 0.005 240);
-  --input: oklch(0.92 0.005 240);
-  --ring: oklch(0.65 0.2 15);
-  --radius: 0.75rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.65 0.2 15);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.65 0.2 15);
+  /* Airbnb Brand Specification
+     Primary: #FF5A5F (Rausch red)
+     Secondary: #00A699 (Teal)
+     Accent: #FC642D (Orange)
+     Background: #FFFFFF
+     Card/Surface: #F7F7F7
+     Text: #484848
+     Border radius: 8px cards, 24px buttons
+  */
+  --background: #FFFFFF;
+  --foreground: #484848;
+  --card: #F7F7F7;
+  --card-foreground: #484848;
+  --popover: #FFFFFF;
+  --popover-foreground: #484848;
+  /* Airbnb Rausch red - primary brand color */
+  --primary: #FF5A5F;
+  --primary-foreground: #FFFFFF;
+  /* Teal - secondary / positive states */
+  --secondary: #00A699;
+  --secondary-foreground: #FFFFFF;
+  --muted: #F7F7F7;
+  --muted-foreground: #717171;
+  /* Accent orange */
+  --accent: #FC642D;
+  --accent-foreground: #FFFFFF;
+  --destructive: #C13515;
+  --destructive-foreground: #FFFFFF;
+  --border: #EBEBEB;
+  --input: #EBEBEB;
+  --ring: #FF5A5F;
+  /* 8px for cards */
+  --radius: 0.5rem;
+  /* 24px for buttons */
+  --radius-button: 1.5rem;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #484848;
+  --sidebar-primary: #FF5A5F;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F7F7F7;
+  --sidebar-accent-foreground: #484848;
+  --sidebar-border: #EBEBEB;
+  --sidebar-ring: #FF5A5F;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.7 0.18 15);
-  --primary-foreground: oklch(0.145 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.7 0.12 180);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.7 0.18 15);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.7 0.18 15);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.7 0.18 15);
+  --background: #222222;
+  --foreground: #FFFFFF;
+  --card: #2D2D2D;
+  --card-foreground: #FFFFFF;
+  --popover: #2D2D2D;
+  --popover-foreground: #FFFFFF;
+  --primary: #FF5A5F;
+  --primary-foreground: #FFFFFF;
+  --secondary: #00A699;
+  --secondary-foreground: #FFFFFF;
+  --muted: #2D2D2D;
+  --muted-foreground: #B0B0B0;
+  --accent: #FC642D;
+  --accent-foreground: #FFFFFF;
+  --destructive: #C13515;
+  --destructive-foreground: #FFFFFF;
+  --border: #3D3D3D;
+  --input: #3D3D3D;
+  --ring: #FF5A5F;
+  --sidebar: #2D2D2D;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #FF5A5F;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #3D3D3D;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #3D3D3D;
+  --sidebar-ring: #FF5A5F;
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  /* Circular font with system fallbacks */
+  --font-sans: 'Circular', -apple-system, system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

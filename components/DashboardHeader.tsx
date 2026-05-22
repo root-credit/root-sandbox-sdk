@@ -35,11 +35,15 @@ export function DashboardHeader({ email }: { email: string }) {
     <header className="sticky top-0 z-30 border-b bg-card">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="h-16 flex items-center justify-between gap-6">
-          <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground text-base font-extrabold">
-              {branding.productName.charAt(0)}
-            </div>
-            <span className="text-lg font-extrabold tracking-tight text-primary">{branding.productName}</span>
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <img
+              src="https://logo.clearbit.com/airbnb.com"
+              alt={branding.productName}
+              height={28}
+              width={28}
+              className="h-7 w-auto"
+            />
+            <span className="text-lg font-bold tracking-tight text-foreground">{branding.productName}</span>
           </Link>
 
           <div className="flex items-center gap-2">
