@@ -8,9 +8,7 @@ import { DashboardSidebar } from '@/components/DashboardSidebar';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { branding } from '@/lib/branding';
 import { useSession } from '@/lib/hooks/useSession';
-import { useTransactions } from '@/lib/hooks/useTransactions';
-import { centsToDollars, formatMoney } from '@/lib/types/payments';
-import { Badge } from '@/components/ui/badge';
+import { useWallet, Transaction as WalletTransaction } from '@/components/WalletContext';
 import {
   Table,
   TableBody,
@@ -25,15 +23,12 @@ export default function ActivityPage() {
   const { session } = useSession();
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
 
-  const payerId = session?.payerId ?? null;
-  const { transactions, isLoading, error } = useTransactions(payerId);
+  const { transactions } = useWallet();
 
   if (!session) return null;
 
-  const totalSentCents = transactions.reduce((sum, t) => sum + (t.amountCents ?? 0), 0);
-  const successfulTransfers = transactions.filter((t) =>
-    isSuccessfulPayoutStatus(t.status),
-  ).length;
+  const totalSent = transactions.reduce((sum, t) => sum + t.sentAmount, 0);
+  const completedTransfers = transactions.filter((t) => t.status === 'Completed').length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -49,36 +44,26 @@ export default function ActivityPage() {
             </p>
           </div>
 
-          {error && (
-            <div className="rounded-lg border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive mb-6">
-              {error}
-            </div>
-          )}
-
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <StatCard
               label="Total sent"
-              value={formatMoney(totalSentCents)}
+              value={`$${totalSent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             />
             <StatCard
               label={`Completed ${branding.payoutNounPlural.toLowerCase()}`}
-              value={String(successfulTransfers)}
+              value={String(completedTransfers)}
             />
             <StatCard label="Total transactions" value={String(transactions.length)} />
           </div>
 
           <div className="rounded-lg border border-border bg-background overflow-hidden">
-            {isLoading ? (
-              <div className="p-12 text-center text-sm text-muted-foreground font-medium">
-                Loading activity...
-              </div>
-            ) : transactions.length === 0 ? (
+            {transactions.length === 0 ? (
               <div className="p-16 flex flex-col items-center gap-3 text-center">
                 <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#F4F4F4]">
                   <ActivityIcon className="h-6 w-6 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-lg font-semibold text-foreground">No activity yet</p>
+                  <p className="text-lg font-semibold text-foreground">No transactions yet</p>
                   <p className="text-sm text-muted-foreground mt-1">
                     Your {branding.payoutNounPlural.toLowerCase()} will appear here.
                   </p>
@@ -96,45 +81,34 @@ export default function ActivityPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="font-medium text-[10px] uppercase tracking-widest">
-                      {branding.payeeSingular}
+                      Date
                     </TableHead>
                     <TableHead className="font-medium text-[10px] uppercase tracking-widest">
-                      Email
+                      From
+                    </TableHead>
+                    <TableHead className="font-medium text-[10px] uppercase tracking-widest">
+                      To
                     </TableHead>
                     <TableHead className="text-right font-medium text-[10px] uppercase tracking-widest">
-                      Amount
+                      Sent (USD)
+                    </TableHead>
+                    <TableHead className="text-right font-medium text-[10px] uppercase tracking-widest">
+                      Received
+                    </TableHead>
+                    <TableHead className="text-right font-medium text-[10px] uppercase tracking-widest">
+                      Rate
+                    </TableHead>
+                    <TableHead className="text-right font-medium text-[10px] uppercase tracking-widest">
+                      Fee
                     </TableHead>
                     <TableHead className="font-medium text-[10px] uppercase tracking-widest">
                       Status
-                    </TableHead>
-                    <TableHead className="font-medium text-[10px] uppercase tracking-widest">
-                      Date
                     </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {transactions.map((transaction) => (
-                    <TableRow key={transaction.id}>
-                      <TableCell className="font-medium">{transaction.payeeName}</TableCell>
-                      <TableCell className="text-muted-foreground text-xs">
-                        {transaction.payeeEmail}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums font-medium">
-                        ${centsToDollars(transaction.amountCents ?? 0).toFixed(2)}
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge status={transaction.status} />
-                      </TableCell>
-                      <TableCell className="text-muted-foreground text-xs font-medium">
-                        {new Date(transaction.createdAt).toLocaleDateString(undefined, {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </TableCell>
-                    </TableRow>
+                    <TransactionRow key={transaction.id} transaction={transaction} />
                   ))}
                 </TableBody>
               </Table>
@@ -146,6 +120,39 @@ export default function ActivityPage() {
   );
 }
 
+function TransactionRow({ transaction }: { transaction: WalletTransaction }) {
+  return (
+    <TableRow>
+      <TableCell className="text-muted-foreground text-xs font-medium">
+        {transaction.date}
+      </TableCell>
+      <TableCell className="font-medium">
+        {transaction.fromCurrency}
+      </TableCell>
+      <TableCell className="font-medium">
+        {transaction.toCurrency}
+      </TableCell>
+      <TableCell className="text-right tabular-nums font-medium">
+        ${transaction.sentAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+      </TableCell>
+      <TableCell className="text-right tabular-nums font-medium">
+        {transaction.receivedAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {transaction.toCurrency}
+      </TableCell>
+      <TableCell className="text-right tabular-nums text-muted-foreground text-xs">
+        {transaction.exchangeRate}
+      </TableCell>
+      <TableCell className="text-right tabular-nums text-muted-foreground text-xs">
+        {transaction.fee === 0 ? 'Free' : `$${transaction.fee.toFixed(2)}`}
+      </TableCell>
+      <TableCell>
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+          {transaction.status}
+        </span>
+      </TableCell>
+    </TableRow>
+  );
+}
+
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-border bg-background p-4 flex flex-col gap-2">
@@ -154,40 +161,5 @@ function StatCard({ label, value }: { label: string; value: string }) {
       </div>
       <div className="text-2xl font-bold tabular-nums text-foreground">{value}</div>
     </div>
-  );
-}
-
-function isSuccessfulPayoutStatus(status: string): boolean {
-  const s = status.toLowerCase();
-  return s === 'settled' || s === 'completed' || s === 'success';
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const key = status.toLowerCase();
-  const map: Record<
-    string,
-    { label: string; variant: 'success' | 'warning' | 'destructive' | 'secondary' }
-  > = {
-    settled: { label: 'Completed', variant: 'success' },
-    completed: { label: 'Completed', variant: 'success' },
-    success: { label: 'Completed', variant: 'success' },
-    initiated: { label: 'Processing', variant: 'warning' },
-    processing: { label: 'Processing', variant: 'warning' },
-    approved: { label: 'Processing', variant: 'warning' },
-    created: { label: 'Processing', variant: 'warning' },
-    debited: { label: 'Processing', variant: 'warning' },
-    pending: { label: 'Pending', variant: 'warning' },
-    needs_review: { label: 'Needs review', variant: 'warning' },
-    failed: { label: 'Failed', variant: 'destructive' },
-    canceled: { label: 'Cancelled', variant: 'secondary' },
-  };
-  const { label, variant } = map[key] ?? {
-    label: status.replace(/_/g, ' '),
-    variant: 'secondary' as const,
-  };
-  return (
-    <Badge variant={variant} className="font-medium">
-      {label}
-    </Badge>
   );
 }

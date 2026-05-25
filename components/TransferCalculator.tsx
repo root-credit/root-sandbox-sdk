@@ -2,23 +2,35 @@
 
 import { useState } from 'react';
 import { branding } from '@/lib/branding';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Check } from 'lucide-react';
 
 const CURRENCIES = [
-  { code: 'EUR', flag: '🇪🇺', rate: 0.9185 },
-  { code: 'INR', flag: '🇮🇳', rate: 83.42 },
-  { code: 'MXN', flag: '🇲🇽', rate: 17.24 },
-  { code: 'GBP', flag: '🇬🇧', rate: 0.79 },
+  { code: 'USD', flag: '🇺🇸', rate: 1.00, fee: 0, deliveryTime: 'Transfers in seconds' },
+  { code: 'EUR', flag: '🇪🇺', rate: 0.92, fee: 7.48, deliveryTime: 'Should arrive in seconds' },
+  { code: 'INR', flag: '🇮🇳', rate: 83.42, fee: 7.48, deliveryTime: 'Should arrive in seconds' },
+  { code: 'GBP', flag: '🇬🇧', rate: 0.79, fee: 7.48, deliveryTime: 'Should arrive in seconds' },
 ];
 
-export function TransferCalculator() {
+interface TransferCalculatorProps {
+  onTransferComplete?: (transaction: {
+    fromCurrency: string;
+    toCurrency: string;
+    sentAmount: number;
+    receivedAmount: number;
+    exchangeRate: number;
+    fee: number;
+  }) => void;
+}
+
+export function TransferCalculator({ onTransferComplete }: TransferCalculatorProps) {
   const [amount, setAmount] = useState('1,000.00');
   const [selectedCurrency, setSelectedCurrency] = useState(CURRENCIES[0]);
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Parse amount
   const numericAmount = parseFloat(amount.replace(/,/g, '')) || 0;
-  const fee = 7.48;
+  const fee = selectedCurrency.fee;
   const sendAmount = numericAmount - fee;
   const receiveAmount = sendAmount > 0 ? (sendAmount * selectedCurrency.rate).toFixed(2) : '0.00';
 
@@ -32,6 +44,43 @@ export function TransferCalculator() {
     // Add thousand separators
     const formatted = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     return formatted + decPart;
+  }
+
+  function handleSend() {
+    if (numericAmount <= fee) return;
+    
+    // Call the callback with transaction details
+    if (onTransferComplete) {
+      onTransferComplete({
+        fromCurrency: 'USD',
+        toCurrency: selectedCurrency.code,
+        sentAmount: numericAmount,
+        receivedAmount: parseFloat(receiveAmount),
+        exchangeRate: selectedCurrency.rate,
+        fee: fee,
+      });
+    }
+    
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
+  }
+
+  if (showSuccess) {
+    return (
+      <div className="rounded-lg border border-border bg-background p-6">
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <Check className="h-8 w-8 text-primary" />
+          </div>
+          <h2 className="text-xl font-semibold text-foreground mb-2">
+            Transfer initiated
+          </h2>
+          <p className="text-muted-foreground">
+            {parseFloat(receiveAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {selectedCurrency.code} is on its way
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -63,17 +112,21 @@ export function TransferCalculator() {
       <div className="flex flex-col gap-2 py-4 px-4 mb-4 text-sm text-muted-foreground border-l-2 border-border ml-4">
         <div className="flex justify-between">
           <span>Fee</span>
-          <span className="font-medium text-foreground">- {fee.toFixed(2)} USD</span>
+          <span className="font-medium text-foreground">
+            {fee === 0 ? 'Free' : `- ${fee.toFixed(2)} USD`}
+          </span>
         </div>
         <div className="flex justify-between">
           <span>Exchange rate</span>
           <span className="font-medium text-foreground">
-            1 USD = {selectedCurrency.rate} {selectedCurrency.code}
+            {selectedCurrency.code === 'USD' 
+              ? '1:1 (same currency)' 
+              : `1 USD = ${selectedCurrency.rate} ${selectedCurrency.code}`}
           </span>
         </div>
       </div>
 
-      {/* Recipient gets input - TEAL background */}
+      {/* Recipient gets input - TEAL background with dark text for accessibility */}
       <div className="mb-6">
         <label className="text-sm font-medium text-muted-foreground mb-2 block">
           Recipient gets
@@ -82,14 +135,21 @@ export function TransferCalculator() {
           className="flex items-center gap-3 p-4 rounded-lg"
           style={{ backgroundColor: '#00D9C6' }}
         >
-          <div className="flex-1 text-2xl font-bold text-white tabular-nums">
+          <div 
+            className="flex-1 text-2xl font-bold tabular-nums"
+            style={{ color: '#003D36' }}
+          >
             {parseFloat(receiveAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <div className="relative">
             <button
               type="button"
               onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
-              className="flex items-center gap-2 px-3 py-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors"
+              className="flex items-center gap-2 px-3 py-2 rounded-full transition-colors"
+              style={{ 
+                backgroundColor: 'rgba(255,255,255,0.25)',
+                color: '#003D36'
+              }}
             >
               <span className="text-lg">{selectedCurrency.flag}</span>
               <span className="text-sm font-semibold">{selectedCurrency.code}</span>
@@ -121,13 +181,15 @@ export function TransferCalculator() {
 
       {/* Delivery estimate */}
       <p className="text-sm text-muted-foreground mb-6">
-        Should arrive in <span className="font-medium text-foreground">seconds</span>
+        {selectedCurrency.deliveryTime}
       </p>
 
       {/* Send button */}
       <button
         type="button"
-        className="w-full py-3.5 px-6 bg-primary text-primary-foreground text-base font-semibold rounded-full hover:bg-primary/90 transition-colors"
+        onClick={handleSend}
+        disabled={numericAmount <= fee}
+        className="w-full py-3.5 px-6 bg-primary text-primary-foreground text-base font-semibold rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {branding.payoutVerb}
       </button>
