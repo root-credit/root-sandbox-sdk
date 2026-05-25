@@ -17,9 +17,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 const CURRENCY_PAIRS = [
+  { to: 'USD', rate: 1.00, flag: '🇺🇸', country: 'United States' },
   { to: 'EUR', rate: 0.92, flag: '🇪🇺', country: 'Eurozone' },
   { to: 'INR', rate: 83.42, flag: '🇮🇳', country: 'India' },
-  { to: 'MXN', rate: 17.24, flag: '🇲🇽', country: 'Mexico' },
   { to: 'GBP', rate: 0.79, flag: '🇬🇧', country: 'United Kingdom' },
 ];
 
@@ -40,7 +40,8 @@ export default function TransfersPage() {
 
   const balance = walletBalanceCents ?? 0;
   const amountNum = parseFloat(amount) || 0;
-  const fee = Math.round(amountNum * 0.0075 * 100) / 100; // 0.75% fee
+  const isUsdToUsd = selectedCurrency.to === 'USD';
+  const fee = isUsdToUsd ? 0 : Math.round(amountNum * 0.0075 * 100) / 100; // 0.75% fee, $0 for USD
   const amountToConvert = amountNum - fee;
   const receivedAmount = Math.round(amountToConvert * selectedCurrency.rate * 100) / 100;
   const canSend = walletEnabled && amountNum > 0 && amountNum <= balance / 100 && selectedPayee;
@@ -121,13 +122,15 @@ export default function TransfersPage() {
               {amount && amountNum > 0 && (
                 <div className="mb-6 rounded-lg bg-[#F4F4F4] p-4">
                   <div className="flex items-center justify-between text-sm mb-2">
-                    <span className="text-muted-foreground">Fee (0.75%)</span>
-                    <span className="font-medium text-foreground">- ${fee.toFixed(2)} USD</span>
+                    <span className="text-muted-foreground">Fee {isUsdToUsd ? '' : '(0.75%)'}</span>
+                    <span className="font-medium text-foreground">
+                      {isUsdToUsd ? '$0.00 USD' : `- $${fee.toFixed(2)} USD`}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Exchange rate</span>
                     <span className="font-medium text-foreground">
-                      1 USD = {selectedCurrency.rate} {selectedCurrency.to}
+                      1 USD = {selectedCurrency.rate.toFixed(2)} {selectedCurrency.to}
                     </span>
                   </div>
                 </div>
@@ -160,13 +163,25 @@ export default function TransfersPage() {
                 </div>
               </div>
 
-              {/* Received amount display - TEAL background */}
+              {/* Received amount display - Teal for FX, White for USD */}
               {amount && amountNum > 0 && (
-                <div className="mb-6 rounded-lg p-4" style={{ backgroundColor: '#00D9C6' }}>
-                  <div className="text-xs font-medium text-white/70 mb-1">
-                    Recipient gets
+                <div 
+                  className="mb-6 rounded-lg p-4"
+                  style={isUsdToUsd 
+                    ? { backgroundColor: '#FFFFFF', border: '1px solid #E0E0E0' }
+                    : { backgroundColor: '#00D9C6' }
+                  }
+                >
+                  <div 
+                    className="text-xs font-medium mb-1"
+                    style={{ color: isUsdToUsd ? '#6B7280' : '#003D36' }}
+                  >
+                    Recipient gets {isUsdToUsd && '— should arrive in seconds'}
                   </div>
-                  <div className="text-3xl font-bold tabular-nums text-white">
+                  <div 
+                    className="text-3xl font-bold tabular-nums"
+                    style={{ color: isUsdToUsd ? '#1E1E1E' : '#003D36' }}
+                  >
                     {receivedAmount.toFixed(2)} {selectedCurrency.to}
                   </div>
                 </div>
