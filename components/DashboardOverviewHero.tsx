@@ -1,22 +1,19 @@
 'use client';
 
 import { useDomainStore } from '@/components/DomainStoreProvider';
+import { branding } from '@/lib/branding';
 import { formatMoney } from '@/lib/types/payments';
 
 /**
- * Live wallet pill on the dashboard overview. Balance is read fresh from
- * `GET /api/subaccounts/{id}` (incoming - outgoing) on every mount and after
- * any wallet-affecting mutation; nothing is cached client-side.
+ * Live wallet display on the dashboard overview. Balance is read fresh from
+ * the Root subaccount on every mount and after any wallet-affecting mutation.
  */
 export function DashboardOverviewHero() {
   const {
     walletEnabled,
     walletBalanceCents,
     isWalletLoading,
-    ownedDomains,
-    marketplaceDomains,
   } = useDomainStore();
-  const listedCount = ownedDomains.filter((d) => d.listingPriceCents !== undefined).length;
 
   const balanceLabel =
     !walletEnabled && !isWalletLoading
@@ -26,24 +23,26 @@ export function DashboardOverviewHero() {
         : formatMoney(walletBalanceCents);
 
   return (
-    <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-      <div className="flex flex-col justify-between rounded-2xl border-2 bg-foreground text-background px-5 py-4 sm:min-w-72">
-        <span className="text-[11px] font-bold uppercase tracking-widest text-background/60">
-          GAG wallet
+    <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-stretch">
+      <div className="flex flex-col justify-between rounded-lg bg-primary text-primary-foreground px-5 py-4 sm:min-w-64">
+        <span className="text-xs font-medium text-primary-foreground/70">
+          {branding.walletName}
         </span>
-        <div className="flex items-end gap-3 mt-1">
-          <span className="text-3xl md:text-4xl font-extrabold font-mono tabular-nums">
-            {isWalletLoading ? '…' : balanceLabel}
+        <div className="flex items-end gap-3 mt-2">
+          <span className="text-3xl md:text-4xl font-bold font-mono tabular-nums">
+            {isWalletLoading ? '...' : balanceLabel}
           </span>
-          <span className="rounded-full bg-primary text-primary-foreground px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest mb-1">
-            Live
-          </span>
+          {walletEnabled && (
+            <span className="rounded-full bg-background/20 text-primary-foreground px-2.5 py-1 text-[10px] font-medium mb-1">
+              USD
+            </span>
+          )}
         </div>
       </div>
-      <div className="flex flex-1 flex-wrap items-center gap-2 rounded-2xl border-2 bg-card px-5 py-4">
-        <Pill label="Owned" value={String(ownedDomains.length)} />
-        <Pill label="Listed" value={String(listedCount)} />
-        <Pill label="In marketplace" value={String(marketplaceDomains.length)} />
+      <div className="flex flex-1 flex-wrap items-center gap-2 rounded-lg border border-border bg-background px-5 py-4">
+        <Pill label="Available to send" value={walletEnabled ? formatMoney(walletBalanceCents ?? 0) : '—'} />
+        <Pill label={branding.payeePlural} value="0" />
+        <Pill label={branding.payoutNounPlural} value="0" />
       </div>
     </div>
   );
@@ -51,9 +50,9 @@ export function DashboardOverviewHero() {
 
 function Pill({ label, value }: { label: string; value: string }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-xs font-bold">
+    <span className="inline-flex items-center gap-2 rounded-full bg-card px-3 py-1.5 text-xs font-medium">
       <span className="font-mono tabular-nums text-foreground">{value}</span>
-      <span className="text-muted-foreground uppercase tracking-widest text-[10px]">{label}</span>
+      <span className="text-muted-foreground text-[10px]">{label}</span>
     </span>
   );
 }

@@ -9,7 +9,7 @@ import { getPayer } from '@/lib/redis';
 import { branding } from '@/lib/branding';
 import { Badge } from '@/components/ui/badge';
 
-export default async function PayerSettingsPage() {
+export default async function AccountSettingsPage() {
   const session = await getCurrentSession();
   if (!session) redirect('/login');
 
@@ -22,22 +22,21 @@ export default async function PayerSettingsPage() {
 
       <main className="flex-1 mx-auto max-w-5xl w-full px-6 lg:px-10 py-8">
         <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
-          <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
-            Console
+          <Link href="/dashboard" className="hover:text-foreground transition-colors font-medium">
+            Home
           </Link>
           <span>/</span>
-          <span className="text-foreground font-bold">{branding.payerSingular}</span>
+          <span className="text-foreground font-medium">{branding.payerSingular}</span>
         </nav>
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">{branding.payerSingular}</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">{branding.payerSingular}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Your profile, your {branding.funderShortLabel.toLowerCase()}, and the Good as Gold
-              wallet behind every domain trade.
+              Your profile, linked bank account, and {branding.walletName}.
             </p>
           </div>
           {payer.bankAccountToken && (
-            <Badge variant="success" className="font-bold">
+            <Badge variant="success" className="font-medium">
               <CheckCircle2 className="h-3.5 w-3.5" />
               {branding.funderShortLabel} linked
             </Badge>
@@ -45,44 +44,44 @@ export default async function PayerSettingsPage() {
         </div>
 
         {/* Profile */}
-        <section className="rounded-2xl border-2 bg-card mb-6">
-          <div className="border-b-2 px-6 py-5">
-            <h2 className="text-xl font-extrabold tracking-tight">
-              {branding.payerSingular} information
+        <section className="rounded-lg border border-border bg-background mb-6">
+          <div className="border-b border-border px-6 py-5">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Account information
             </h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              The details we use across your console.
+              Your personal details for this {branding.productName} account.
             </p>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5">
-            <ProfileField label={`${branding.payerSingular} name`} value={payer.payerName} />
+            <ProfileField label="Full name" value={payer.payerName} />
             <ProfileField label="Email address" value={payer.payerEmail} mono />
             <ProfileField label="Phone number" value={payer.phone} mono />
-            <ProfileField label="Root payer ID" value={payer.rootPayerId} mono small />
+            <ProfileField label="Account ID" value={payer.rootPayerId} mono small />
           </div>
         </section>
 
         {/* Bank account */}
-        <section className="rounded-2xl border-2 bg-card mb-6">
-          <div className="border-b-2 px-6 py-5">
-            <h2 className="text-xl font-extrabold tracking-tight">{branding.funderLabel}</h2>
+        <section className="rounded-lg border border-border bg-background mb-6">
+          <div className="border-b border-border px-6 py-5">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">{branding.funderLabel}</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Link your {branding.payerPossessive} bank to fund your Good as Gold wallet via ACH.
+              Link your bank account to fund your {branding.walletName} and receive withdrawals.
             </p>
           </div>
           <div className="p-6 flex flex-col gap-6">
             <BankAccountForm payerId={session.payerId} />
 
-            <div className="rounded-xl bg-secondary p-5">
-              <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">
-                Why link a {branding.funderShortLabel.toLowerCase()}?
+            <div className="rounded-lg bg-card p-5">
+              <p className="text-xs font-medium text-primary mb-3">
+                Why link a bank account?
               </p>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-foreground">
                 {[
-                  `Fund your GAG wallet via ACH debit`,
-                  'Fast and secure transfers',
-                  'Support for checking and savings accounts',
-                  'Direct integration with Root infrastructure',
+                  `Fund your ${branding.walletName} via ACH`,
+                  'Withdraw your balance anytime',
+                  'Secure and encrypted connection',
+                  'Works with checking and savings accounts',
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2.5">
                     <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary flex-none" />
@@ -94,7 +93,7 @@ export default async function PayerSettingsPage() {
           </div>
         </section>
 
-        {/* GAG wallet (subaccount) */}
+        {/* Wallet (subaccount) */}
         <PayerSubaccountSection
           payerId={session.payerId}
           payerName={payer.payerName}
@@ -119,12 +118,12 @@ function ProfileField({
 }) {
   return (
     <div>
-      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
+      <p className="text-xs font-medium text-muted-foreground mb-1">
         {label}
       </p>
       <p
-        className={`${mono ? 'font-mono' : 'font-bold'} ${
-          small ? 'text-xs break-all text-muted-foreground' : 'text-base'
+        className={`${mono ? 'font-mono' : 'font-medium'} ${
+          small ? 'text-xs break-all text-muted-foreground' : 'text-base text-foreground'
         }`}
       >
         {value}

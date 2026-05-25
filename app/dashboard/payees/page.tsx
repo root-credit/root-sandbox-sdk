@@ -28,7 +28,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-export default function PayeesPage() {
+export default function RecipientsPage() {
   const router = useRouter();
   const { session } = useSession();
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
@@ -57,32 +57,31 @@ export default function PayeesPage() {
 
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
         <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
-          <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
-            Console
+          <Link href="/dashboard" className="hover:text-foreground transition-colors font-medium">
+            Home
           </Link>
           <span>/</span>
-          <span className="text-foreground font-bold">{branding.payeePlural}</span>
+          <span className="text-foreground font-medium">{branding.payeePlural}</span>
         </nav>
 
         <div className="mb-8 flex items-end justify-between gap-6 flex-wrap">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">{branding.payeePlural}</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">{branding.payeePlural}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              The banks and debit cards you {branding.payoutVerb.toLowerCase()} to from your Good as Gold
-              wallet.
+              The people you send money to. Add their bank details once, send anytime.
             </p>
           </div>
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90 h-11 px-5">
+              <Button className="rounded-full font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-5">
                 <Plus className="h-4 w-4" />
                 Add {branding.payeeSingular.toLowerCase()}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-extrabold tracking-tight">
+                <DialogTitle className="text-xl font-semibold tracking-tight">
                   Add {branding.payeeSingular.toLowerCase()}
                 </DialogTitle>
               </DialogHeader>
@@ -98,18 +97,18 @@ export default function PayeesPage() {
         </div>
 
         {loadError && (
-          <div className="rounded-xl border-2 border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
+          <div className="rounded-lg border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive mb-6">
             {loadError}
           </div>
         )}
 
-        <div className="rounded-2xl border-2 bg-card overflow-hidden">
-          <div className="flex items-center justify-between gap-3 border-b-2 px-6 py-4">
+        <div className="rounded-lg border border-border bg-background overflow-hidden">
+          <div className="flex items-center justify-between gap-3 border-b border-border px-6 py-4">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
-              <h2 className="font-extrabold tracking-tight">{branding.payeePlural}</h2>
+              <h2 className="font-semibold tracking-tight text-foreground">{branding.payeePlural}</h2>
               {!isLoading && (
-                <span className="text-xs text-muted-foreground font-bold">
+                <span className="text-xs text-muted-foreground font-medium">
                   ({payees.length})
                 </span>
               )}
@@ -117,33 +116,32 @@ export default function PayeesPage() {
           </div>
 
           {isLoading ? (
-            <div className="p-12 text-center text-sm text-muted-foreground font-semibold">
-              Loading {branding.payeePlural.toLowerCase()}…
+            <div className="p-12 text-center text-sm text-muted-foreground font-medium">
+              Loading {branding.payeePlural.toLowerCase()}...
             </div>
           ) : payees.length === 0 ? (
             <div className="p-16 flex flex-col items-center gap-3 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-card">
                 <Users className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-lg font-extrabold">
+                <p className="text-lg font-semibold text-foreground">
                   No {branding.payeePlural.toLowerCase()} yet
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Add your first {branding.payeeSingular.toLowerCase()} to start{' '}
-                  {branding.payoutVerb.toLowerCase()}-ing.
+                  Add your first {branding.payeeSingular.toLowerCase()} to start sending money.
                 </p>
               </div>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="mt-1 rounded-full font-bold bg-foreground text-background hover:bg-foreground/90">
+                  <Button className="mt-1 rounded-full font-medium bg-primary text-primary-foreground hover:bg-primary/90">
                     <Plus className="h-4 w-4" />
                     Add your first {branding.payeeSingular.toLowerCase()}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-extrabold tracking-tight">
+                    <DialogTitle className="text-xl font-semibold tracking-tight">
                       Add {branding.payeeSingular.toLowerCase()}
                     </DialogTitle>
                   </DialogHeader>
@@ -161,19 +159,19 @@ export default function PayeesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="font-medium text-[10px] uppercase tracking-widest">
                     Name
                   </TableHead>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="font-medium text-[10px] uppercase tracking-widest">
                     Email
                   </TableHead>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="font-medium text-[10px] uppercase tracking-widest">
                     Phone
                   </TableHead>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
-                    Rail
+                  <TableHead className="font-medium text-[10px] uppercase tracking-widest">
+                    Type
                   </TableHead>
-                  <TableHead className="text-right font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="text-right font-medium text-[10px] uppercase tracking-widest">
                     Actions
                   </TableHead>
                 </TableRow>
@@ -181,7 +179,7 @@ export default function PayeesPage() {
               <TableBody>
                 {payees.map((payee) => (
                   <TableRow key={payee.id}>
-                    <TableCell className="font-bold">{payee.name}</TableCell>
+                    <TableCell className="font-medium">{payee.name}</TableCell>
                     <TableCell className="text-muted-foreground font-mono text-xs">
                       {payee.email}
                     </TableCell>
@@ -193,7 +191,7 @@ export default function PayeesPage() {
                         variant={
                           payee.paymentMethodType === 'bank_account' ? 'secondary' : 'success'
                         }
-                        className="font-bold"
+                        className="font-medium"
                       >
                         {payee.paymentMethodType === 'bank_account'
                           ? 'Bank account'
@@ -203,7 +201,7 @@ export default function PayeesPage() {
                     <TableCell className="text-right">
                       <button
                         onClick={() => handleDelete(payee.id)}
-                        className="text-xs text-muted-foreground hover:text-destructive font-bold transition-colors uppercase tracking-widest"
+                        className="text-xs text-muted-foreground hover:text-destructive font-medium transition-colors uppercase tracking-widest"
                       >
                         Remove
                       </button>

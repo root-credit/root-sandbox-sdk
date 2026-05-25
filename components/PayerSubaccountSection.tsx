@@ -44,7 +44,7 @@ export function PayerSubaccountSection({
   const { fundPayin, isSubmitting: payinBusy } = useFundSubaccountPayin();
   const { refreshWallet } = useDomainStore();
 
-  const defaultSubaccountName = `${payerName} · ${branding.productName} GAG wallet`.slice(
+  const defaultSubaccountName = `${payerName} · ${branding.walletName}`.slice(
     0,
     128,
   );
@@ -54,14 +54,12 @@ export function PayerSubaccountSection({
     try {
       if (enable) {
         await enableSubaccount(payerId, defaultSubaccountName);
-        toast.success('Good as Gold wallet enabled');
+        toast.success(`${branding.walletName} enabled`);
       } else {
         await disableSubaccount(payerId);
-        toast.success('Good as Gold wallet disabled for this profile');
+        toast.success(`${branding.walletName} disabled`);
       }
       router.refresh();
-      // Pull fresh balance (incoming - outgoing) from Root after the wallet
-      // (subaccount) state changes; client cache stays in sync with the server.
       await refreshWallet();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');
@@ -85,34 +83,30 @@ export function PayerSubaccountSection({
     try {
       const result = await fundPayin(payerId, data);
       toast.success(
-        `Top-up started — ${result.rail} (${result.payinId.slice(0, 8)}…)`,
+        `Deposit started — ${result.rail} (${result.payinId.slice(0, 8)}...)`,
       );
       reset({ amount: data.amount, rail: data.rail });
       router.refresh();
-      // Re-fetch live wallet balance from Root once the payin lands. Root reports
-      // `incoming` and `outgoing` totals on the subaccount; we never cache the
-      // derived balance, so a fresh GET is the only source of truth.
       await refreshWallet();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Payin failed');
+      toast.error(err instanceof Error ? err.message : 'Deposit failed');
     }
   }
 
   return (
-    <Card className="mb-6 rounded-2xl border-2">
+    <Card className="mb-6 rounded-lg border border-border">
       <CardHeader>
-        <CardTitle className="text-xl font-extrabold tracking-tight">Good as Gold wallet</CardTitle>
+        <CardTitle className="text-lg font-semibold tracking-tight">{branding.walletName}</CardTitle>
         <CardDescription>
-          Your in-app balance for buying domains, receiving sales, and {branding.payoutVerb.toLowerCase()}-ing
-          to your {branding.payeePlural.toLowerCase()}. Powered by a Root subaccount.
+          Your account balance for sending money abroad and receiving withdrawals. Powered by Root.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
-        <div className="flex flex-col gap-4 rounded-xl border-2 bg-secondary p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-bold">Enable Good as Gold wallet</p>
+            <p className="text-sm font-medium text-foreground">Enable {branding.walletName}</p>
             <p className="text-xs text-muted-foreground">
-              Provisions a Root subaccount to back your wallet balance and ACH payins.
+              Activate your account balance to fund and send money.
             </p>
           </div>
           <ToggleSwitch
@@ -123,32 +117,26 @@ export function PayerSubaccountSection({
         </div>
 
         {subaccountEnabled && subaccountId ? (
-          <div className="rounded-xl border-2 bg-background px-3 py-2">
-            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-              Wallet (subaccount) ID
+          <div className="rounded-lg border border-border bg-background px-3 py-2">
+            <p className="text-xs font-medium text-muted-foreground">
+              Wallet ID
             </p>
             <p className="font-mono text-xs break-all text-muted-foreground">{subaccountId}</p>
           </div>
         ) : null}
 
         {subaccountEnabled ? (
-          <div className="flex flex-col gap-4 rounded-xl border-2 bg-secondary p-4">
+          <div className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4">
             <div>
-              <p className="text-sm font-bold">Top up GAG wallet (ACH pull)</p>
+              <p className="text-sm font-medium text-foreground">Add money (ACH deposit)</p>
               <p className="text-xs text-muted-foreground mt-1">
-                Pull funds from your {branding.funderLabel.toLowerCase()} into your wallet using{' '}
-                <code className="rounded bg-muted px-1 py-0.5 text-[11px]">standard_ach</code>{' '}
-                or{' '}
-                <code className="rounded bg-muted px-1 py-0.5 text-[11px]">
-                  same_day_ach
-                </code>
-                .
+                Pull funds from your {branding.funderLabel.toLowerCase()} into your {branding.walletName}.
               </p>
             </div>
 
             {!hasLinkedBank ? (
-              <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">
-                Link your {branding.funderShortLabel.toLowerCase()} above before topping up your wallet.
+              <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+                Link your {branding.funderShortLabel.toLowerCase()} above before adding money.
               </p>
             ) : (
               <form onSubmit={handleSubmit(onPayinSubmit)} className="flex flex-col gap-4">
@@ -168,17 +156,17 @@ export function PayerSubaccountSection({
                     ) : null}
                   </div>
                   <div className="flex flex-col gap-2">
-                    <Label htmlFor="payin-rail">ACH rail</Label>
+                    <Label htmlFor="payin-rail">ACH type</Label>
                     <select
                       id="payin-rail"
                       {...register('rail')}
                       className={cn(
-                        'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors',
+                        'flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors',
                         'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
                       )}
                     >
-                      <option value="standard_ach">standard_ach</option>
-                      <option value="same_day_ach">same_day_ach</option>
+                      <option value="standard_ach">Standard ACH</option>
+                      <option value="same_day_ach">Same day ACH</option>
                     </select>
                     {errors.rail ? (
                       <p className="text-xs text-destructive">{errors.rail.message}</p>
@@ -188,15 +176,15 @@ export function PayerSubaccountSection({
                 <Button
                   type="submit"
                   disabled={payinBusy}
-                  className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90"
+                  className="rounded-full font-medium bg-primary text-primary-foreground hover:bg-primary/90"
                 >
                   {payinBusy ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Topping up…
+                      Adding money...
                     </>
                   ) : (
-                    'Top up GAG wallet'
+                    'Add money'
                   )}
                 </Button>
               </form>
