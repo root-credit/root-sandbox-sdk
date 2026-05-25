@@ -4,38 +4,40 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Wise brand palette: lime green primary, dark green text, white dominant */
+  /* Wise brand palette — white dominant, lime green accents */
   --background: #FFFFFF;
-  --foreground: #2E3838;
-  --card: #F5F7F7;
-  --card-foreground: #2E3838;
+  --foreground: #1E1E1E;
+  --card: #FFFFFF;
+  --card-foreground: #1E1E1E;
   --popover: #FFFFFF;
-  --popover-foreground: #2E3838;
+  --popover-foreground: #1E1E1E;
   /* Wise lime green */
   --primary: #9FE870;
   /* Text on primary (dark green on lime) */
   --primary-foreground: #163300;
-  --secondary: #F5F7F7;
-  --secondary-foreground: #2E3838;
-  --muted: #F5F7F7;
-  --muted-foreground: #5D6B6B;
-  --accent: #E8F5E0;
-  --accent-foreground: #163300;
+  --secondary: #F4F4F4;
+  --secondary-foreground: #1E1E1E;
+  --muted: #F4F4F4;
+  --muted-foreground: #6B7280;
+  --accent: #F4F4F4;
+  --accent-foreground: #1E1E1E;
   --destructive: #D32F2F;
   --destructive-foreground: #FFFFFF;
-  --border: #E0E5E5;
-  --input: #E0E5E5;
+  --border: #E0E0E0;
+  --input: #E0E0E0;
   --ring: #9FE870;
-  /* Border radius: 8px cards, 56px buttons */
+  /* Border radius: 8px cards, 999px pill buttons */
   --radius: 0.5rem;
-  --radius-button: 3.5rem;
+  /* Teal accent — ONLY for recipient-gets card */
+  --teal-accent: #00D9C6;
+  /* Sidebar */
   --sidebar: #FFFFFF;
-  --sidebar-foreground: #2E3838;
-  --sidebar-primary: #2E3838;
+  --sidebar-foreground: #1E1E1E;
+  --sidebar-primary: #1E1E1E;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F5F7F7;
-  --sidebar-accent-foreground: #2E3838;
-  --sidebar-border: #E0E5E5;
+  --sidebar-accent: #F4F4F4;
+  --sidebar-accent-foreground: #1E1E1E;
+  --sidebar-border: #E0E0E0;
   --sidebar-ring: #9FE870;
 }
 
@@ -59,6 +61,7 @@
   --border: #2A2D2D;
   --input: #2A2D2D;
   --ring: #9FE870;
+  --teal-accent: #00D9C6;
   --sidebar: #1A1D1D;
   --sidebar-foreground: #FFFFFF;
   --sidebar-primary: #9FE870;
@@ -70,7 +73,7 @@
 }
 
 @theme inline {
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -111,5 +114,6 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 }

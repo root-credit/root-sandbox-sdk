@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { branding } from "@/lib/branding";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
 
 export const metadata: Metadata = {
   title: `${branding.productName} — ${branding.tagline}`,
@@ -20,10 +14,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} bg-background`}
-    >
+    <html lang="en" className="bg-background">
+      <head>
+        <link 
+          rel="stylesheet" 
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" 
+        />
+      </head>
       <body className="min-h-screen font-sans antialiased bg-background text-foreground">
         {children}
         <Toaster richColors position="top-right" />
