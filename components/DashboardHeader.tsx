@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { branding } from '@/lib/branding';
 import { useLogout } from '@/lib/hooks/useAuth';
 import { Button } from '@/components/ui/button';
+import { WiseLogo } from '@/components/WiseLogo';
 
 const NAV: { href: string; label: string }[] = [
   { href: '/dashboard', label: 'Home' },
@@ -34,22 +35,7 @@ export function DashboardHeader({ email }: { email: string }) {
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="h-16 flex items-center justify-between gap-6">
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <img 
-              src="https://logo.clearbit.com/wise.com" 
-              height={28}
-              width={28}
-              alt="Wise"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.style.display = 'none';
-                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                if (fallback) fallback.style.display = 'inline';
-              }}
-              className="h-7 w-auto"
-            />
-            <span style={{ display: 'none' }} className="text-lg font-semibold text-[#9FE870]">
-              {branding.productName}
-            </span>
+            <WiseLogo size={28} />
           </Link>
 
           <div className="flex items-center gap-2">

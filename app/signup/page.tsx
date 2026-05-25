@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { SignupForm } from '@/components/SignupForm';
 import { branding } from '@/lib/branding';
+import { WiseLogo } from '@/components/WiseLogo';
 
 export default function SignupPage() {
   return (
@@ -8,22 +9,7 @@ export default function SignupPage() {
       <header className="border-b border-border bg-background">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2.5">
-            <img 
-              src="https://logo.clearbit.com/wise.com" 
-              height={28}
-              width={28}
-              alt="Wise"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.style.display = 'none';
-                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                if (fallback) fallback.style.display = 'inline';
-              }}
-              className="h-7 w-auto"
-            />
-            <span style={{ display: 'none' }} className="text-lg font-semibold text-[#9FE870]">
-              {branding.productName}
-            </span>
+            <WiseLogo size={28} />
           </Link>
         </div>
       </header>

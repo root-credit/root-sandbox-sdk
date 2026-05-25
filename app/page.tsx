@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { branding } from '@/lib/branding';
 import { Button } from '@/components/ui/button';
+import { WiseLogo } from '@/components/WiseLogo';
 
 const CURRENCY_PAIRS = [
   { from: 'USD', to: 'EUR', rate: '0.92', flag: '🇪🇺' },
@@ -16,22 +17,7 @@ export default function LandingPage() {
       <header className="border-b border-border bg-background sticky top-0 z-30">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <img 
-              src="https://logo.clearbit.com/wise.com" 
-              height={28}
-              width={28}
-              alt="Wise"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.style.display = 'none';
-                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                if (fallback) fallback.style.display = 'inline';
-              }}
-              className="h-7 w-auto"
-            />
-            <span style={{ display: 'none' }} className="text-lg font-semibold text-[#9FE870]">
-              {branding.productName}
-            </span>
+            <WiseLogo size={28} />
           </Link>
           <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-foreground">
             <a href="#how-it-works" className="hover:text-primary transition-colors">
@@ -320,22 +306,7 @@ export default function LandingPage() {
       <footer className="border-t border-border bg-background">
         <div className="mx-auto max-w-7xl px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <img 
-              src="https://logo.clearbit.com/wise.com" 
-              height={24}
-              width={24}
-              alt="Wise"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.style.display = 'none';
-                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                if (fallback) fallback.style.display = 'inline';
-              }}
-              className="h-6 w-auto"
-            />
-            <span style={{ display: 'none' }} className="text-sm font-semibold text-[#9FE870]">
-              {branding.productName}
-            </span>
+            <WiseLogo size={24} />
           </div>
           <p className="text-xs text-muted-foreground text-center">
             {'© '}
