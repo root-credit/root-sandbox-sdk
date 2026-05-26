@@ -13,6 +13,7 @@ const CURRENCIES = [
 
 interface TransferCalculatorProps {
   onTransferComplete?: (transaction: {
+    recipientName: string;
     fromCurrency: string;
     toCurrency: string;
     sentAmount: number;
@@ -52,6 +53,7 @@ export function TransferCalculator({ onTransferComplete }: TransferCalculatorPro
     // Call the callback with transaction details
     if (onTransferComplete) {
       onTransferComplete({
+        recipientName: 'Quick Transfer',
         fromCurrency: 'USD',
         toCurrency: selectedCurrency.code,
         sentAmount: numericAmount,

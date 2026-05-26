@@ -84,6 +84,9 @@ export default function ActivityPage() {
                       Date
                     </TableHead>
                     <TableHead className="font-medium text-[10px] uppercase tracking-widest">
+                      Recipient
+                    </TableHead>
+                    <TableHead className="font-medium text-[10px] uppercase tracking-widest">
                       From
                     </TableHead>
                     <TableHead className="font-medium text-[10px] uppercase tracking-widest">
@@ -124,7 +127,11 @@ function TransactionRow({ transaction }: { transaction: WalletTransaction }) {
   return (
     <TableRow>
       <TableCell className="text-muted-foreground text-xs font-medium">
-        {transaction.date}
+        <div>{transaction.date}</div>
+        <div className="text-[10px] text-muted-foreground/70">{transaction.time}</div>
+      </TableCell>
+      <TableCell className="font-medium">
+        {transaction.recipientName}
       </TableCell>
       <TableCell className="font-medium">
         {transaction.fromCurrency}

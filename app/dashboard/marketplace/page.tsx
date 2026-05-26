@@ -10,6 +10,7 @@ import { DashboardHeader } from '@/components/DashboardHeader';
 import { useDomainStore } from '@/components/DomainStoreProvider';
 import { useSession } from '@/lib/hooks/useSession';
 import { usePayees } from '@/lib/hooks/usePayees';
+import { useWallet } from '@/components/WalletContext';
 import { branding } from '@/lib/branding';
 import { formatMoney, dollarsToCents } from '@/lib/types/payments';
 import { Button } from '@/components/ui/button';
@@ -29,6 +30,7 @@ export default function TransfersPage() {
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
 
   const { walletBalanceCents, walletEnabled } = useDomainStore();
+  const { balance: walletBalance, executeTransfer } = useWallet();
   const payerId = session?.payerId ?? null;
   const { payees, isLoading: payeesLoading } = usePayees(payerId);
 
@@ -49,21 +51,33 @@ export default function TransfersPage() {
   async function handleSendMoney() {
     if (!canSend) return;
     
-    const amountCents = dollarsToCents(amountNum);
-    if (amountCents > balance) {
-      toast.error(`Insufficient balance in your ${branding.walletName}.`);
-      return;
-    }
-
     const payee = payees.find(p => p.id === selectedPayee);
     if (!payee) {
       toast.error('Please select a recipient.');
       return;
     }
 
+    // Insufficient funds check (sentAmount + fee)
+    const totalDeduction = amountNum + fee;
+    if (totalDeduction > walletBalance) {
+      toast.error('Insufficient balance');
+      return;
+    }
+
+    // Execute transfer - updates balance and logs transaction
+    executeTransfer({
+      recipientName: payee.name,
+      fromCurrency: 'USD',
+      toCurrency: selectedCurrency.to,
+      sentAmount: amountNum,
+      receivedAmount: receivedAmount,
+      exchangeRate: selectedCurrency.rate,
+      fee: fee,
+    });
+
     toast.success(
-      `Transfer initiated: ${formatMoney(amountCents)} USD to ${payee.name}. ` +
-      `They will receive approximately ${receivedAmount.toFixed(2)} ${selectedCurrency.to}.`
+      `Transfer of $${amountNum.toFixed(2)} to ${payee.name} completed. ` +
+      `They received ${receivedAmount.toFixed(2)} ${selectedCurrency.to}.`
     );
     setAmount('');
     setSelectedPayee('');

@@ -6,6 +6,7 @@ export interface Transaction {
   id: string;
   date: string;
   time: string;
+  recipientName: string;
   fromCurrency: string;
   toCurrency: string;
   sentAmount: number;
@@ -18,11 +19,10 @@ export interface Transaction {
 interface WalletContextType {
   balance: number;
   transactions: Transaction[];
-  deductBalance: (amount: number) => void;
-  addTransaction: (transaction: Omit<Transaction, 'id' | 'date' | 'time' | 'status'>) => void;
+  executeTransfer: (tx: Omit<Transaction, 'id' | 'date' | 'time' | 'status'>) => void;
 }
 
-const WalletContext = createContext<WalletContextType | undefined>(undefined);
+const WalletContext = createContext<WalletContextType | null>(null);
 
 export function WalletProvider({ 
   children, 
@@ -34,33 +34,32 @@ export function WalletProvider({
   const [balance, setBalance] = useState(initialBalance);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-  const deductBalance = useCallback((amount: number) => {
-    setBalance((prev) => Math.max(0, prev - amount));
-  }, []);
+  const executeTransfer = useCallback((tx: Omit<Transaction, 'id' | 'date' | 'time' | 'status'>) => {
+    const totalDeducted = tx.sentAmount + tx.fee;
+    if (totalDeducted > balance) return; // insufficient funds guard
 
-  const addTransaction = useCallback((txData: Omit<Transaction, 'id' | 'date' | 'time' | 'status'>) => {
-    const now = new Date();
-    const newTransaction: Transaction = {
-      ...txData,
-      id: Date.now().toString(),
-      date: now.toLocaleDateString(),
-      time: now.toLocaleTimeString(),
-      status: 'Completed',
-    };
-    setTransactions((prev) => [newTransaction, ...prev]);
-  }, []);
+    setBalance((prev) => prev - totalDeducted);
+    setTransactions((prev) => [
+      {
+        ...tx,
+        id: Date.now().toString(),
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        status: 'Completed',
+      },
+      ...prev,
+    ]);
+  }, [balance]);
 
   return (
-    <WalletContext.Provider value={{ balance, transactions, deductBalance, addTransaction }}>
+    <WalletContext.Provider value={{ balance, transactions, executeTransfer }}>
       {children}
     </WalletContext.Provider>
   );
 }
 
 export function useWallet() {
-  const context = useContext(WalletContext);
-  if (context === undefined) {
-    throw new Error('useWallet must be used within a WalletProvider');
-  }
-  return context;
+  const ctx = useContext(WalletContext);
+  if (!ctx) throw new Error('useWallet must be used within WalletProvider');
+  return ctx;
 }

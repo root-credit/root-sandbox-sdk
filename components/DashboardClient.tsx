@@ -14,9 +14,10 @@ const CURRENCY_PAIRS = [
 ];
 
 export function DashboardClient() {
-  const { balance, deductBalance, addTransaction } = useWallet();
+  const { balance, transactions, executeTransfer } = useWallet();
 
   const handleTransferComplete = (transaction: {
+    recipientName: string;
     fromCurrency: string;
     toCurrency: string;
     sentAmount: number;
@@ -24,13 +25,11 @@ export function DashboardClient() {
     exchangeRate: number;
     fee: number;
   }) => {
-    // Deduct sentAmount + fee from balance
-    const totalDeduction = transaction.sentAmount;
-    deductBalance(totalDeduction);
-    
-    // Add transaction to history
-    addTransaction(transaction);
+    executeTransfer(transaction);
   };
+
+  // Calculate stats from transactions
+  const totalSent = transactions.reduce((sum, t) => sum + t.sentAmount, 0);
 
   return (
     <>
@@ -98,14 +97,14 @@ export function DashboardClient() {
                 <Users className="h-4 w-4" />
                 <span className="text-xs font-medium">{branding.payeePlural}</span>
               </div>
-              <div className="text-xl font-bold text-foreground">0</div>
+              <div className="text-xl font-bold text-foreground">{transactions.length > 0 ? new Set(transactions.map(t => t.recipientName)).size : 0}</div>
             </div>
             <div className="rounded-lg border border-border bg-background p-4">
               <div className="flex items-center gap-2 text-muted-foreground mb-1">
                 <Send className="h-4 w-4" />
                 <span className="text-xs font-medium">{branding.payoutNounPlural}</span>
               </div>
-              <div className="text-xl font-bold text-foreground">$0.00</div>
+              <div className="text-xl font-bold text-foreground">${totalSent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             </div>
             <div className="rounded-lg border border-border bg-background p-4 col-span-2">
               <div className="flex items-center gap-2 text-muted-foreground mb-1">
