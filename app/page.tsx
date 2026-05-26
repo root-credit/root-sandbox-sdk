@@ -25,7 +25,6 @@ export default function LandingPage() {
               width={24}
               alt=""
               className="object-contain"
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
             <span
               className="text-xl font-extrabold tracking-tight"
@@ -270,7 +269,6 @@ export default function LandingPage() {
               width={20}
               alt=""
               className="object-contain"
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
             <span
               className="text-sm font-extrabold"

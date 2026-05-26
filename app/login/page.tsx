@@ -14,7 +14,6 @@ export default function LoginPage() {
               width={24}
               alt=""
               className="object-contain"
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
             <span
               className="text-xl font-extrabold tracking-tight"
