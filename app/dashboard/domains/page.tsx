@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Globe2, Plus, Tag, TagIcon, X } from 'lucide-react';
+import { TrendingDown, Plus, Tag, TagIcon, X } from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { useDomainStore } from '@/components/DomainStoreProvider';
 import { useSession } from '@/lib/hooks/useSession';
@@ -24,7 +24,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
-export default function MyDomainsPage() {
+export default function SellCryptoPage() {
   const router = useRouter();
   const { session } = useSession();
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
@@ -49,7 +49,7 @@ export default function MyDomainsPage() {
     try {
       const result = await transferIn(transferName);
       if (result.ok) {
-        toast.success(`Transferred ${result.domain?.name ?? ''} into your account.`);
+        toast.success(`Added ${result.domain?.name ?? ''} to your holdings.`);
         setTransferOpen(false);
         setTransferName('');
       } else {
@@ -81,7 +81,7 @@ export default function MyDomainsPage() {
     try {
       const result = await listForSale(listingDomain.name, cents);
       if (result.ok) {
-        toast.success(`${listingDomain.name} listed for ${formatMoney(cents)}.`);
+        toast.success(`Listed for ${formatMoney(cents)}.`);
         setListingDomain(null);
         setListingPrice('');
       } else {
@@ -106,27 +106,27 @@ export default function MyDomainsPage() {
       <DashboardHeader email={session.payerEmail} />
 
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
-        <Breadcrumb here="My domains" />
+        <Breadcrumb here="Sell crypto" />
 
         <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">My domains</h1>
+            <h1 className="text-4xl font-extrabold tracking-tight text-foreground">Sell crypto</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Every domain you own. List one for sale, set the price, and it shows up in the
-              marketplace for other {branding.payerPlural.toLowerCase()} to buy.
+              List your holdings for sale. Other {branding.payerPlural.toLowerCase()} can purchase
+              them, and the funds go directly to your {branding.walletName}.
             </p>
           </div>
           <Button
             onClick={() => setTransferOpen(true)}
-            className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90 h-11 px-5"
+            className="rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-5"
           >
             <Plus className="h-4 w-4" />
-            Transfer in a domain
+            Add asset
           </Button>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          <StatCard label="Owned" value={String(ownedDomains.length)} />
+          <StatCard label="Holdings" value={String(ownedDomains.length)} />
           <StatCard label="Listed for sale" value={String(listed.length)} />
           <StatCard
             label="Total ask"
@@ -147,7 +147,7 @@ export default function MyDomainsPage() {
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {listed.map((d) => (
-                    <DomainRow
+                    <AssetRow
                       key={d.id}
                       domain={d}
                       onList={() => openListing(d)}
@@ -161,7 +161,7 @@ export default function MyDomainsPage() {
               <Section title="Not listed" desc="Set an asking price to put one up for sale.">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {unlisted.map((d) => (
-                    <DomainRow
+                    <AssetRow
                       key={d.id}
                       domain={d}
                       onList={() => openListing(d)}
@@ -176,24 +176,24 @@ export default function MyDomainsPage() {
       </main>
 
       <Dialog open={transferOpen} onOpenChange={setTransferOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-card border-border">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-extrabold tracking-tight">
-              Transfer in a domain
+            <DialogTitle className="text-2xl font-extrabold tracking-tight text-foreground">
+              Add asset
             </DialogTitle>
-            <DialogDescription>
-              Mocked transfer — enter the domain name you own and we&apos;ll add it to your{' '}
+            <DialogDescription className="text-muted-foreground">
+              Mocked transfer — enter the asset identifier and we&apos;ll add it to your{' '}
               {branding.payerSingular.toLowerCase()}.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="transfer-name">Domain</Label>
+            <Label htmlFor="transfer-name" className="text-foreground">Asset</Label>
             <Input
               id="transfer-name"
-              placeholder="example.com"
+              placeholder="BTC-001"
               value={transferName}
               onChange={(e) => setTransferName(e.target.value)}
-              className="font-mono"
+              className="font-mono bg-background border-border"
               disabled={transferBusy}
             />
           </div>
@@ -201,7 +201,7 @@ export default function MyDomainsPage() {
             <Button
               variant="ghost"
               onClick={() => setTransferOpen(false)}
-              className="rounded-full font-bold"
+              className="rounded-xl font-bold text-foreground hover:bg-secondary"
               disabled={transferBusy}
             >
               Cancel
@@ -209,9 +209,9 @@ export default function MyDomainsPage() {
             <Button
               onClick={handleTransfer}
               disabled={transferBusy}
-              className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90"
+              className="rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              {transferBusy ? 'Transferring…' : 'Add domain'}
+              {transferBusy ? 'Adding…' : 'Add asset'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -226,18 +226,18 @@ export default function MyDomainsPage() {
           }
         }}
       >
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-card border-border">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-extrabold tracking-tight">
+            <DialogTitle className="text-2xl font-extrabold tracking-tight text-foreground">
               {listingDomain?.listingPriceCents !== undefined ? 'Update price' : 'List for sale'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-muted-foreground">
               <span className="font-mono font-bold text-foreground">{listingDomain?.name}</span>{' '}
               will be visible to every account in the marketplace.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="listing-price">Asking price (USD)</Label>
+            <Label htmlFor="listing-price" className="text-foreground">Asking price (USD)</Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-mono">
                 $
@@ -250,7 +250,7 @@ export default function MyDomainsPage() {
                 placeholder="1000.00"
                 value={listingPrice}
                 onChange={(e) => setListingPrice(e.target.value)}
-                className="pl-7 font-mono"
+                className="pl-7 font-mono bg-background border-border"
                 disabled={listingBusy}
               />
             </div>
@@ -259,7 +259,7 @@ export default function MyDomainsPage() {
             <Button
               variant="ghost"
               onClick={() => setListingDomain(null)}
-              className="rounded-full font-bold"
+              className="rounded-xl font-bold text-foreground hover:bg-secondary"
               disabled={listingBusy}
             >
               Cancel
@@ -267,13 +267,13 @@ export default function MyDomainsPage() {
             <Button
               onClick={handleConfirmListing}
               disabled={listingBusy}
-              className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90"
+              className="rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90"
             >
               {listingBusy
                 ? 'Saving…'
                 : listingDomain?.listingPriceCents !== undefined
                   ? 'Update listing'
-                  : 'List domain'}
+                  : 'List asset'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -316,16 +316,16 @@ function Section({
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border-2 bg-card p-5 flex flex-col gap-2">
+    <div className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-2">
       <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
         {label}
       </div>
-      <div className="text-2xl font-extrabold font-mono tabular-nums">{value}</div>
+      <div className="text-2xl font-extrabold font-mono tabular-nums text-foreground">{value}</div>
     </div>
   );
 }
 
-function DomainRow({
+function AssetRow({
   domain,
   onList,
   onUnlist,
@@ -336,17 +336,17 @@ function DomainRow({
 }) {
   const isListed = domain.listingPriceCents !== undefined;
   return (
-    <div className="rounded-2xl border-2 bg-card p-5 flex flex-col gap-3 hover:border-foreground transition-colors">
+    <div className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-3 hover:border-primary/50 transition-colors">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <Globe2 className="h-4 w-4 text-muted-foreground flex-none" />
-            <h3 className="text-lg font-extrabold font-mono tracking-tight break-all">
+            <TrendingDown className="h-4 w-4 text-muted-foreground flex-none" />
+            <h3 className="text-lg font-extrabold font-mono tracking-tight break-all text-foreground">
               {domain.name}
             </h3>
           </div>
           <p className="text-xs text-muted-foreground font-semibold">
-            Registered{' '}
+            Added{' '}
             {new Date(domain.registeredAt).toLocaleDateString(undefined, {
               year: 'numeric',
               month: 'short',
@@ -361,16 +361,16 @@ function DomainRow({
           </Badge>
         ) : (
           <Badge variant="secondary" className="shrink-0 font-bold">
-            Owned
+            Held
           </Badge>
         )}
       </div>
       {isListed && (
-        <div className="rounded-xl bg-primary/10 px-4 py-3">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+        <div className="rounded-xl bg-primary px-4 py-3">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-primary-foreground/70">
             Asking price
           </div>
-          <div className="text-2xl font-extrabold font-mono tabular-nums">
+          <div className="text-2xl font-extrabold font-mono tabular-nums text-primary-foreground">
             {formatMoney(domain.listingPriceCents ?? 0)}
           </div>
         </div>
@@ -378,7 +378,7 @@ function DomainRow({
       <div className="flex flex-wrap gap-2 mt-1">
         <Button
           onClick={onList}
-          className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90 h-9"
+          className="rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-9"
           size="sm"
         >
           <Tag className="h-3.5 w-3.5" />
@@ -388,7 +388,7 @@ function DomainRow({
           <Button
             onClick={onUnlist}
             variant="outline"
-            className="rounded-full font-bold border-2 h-9"
+            className="rounded-xl font-bold border border-border text-foreground hover:bg-secondary h-9"
             size="sm"
           >
             <X className="h-3.5 w-3.5" />
@@ -402,33 +402,33 @@ function DomainRow({
 
 function LoadingState() {
   return (
-    <div className="rounded-2xl border-2 bg-card p-16 flex flex-col items-center gap-4 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-        <Globe2 className="h-6 w-6 text-muted-foreground" />
+    <div className="rounded-2xl border border-border bg-card p-16 flex flex-col items-center gap-4 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-muted">
+        <TrendingDown className="h-6 w-6 text-muted-foreground" />
       </div>
-      <p className="text-sm text-muted-foreground">Loading your domains…</p>
+      <p className="text-sm text-muted-foreground">Loading your holdings...</p>
     </div>
   );
 }
 
 function EmptyState({ onTransfer }: { onTransfer: () => void }) {
   return (
-    <div className="rounded-2xl border-2 bg-card p-16 flex flex-col items-center gap-4 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-        <Globe2 className="h-6 w-6 text-muted-foreground" />
+    <div className="rounded-2xl border border-border bg-card p-16 flex flex-col items-center gap-4 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-muted">
+        <TrendingDown className="h-6 w-6 text-muted-foreground" />
       </div>
       <div>
-        <p className="text-lg font-extrabold">No domains yet</p>
+        <p className="text-lg font-extrabold text-foreground">No holdings yet</p>
         <p className="text-sm text-muted-foreground mt-1">
-          Transfer in a domain to start listing it for sale.
+          Add an asset to start listing it for sale.
         </p>
       </div>
       <Button
         onClick={onTransfer}
-        className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90"
+        className="rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90"
       >
         <Plus className="h-4 w-4" />
-        Transfer in your first domain
+        Add your first asset
       </Button>
     </div>
   );

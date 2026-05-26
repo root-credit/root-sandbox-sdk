@@ -48,7 +48,7 @@ export default function ActivityPage() {
         </nav>
 
         <div className="mb-8">
-          <h1 className="text-4xl font-extrabold tracking-tight">Activity</h1>
+          <h1 className="text-4xl font-extrabold tracking-tight text-foreground">Activity</h1>
           <p className="text-base text-muted-foreground mt-2 max-w-xl">
             Every {branding.payoutNoun.toLowerCase()}, every status, every receipt — written to
             your ledger.
@@ -56,7 +56,7 @@ export default function ActivityPage() {
         </div>
 
         {error && (
-          <div className="rounded-xl border-2 border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
+          <div className="rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
             {error}
           </div>
         )}
@@ -73,25 +73,25 @@ export default function ActivityPage() {
           <StatCard label="Total events" value={String(transactions.length)} />
         </div>
 
-        <div className="rounded-2xl border-2 bg-card overflow-hidden">
+        <div className="rounded-2xl border border-border bg-card overflow-hidden">
           {isLoading ? (
             <div className="p-12 text-center text-sm text-muted-foreground font-semibold">
               Loading activity…
             </div>
           ) : transactions.length === 0 ? (
             <div className="p-16 flex flex-col items-center gap-3 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-muted">
                 <ActivityIcon className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-lg font-extrabold">No activity yet</p>
+                <p className="text-lg font-extrabold text-foreground">No activity yet</p>
                 <p className="text-sm text-muted-foreground mt-1">
                   Run your first {branding.payoutNoun.toLowerCase()} to populate the ledger.
                 </p>
               </div>
               <Link
                 href="/dashboard/payouts"
-                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-foreground text-background px-5 h-11 text-sm font-bold hover:bg-foreground/90 transition-colors"
+                className="mt-1 inline-flex items-center gap-1.5 rounded-xl bg-primary text-primary-foreground px-5 h-11 text-sm font-bold hover:bg-primary/90 transition-colors"
               >
                 Run your first {branding.payoutNoun.toLowerCase()} →
               </Link>
@@ -99,32 +99,32 @@ export default function ActivityPage() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                <TableRow className="border-border">
+                  <TableHead className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
                     {branding.payeeSingular}
                   </TableHead>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
                     Email
                   </TableHead>
-                  <TableHead className="text-right font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="text-right font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
                     Amount
                   </TableHead>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
                     Status
                   </TableHead>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
                     Date
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {transactions.map((transaction) => (
-                  <TableRow key={transaction.id}>
-                    <TableCell className="font-bold">{transaction.payeeName}</TableCell>
+                  <TableRow key={transaction.id} className="border-border">
+                    <TableCell className="font-bold text-foreground">{transaction.payeeName}</TableCell>
                     <TableCell className="text-muted-foreground font-mono text-xs">
                       {transaction.payeeEmail}
                     </TableCell>
-                    <TableCell className="text-right font-mono tabular-nums font-extrabold">
+                    <TableCell className="text-right font-mono tabular-nums font-extrabold text-foreground">
                       ${centsToDollars(transaction.amountCents ?? 0).toFixed(2)}
                     </TableCell>
                     <TableCell>
@@ -152,11 +152,11 @@ export default function ActivityPage() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border-2 bg-card p-5 flex flex-col gap-2">
+    <div className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-2">
       <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
         {label}
       </div>
-      <div className="text-2xl font-extrabold font-mono tabular-nums">{value}</div>
+      <div className="text-2xl font-extrabold font-mono tabular-nums text-foreground">{value}</div>
     </div>
   );
 }

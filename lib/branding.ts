@@ -13,10 +13,10 @@
  */
 export const branding = {
   /** Top-level product name shown in nav, footer, browser title. */
-  productName: "GoDaddy",
+  productName: "Coinbase",
   /** One-line tagline used on landing + auth panels. */
-  tagline: "Buy domains. Sell domains. Cash out instantly.",
-  /** Payer entity (the user who logs in, funds the wallet, and trades domains). */
+  tagline: "Buy crypto. Sell crypto. Cash out instantly.",
+  /** Payer entity (the user who logs in, funds the wallet, and trades crypto). */
   payerSingular: "Account",
   payerPlural: "Accounts",
   /** Used in possessive contexts: e.g. "your account's bank". */
@@ -24,17 +24,19 @@ export const branding = {
   /** Payee entity (the destination where the user moves funds out of their wallet). */
   payeeSingular: "Payout destination",
   payeePlural: "Payout destinations",
-  /** Payout terminology — moving funds OUT of the GAG wallet. */
+  /** Payout terminology — moving funds OUT of the Coinbase Cash Balance. */
   payoutVerb: "Cash out",
   payoutNoun: "Cash-out",
   payoutNounPlural: "Cash-outs",
   /** Funding source label on the wallet settings screen. */
   funderLabel: "Linked bank account",
   funderShortLabel: "Bank account",
+  /** Wallet name — the Coinbase Cash Balance. */
+  walletName: "Coinbase Cash Balance",
   /** Console heading displayed on the dashboard home. */
-  consoleHeading: "Welcome back. Your domain console awaits.",
+  consoleHeading: "Welcome back. Your portfolio awaits.",
   consoleSubheading:
-    "Manage your Good as Gold wallet, list domains for sale, and explore the marketplace from one console.",
+    "Manage your Coinbase Cash Balance, buy and sell crypto, and cash out to your bank or debit card from one console.",
 } as const;
 
 export type Branding = typeof branding;

@@ -4,73 +4,74 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* GoDaddy-inspired palette: bright teal primary, near-black ink, clean white,
-     soft gray neutrals, plus a warm accent for highlights. */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.16 0.01 240);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.01 240);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.01 240);
-  /* Vivid GoDaddy teal */
-  --primary: oklch(0.78 0.14 195);
-  --primary-foreground: oklch(0.16 0.01 240);
-  --secondary: oklch(0.97 0.005 240);
-  --secondary-foreground: oklch(0.2 0.01 240);
-  --muted: oklch(0.96 0.005 240);
-  --muted-foreground: oklch(0.46 0.01 240);
-  /* Warm accent — GoDaddy uses sunny yellows in marketing accents */
-  --accent: oklch(0.9 0.15 95);
-  --accent-foreground: oklch(0.2 0.04 80);
-  --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(0.99 0.005 0);
-  --border: oklch(0.92 0.005 240);
-  --input: oklch(0.92 0.005 240);
-  --ring: oklch(0.78 0.14 195);
-  --radius: 0.5rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Coinbase dark theme palette */
+  --background: #0A0B0D;
+  --foreground: #FFFFFF;
+  --card: #1C1D1F;
+  --card-foreground: #FFFFFF;
+  --popover: #1C1D1F;
+  --popover-foreground: #FFFFFF;
+  /* Coinbase blue */
+  --primary: #0052FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #2C2D30;
+  --secondary-foreground: #FFFFFF;
+  --muted: #2C2D30;
+  --muted-foreground: #8A8D90;
+  /* Accent for success states (green for positive price movement) */
+  --accent: #05B169;
+  --accent-foreground: #FFFFFF;
+  --destructive: #F04438;
+  --destructive-foreground: #FFFFFF;
+  --border: #2C2D30;
+  --input: #2C2D30;
+  --ring: #0052FF;
+  --radius: 0.75rem;
+  /* Sidebar */
+  --sidebar: #0A0B0D;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #0052FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #1C1D1F;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #2C2D30;
+  --sidebar-ring: #0052FF;
 }
 
+/* Dark mode is the only mode for Coinbase */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  --background: #0A0B0D;
+  --foreground: #FFFFFF;
+  --card: #1C1D1F;
+  --card-foreground: #FFFFFF;
+  --popover: #1C1D1F;
+  --popover-foreground: #FFFFFF;
+  --primary: #0052FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #2C2D30;
+  --secondary-foreground: #FFFFFF;
+  --muted: #2C2D30;
+  --muted-foreground: #8A8D90;
+  --accent: #05B169;
+  --accent-foreground: #FFFFFF;
+  --destructive: #F04438;
+  --destructive-foreground: #FFFFFF;
+  --border: #2C2D30;
+  --input: #2C2D30;
+  --ring: #0052FF;
+  --sidebar: #0A0B0D;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #0052FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #1C1D1F;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #2C2D30;
+  --sidebar-ring: #0052FF;
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-sans: 'Inter', 'Inter Fallback', sans-serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

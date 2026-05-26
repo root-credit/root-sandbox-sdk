@@ -5,21 +5,31 @@ import { branding } from '@/lib/branding';
 export default function SignupPage() {
   return (
     <main className="min-h-screen flex flex-col bg-background">
-      <header className="border-b bg-card">
+      <header className="border-b border-border bg-background">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground text-base font-extrabold">
-              {branding.productName.charAt(0)}
-            </div>
-            <span className="text-lg font-extrabold tracking-tight">{branding.productName}</span>
+          <Link href="/" className="flex items-center gap-2">
+            <img
+              src="https://logo.clearbit.com/coinbase.com"
+              height={24}
+              width={24}
+              alt=""
+              className="object-contain"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+            <span
+              className="text-xl font-extrabold tracking-tight"
+              style={{ letterSpacing: '-0.03em', color: '#0052FF' }}
+            >
+              {branding.productName}
+            </span>
           </Link>
         </div>
       </header>
 
       <section className="flex-1 flex items-center relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
-          <div className="absolute -top-24 -right-24 h-[24rem] w-[24rem] rounded-full bg-primary/20 blur-3xl" />
-          <div className="absolute -bottom-32 -left-24 h-[20rem] w-[20rem] rounded-full bg-accent/30 blur-3xl" />
+          <div className="absolute -top-24 -right-24 h-[24rem] w-[24rem] rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute -bottom-32 -left-24 h-[20rem] w-[20rem] rounded-full bg-primary/5 blur-3xl" />
         </div>
 
         <div className="mx-auto w-full max-w-7xl px-6 py-16 grid gap-12 md:grid-cols-2 items-center">
@@ -27,16 +37,13 @@ export default function SignupPage() {
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-primary-foreground">
               New {branding.payerSingular.toLowerCase()}
             </span>
-            <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-balance leading-[1.02]">
+            <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-balance leading-[1.02] text-foreground">
               Open your{' '}
-              <span className="relative inline-block">
-                <span className="relative z-10">console.</span>
-                <span className="absolute inset-x-0 bottom-1 h-3 bg-primary -z-0" aria-hidden />
-              </span>
+              <span className="text-primary">console.</span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              Create an {branding.payerSingular.toLowerCase()} in under two minutes. We&apos;ll spin up
-              your Good as Gold wallet, ready to fund and trade.
+              Create an {branding.payerSingular.toLowerCase()} in under two minutes. We&apos;ll set up
+              your {branding.walletName}, ready to fund and trade.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
@@ -45,7 +52,7 @@ export default function SignupPage() {
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                Buy with wallet, sell to other accounts
+                Buy and sell BTC, ETH, SOL, USDC
               </li>
               <li className="flex items-center gap-3">
                 <Check />
@@ -54,9 +61,9 @@ export default function SignupPage() {
             </ul>
           </div>
 
-          <div className="rounded-2xl border-2 bg-card p-7 shadow-xl">
+          <div className="rounded-2xl border border-border bg-card p-7 shadow-xl">
             <div className="mb-6">
-              <h2 className="text-2xl font-extrabold tracking-tight">Create your {branding.payerSingular.toLowerCase()}</h2>
+              <h2 className="text-2xl font-extrabold tracking-tight text-foreground">Create your {branding.payerSingular.toLowerCase()}</h2>
               <p className="text-base text-muted-foreground mt-1">
                 Tell us a bit about yourself.
               </p>
@@ -64,7 +71,7 @@ export default function SignupPage() {
             <SignupForm />
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+                <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground font-bold tracking-widest">
@@ -74,7 +81,7 @@ export default function SignupPage() {
             </div>
             <Link
               href="/login"
-              className="flex w-full items-center justify-center rounded-full border-2 border-foreground h-11 px-5 text-sm font-bold transition-colors hover:bg-foreground hover:text-background"
+              className="flex w-full items-center justify-center rounded-xl border border-border h-11 px-5 text-sm font-bold text-foreground transition-colors hover:bg-card hover:border-primary/50"
             >
               Sign in instead
             </Link>
@@ -82,7 +89,7 @@ export default function SignupPage() {
         </div>
       </section>
 
-      <footer className="border-t bg-card">
+      <footer className="border-t border-border bg-background">
         <div className="mx-auto max-w-7xl px-6 py-6 text-xs text-muted-foreground">
           Sandbox environment — no real money is moved.
         </div>

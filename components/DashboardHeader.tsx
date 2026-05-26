@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button';
 
 const NAV: { href: string; label: string }[] = [
   { href: '/dashboard', label: 'Overview' },
-  { href: '/dashboard/marketplace', label: 'Marketplace' },
-  { href: '/dashboard/domains', label: 'My domains' },
+  { href: '/dashboard/marketplace', label: 'Buy crypto' },
+  { href: '/dashboard/domains', label: 'Sell crypto' },
   { href: '/dashboard/payouts', label: branding.payoutNounPlural },
   { href: '/dashboard/payees', label: branding.payeePlural },
   { href: '/dashboard/transactions', label: 'Activity' },
@@ -32,19 +32,29 @@ export function DashboardHeader({ email }: { email: string }) {
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b bg-card">
+    <header className="sticky top-0 z-30 border-b border-border bg-background">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="h-16 flex items-center justify-between gap-6">
-          <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground text-base font-extrabold">
-              {branding.productName.charAt(0)}
-            </div>
-            <span className="text-lg font-extrabold tracking-tight">{branding.productName}</span>
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <img
+              src="https://logo.clearbit.com/coinbase.com"
+              height={24}
+              width={24}
+              alt=""
+              className="object-contain"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+            <span
+              className="text-xl font-extrabold tracking-tight"
+              style={{ letterSpacing: '-0.03em', color: '#0052FF' }}
+            >
+              {branding.productName}
+            </span>
           </Link>
 
           <div className="flex items-center gap-2">
-            <span className="hidden sm:flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-xs font-semibold text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span className="hidden sm:flex items-center gap-2 rounded-full bg-card px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
               {email}
             </span>
             <Button
@@ -52,7 +62,7 @@ export function DashboardHeader({ email }: { email: string }) {
               size="sm"
               onClick={handleLogout}
               disabled={isSubmitting}
-              className="font-semibold rounded-full"
+              className="font-semibold rounded-full text-foreground hover:bg-card"
             >
               {isSubmitting ? 'Signing out…' : 'Sign out'}
             </Button>

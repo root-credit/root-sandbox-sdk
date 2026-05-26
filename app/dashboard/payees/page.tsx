@@ -66,23 +66,22 @@ export default function PayeesPage() {
 
         <div className="mb-8 flex items-end justify-between gap-6 flex-wrap">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">{branding.payeePlural}</h1>
+            <h1 className="text-4xl font-extrabold tracking-tight text-foreground">{branding.payeePlural}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              The banks and debit cards you {branding.payoutVerb.toLowerCase()} to from your Good as Gold
-              wallet.
+              The banks and debit cards you {branding.payoutVerb.toLowerCase()} to from your {branding.walletName}.
             </p>
           </div>
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90 h-11 px-5">
+              <Button className="rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-5">
                 <Plus className="h-4 w-4" />
                 Add {branding.payeeSingular.toLowerCase()}
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-border">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-extrabold tracking-tight">
+                <DialogTitle className="text-2xl font-extrabold tracking-tight text-foreground">
                   Add {branding.payeeSingular.toLowerCase()}
                 </DialogTitle>
               </DialogHeader>
@@ -98,16 +97,16 @@ export default function PayeesPage() {
         </div>
 
         {loadError && (
-          <div className="rounded-xl border-2 border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
+          <div className="rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
             {loadError}
           </div>
         )}
 
-        <div className="rounded-2xl border-2 bg-card overflow-hidden">
-          <div className="flex items-center justify-between gap-3 border-b-2 px-6 py-4">
+        <div className="rounded-2xl border border-border bg-card overflow-hidden">
+          <div className="flex items-center justify-between gap-3 border-b border-border px-6 py-4">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
-              <h2 className="font-extrabold tracking-tight">{branding.payeePlural}</h2>
+              <h2 className="font-extrabold tracking-tight text-foreground">{branding.payeePlural}</h2>
               {!isLoading && (
                 <span className="text-xs text-muted-foreground font-bold">
                   ({payees.length})
@@ -122,11 +121,11 @@ export default function PayeesPage() {
             </div>
           ) : payees.length === 0 ? (
             <div className="p-16 flex flex-col items-center gap-3 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-muted">
                 <Users className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-lg font-extrabold">
+                <p className="text-lg font-extrabold text-foreground">
                   No {branding.payeePlural.toLowerCase()} yet
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
@@ -136,14 +135,14 @@ export default function PayeesPage() {
               </div>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="mt-1 rounded-full font-bold bg-foreground text-background hover:bg-foreground/90">
+                  <Button className="mt-1 rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90">
                     <Plus className="h-4 w-4" />
                     Add your first {branding.payeeSingular.toLowerCase()}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-border">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-extrabold tracking-tight">
+                    <DialogTitle className="text-2xl font-extrabold tracking-tight text-foreground">
                       Add {branding.payeeSingular.toLowerCase()}
                     </DialogTitle>
                   </DialogHeader>
@@ -160,28 +159,28 @@ export default function PayeesPage() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                <TableRow className="border-border">
+                  <TableHead className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
                     Name
                   </TableHead>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
                     Email
                   </TableHead>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
                     Phone
                   </TableHead>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
                     Rail
                   </TableHead>
-                  <TableHead className="text-right font-bold uppercase tracking-widest text-[10px]">
+                  <TableHead className="text-right font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
                     Actions
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {payees.map((payee) => (
-                  <TableRow key={payee.id}>
-                    <TableCell className="font-bold">{payee.name}</TableCell>
+                  <TableRow key={payee.id} className="border-border">
+                    <TableCell className="font-bold text-foreground">{payee.name}</TableCell>
                     <TableCell className="text-muted-foreground font-mono text-xs">
                       {payee.email}
                     </TableCell>

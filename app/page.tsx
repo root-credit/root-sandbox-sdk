@@ -5,24 +5,34 @@ import { Button } from '@/components/ui/button';
 export default function LandingPage() {
   return (
     <main className="min-h-screen flex flex-col bg-background">
-      {/* Top promo bar — GoDaddy-style narrow utility band */}
-      <div className="bg-foreground text-background">
+      {/* Top promo bar */}
+      <div className="bg-primary text-primary-foreground">
         <div className="mx-auto max-w-7xl px-6 py-2 text-center text-xs sm:text-sm font-medium">
-          Got a domain to sell? Open an {branding.productName} account in seconds.{' '}
-          <Link href="/signup" className="underline underline-offset-4 hover:text-primary">
+          Start trading crypto in minutes.{' '}
+          <Link href="/signup" className="underline underline-offset-4 hover:opacity-80">
             Get started
           </Link>
         </div>
       </div>
 
       {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-30">
+      <header className="border-b border-border bg-background sticky top-0 z-30">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground text-base font-extrabold">
-              {branding.productName.charAt(0)}
-            </div>
-            <span className="text-lg font-extrabold tracking-tight">{branding.productName}</span>
+          <Link href="/" className="flex items-center gap-2">
+            <img
+              src="https://logo.clearbit.com/coinbase.com"
+              height={24}
+              width={24}
+              alt=""
+              className="object-contain"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+            <span
+              className="text-xl font-extrabold tracking-tight"
+              style={{ letterSpacing: '-0.03em', color: '#0052FF' }}
+            >
+              {branding.productName}
+            </span>
           </Link>
           <nav className="hidden md:flex items-center gap-7 text-sm font-semibold text-foreground">
             <a href="#how-it-works" className="hover:text-primary transition-colors">
@@ -32,16 +42,16 @@ export default function LandingPage() {
               Features
             </a>
             <a href="#wallet" className="hover:text-primary transition-colors">
-              GAG wallet
+              {branding.walletName}
             </a>
           </nav>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="font-bold" asChild>
+            <Button variant="ghost" size="sm" className="font-bold text-foreground hover:bg-card" asChild>
               <Link href="/login">Sign in</Link>
             </Button>
             <Button
               size="sm"
-              className="bg-foreground text-background hover:bg-foreground/90 font-bold rounded-full px-5"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-xl px-5"
               asChild
             >
               <Link href="/signup">Get started</Link>
@@ -53,36 +63,31 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-x-0 top-0 h-[70%] bg-primary/15" />
-          <div className="absolute -top-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-primary/30 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 h-[20rem] w-[20rem] rounded-full bg-accent/40 blur-3xl" />
+          <div className="absolute -top-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 h-[20rem] w-[20rem] rounded-full bg-primary/5 blur-3xl" />
         </div>
 
         <div className="mx-auto w-full max-w-7xl px-6 py-20 md:py-28 grid gap-12 md:grid-cols-2 items-center">
           <div className="flex flex-col gap-6">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-primary-foreground">
-              Domain Marketplace
+              Crypto Exchange
             </span>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-balance leading-[1.02] text-foreground">
-              Buy domains. Sell domains.{' '}
-              <span className="relative inline-block">
-                <span className="relative z-10">Cash out instantly.</span>
-                <span className="absolute inset-x-0 bottom-1 h-3 bg-primary -z-0" aria-hidden />
-              </span>
+              Buy crypto. Sell crypto.{' '}
+              <span className="text-primary">Cash out instantly.</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              {branding.productName} pairs a Good as Gold wallet with a creator-friendly marketplace
-              — list domains for sale, buy from other accounts, and cash out to your bank or debit
-              card whenever you&apos;re ready.
+              {branding.productName} pairs a {branding.walletName} with a simple trading interface
+              — buy BTC, ETH, SOL, USDC, and cash out to your bank or debit card whenever you&apos;re ready.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
                 <Check />
-                Fund your GAG wallet with one ACH pull
+                Fund your {branding.walletName} with one ACH pull
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                Sell any domain you own — set the price, we route the buyers
+                Buy and sell BTC, ETH, SOL, and USDC
               </li>
               <li className="flex items-center gap-3">
                 <Check />
@@ -92,7 +97,7 @@ export default function LandingPage() {
             <div className="flex flex-wrap gap-3 pt-2">
               <Button
                 size="lg"
-                className="bg-foreground text-background hover:bg-foreground/90 font-bold rounded-full px-7 h-12 text-base"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-xl px-7 h-12 text-base"
                 asChild
               >
                 <Link href="/signup">Open an {branding.payerSingular.toLowerCase()}</Link>
@@ -100,7 +105,7 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="rounded-full px-7 h-12 text-base font-bold border-2 border-foreground hover:bg-foreground hover:text-background"
+                className="rounded-xl px-7 h-12 text-base font-bold border-2 border-border text-foreground hover:bg-card"
                 asChild
               >
                 <Link href="/login">Sign in</Link>
@@ -108,31 +113,32 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Hero showcase card — mock domain marketplace tile */}
+          {/* Hero showcase card — crypto prices */}
           <div className="relative">
-            <div className="absolute -top-6 -left-6 h-24 w-24 rounded-2xl bg-accent rotate-6 -z-10" aria-hidden />
-            <div className="rounded-2xl border-2 bg-card shadow-xl p-6">
+            <div className="absolute -top-6 -left-6 h-24 w-24 rounded-2xl bg-primary/20 rotate-6 -z-10" aria-hidden />
+            <div className="rounded-2xl border border-border bg-card shadow-xl p-6">
               <div className="flex items-center justify-between mb-5">
-                <span className="inline-flex items-center justify-center rounded-full bg-primary/15 text-primary px-3 py-1 text-[11px] font-bold uppercase tracking-widest">
-                  Trending now
+                <span className="inline-flex items-center justify-center rounded-full bg-primary/20 text-primary px-3 py-1 text-[11px] font-bold uppercase tracking-widest">
+                  Live prices
                 </span>
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Marketplace
+                  Market
                 </span>
               </div>
               <div className="grid grid-cols-1 gap-3">
-                <DomainTile name="cloudwave.io" price="$1,990" badge="Tech" />
-                <DomainTile name="midnightcredit.com" price="$5,450" badge="Finance" featured />
-                <DomainTile name="evergreen.shop" price="$3,200" badge="Business" />
+                <CryptoTile symbol="BTC" name="Bitcoin" price="$67,234.50" change="+2.4%" positive />
+                <CryptoTile symbol="ETH" name="Ethereum" price="$3,456.78" change="+1.8%" positive />
+                <CryptoTile symbol="SOL" name="Solana" price="$142.56" change="-0.5%" />
+                <CryptoTile symbol="USDC" name="USD Coin" price="$1.00" change="0.0%" positive />
               </div>
-              <div className="mt-5 flex items-center justify-between rounded-xl bg-foreground text-background px-4 py-3">
+              <div className="mt-5 flex items-center justify-between rounded-xl bg-primary text-primary-foreground px-4 py-3">
                 <div>
-                  <div className="text-[11px] font-bold uppercase tracking-widest text-background/60">
-                    GAG wallet
+                  <div className="text-[11px] font-bold uppercase tracking-widest text-primary-foreground/70">
+                    {branding.walletName}
                   </div>
                   <div className="text-2xl font-extrabold font-mono tabular-nums">$1,250.00</div>
                 </div>
-                <span className="rounded-full bg-primary text-primary-foreground px-3 py-1.5 text-xs font-bold uppercase tracking-widest">
+                <span className="rounded-full bg-primary-foreground/20 text-primary-foreground px-3 py-1.5 text-xs font-bold uppercase tracking-widest">
                   Live
                 </span>
               </div>
@@ -142,35 +148,35 @@ export default function LandingPage() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="border-t bg-secondary py-20 md:py-24">
+      <section id="how-it-works" className="border-t border-border bg-card py-20 md:py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-12 max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">
               How it works
             </p>
             <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05]">
-              Three steps. Zero spreadsheets.
+              Three steps. Zero complexity.
             </h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-lg">
-              Spin up an {branding.payerSingular.toLowerCase()}, fund your Good as Gold wallet, and start trading.
+              Open an {branding.payerSingular.toLowerCase()}, fund your {branding.walletName}, and start trading.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Step
               n="01"
-              title="Fund your GAG wallet"
-              body={`Link a ${branding.funderShortLabel.toLowerCase()} and pull funds via ACH into your Good as Gold wallet — your in-platform balance.`}
+              title={`Fund your ${branding.walletName}`}
+              body={`Link a ${branding.funderShortLabel.toLowerCase()} and pull funds via ACH into your ${branding.walletName} — your in-platform balance.`}
             />
             <Step
               n="02"
-              title="List or buy a domain"
-              body="Mark any domain you own for sale at your asking price, or browse the marketplace and buy with one click using your wallet balance."
+              title="Buy or sell crypto"
+              body="Buy BTC, ETH, SOL, or USDC with your balance, or sell your holdings back into USD."
             />
             <Step
               n="03"
               title={`${branding.payoutVerb} when you're ready`}
-              body={`Move funds out of your wallet to a ${branding.funderShortLabel.toLowerCase()} or debit card. ${branding.payoutNoun} settles fast.`}
+              body={`Move funds out of your ${branding.walletName} to a ${branding.funderShortLabel.toLowerCase()} or debit card. ${branding.payoutNoun} settles fast.`}
             />
           </div>
         </div>
@@ -182,29 +188,29 @@ export default function LandingPage() {
           <div className="mb-12 max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">Features</p>
             <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05]">
-              Built for domain investors who hate friction.
+              Built for crypto traders who value simplicity.
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FeatureCard
-              code="GAG"
-              title="Good as Gold wallet"
+              code="BAL"
+              title={branding.walletName}
               features={[
                 'Single in-app balance for buying and selling',
                 'Funded via ACH pulls from your linked bank',
-                'Real-time updates as offers settle',
+                'Real-time updates as trades settle',
                 'No idle reconciliation — moves are instant',
               ]}
             />
             <FeatureCard
-              code="MKT"
-              title="Open marketplace"
+              code="TRD"
+              title="Crypto trading"
               features={[
-                'Browse every domain listed by other accounts',
-                'Filter by category, price, or traffic score',
-                'Buy with wallet balance — no card needed',
-                'Self-listings appear in seconds',
+                'Buy BTC, ETH, SOL, and USDC instantly',
+                'See live spot prices before you trade',
+                'Sell holdings back to your cash balance',
+                'Simple, transparent pricing',
               ]}
             />
             <FeatureCard
@@ -222,22 +228,22 @@ export default function LandingPage() {
       </section>
 
       {/* Wallet / CTA */}
-      <section id="wallet" className="bg-foreground text-background py-20 md:py-28">
+      <section id="wallet" className="bg-primary text-primary-foreground py-20 md:py-28">
         <div className="mx-auto max-w-3xl px-6 text-center">
-          <p className="text-xs font-bold uppercase tracking-widest text-primary mb-4">
-            Good as Gold
+          <p className="text-xs font-bold uppercase tracking-widest text-primary-foreground/70 mb-4">
+            {branding.walletName}
           </p>
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-balance mb-5 leading-[1.05]">
-            One wallet. Every move. Always settled.
+            One balance. Every trade. Always settled.
           </h2>
-          <p className="text-lg text-background/80 leading-relaxed max-w-xl mx-auto mb-8">
-            The GAG wallet is the heart of {branding.productName}. Buy domains from it, receive
-            sales into it, cash out from it — all on one ledger, all sandbox-safe.
+          <p className="text-lg text-primary-foreground/80 leading-relaxed max-w-xl mx-auto mb-8">
+            The {branding.walletName} is the heart of {branding.productName}. Buy crypto from it, sell
+            crypto into it, cash out from it — all on one ledger, all sandbox-safe.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button
               size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-full px-7 h-12 text-base"
+              className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-bold rounded-xl px-7 h-12 text-base"
               asChild
             >
               <Link href="/signup">Open your console</Link>
@@ -245,7 +251,7 @@ export default function LandingPage() {
             <Button
               size="lg"
               variant="outline"
-              className="rounded-full px-7 h-12 text-base font-bold border-2 border-background bg-transparent text-background hover:bg-background hover:text-foreground"
+              className="rounded-xl px-7 h-12 text-base font-bold border-2 border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10"
               asChild
             >
               <Link href="/login">Sign in</Link>
@@ -255,13 +261,23 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-card">
+      <footer className="border-t border-border bg-background">
         <div className="mx-auto max-w-7xl px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded bg-primary text-primary-foreground text-xs font-extrabold">
-              {branding.productName.charAt(0)}
-            </div>
-            <span className="text-sm font-bold">{branding.productName}</span>
+          <div className="flex items-center gap-2">
+            <img
+              src="https://logo.clearbit.com/coinbase.com"
+              height={20}
+              width={20}
+              alt=""
+              className="object-contain"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+            <span
+              className="text-sm font-extrabold"
+              style={{ letterSpacing: '-0.03em', color: '#0052FF' }}
+            >
+              {branding.productName}
+            </span>
           </div>
           <p className="text-xs text-muted-foreground text-center">
             {'© '}
@@ -293,30 +309,33 @@ function Check() {
   );
 }
 
-function DomainTile({
+function CryptoTile({
+  symbol,
   name,
   price,
-  badge,
-  featured,
+  change,
+  positive,
 }: {
+  symbol: string;
   name: string;
   price: string;
-  badge: string;
-  featured?: boolean;
+  change: string;
+  positive?: boolean;
 }) {
   return (
-    <div
-      className={`flex items-center justify-between rounded-xl border-2 px-4 py-3 transition-colors ${
-        featured ? 'border-primary bg-primary/5' : 'border-border bg-card hover:border-foreground/30'
-      }`}
-    >
+    <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3 bg-background hover:border-primary/50 transition-colors">
       <div className="flex items-center gap-3 min-w-0">
-        <span className="inline-flex items-center justify-center rounded-md bg-primary/15 text-primary text-[10px] font-bold uppercase tracking-widest px-2 py-1">
-          {badge}
+        <span className="inline-flex items-center justify-center rounded-lg bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest px-2 py-1.5 w-12">
+          {symbol}
         </span>
-        <span className="font-mono font-bold truncate">{name}</span>
+        <span className="font-semibold text-foreground">{name}</span>
       </div>
-      <span className="font-mono font-extrabold tabular-nums text-sm">{price}</span>
+      <div className="text-right">
+        <div className="font-mono font-bold tabular-nums text-sm text-foreground">{price}</div>
+        <div className={`text-xs font-semibold ${positive ? 'text-accent' : 'text-destructive'}`}>
+          {change}
+        </div>
+      </div>
     </div>
   );
 }
@@ -331,16 +350,16 @@ function FeatureCard({
   features: string[];
 }) {
   return (
-    <div className="group rounded-2xl border-2 bg-card p-7 transition-all hover:border-foreground hover:shadow-xl">
+    <div className="group rounded-2xl border border-border bg-card p-7 transition-all hover:border-primary/50 hover:shadow-xl">
       <div className="flex items-center justify-between mb-5">
-        <span className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-extrabold tracking-tight text-primary-foreground">
+        <span className="inline-flex items-center justify-center rounded-lg bg-primary px-3 py-1.5 text-sm font-extrabold tracking-tight text-primary-foreground">
           {code}
         </span>
         <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
           Module
         </span>
       </div>
-      <h3 className="text-2xl font-extrabold tracking-tight mb-4">{title}</h3>
+      <h3 className="text-2xl font-extrabold tracking-tight mb-4 text-foreground">{title}</h3>
       <ul className="space-y-2.5">
         {features.map((f) => (
           <li key={f} className="flex items-start gap-2.5 text-sm text-foreground">
@@ -350,7 +369,7 @@ function FeatureCard({
         ))}
       </ul>
       <div className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-foreground">
-        <span className="h-2 w-2 rounded-full bg-primary" />
+        <span className="h-2 w-2 rounded-full bg-accent" />
         Active · Live
       </div>
     </div>
@@ -359,11 +378,11 @@ function FeatureCard({
 
 function Step({ n, title, body }: { n: string; title: string; body: string }) {
   return (
-    <div className="rounded-2xl border-2 p-7 bg-card hover:border-foreground transition-colors">
-      <div className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground h-12 w-12 text-lg font-extrabold mb-4">
+    <div className="rounded-2xl border border-border p-7 bg-background hover:border-primary/50 transition-colors">
+      <div className="inline-flex items-center justify-center rounded-xl bg-primary text-primary-foreground h-12 w-12 text-lg font-extrabold mb-4">
         {n}
       </div>
-      <h3 className="text-xl font-extrabold tracking-tight mb-2">{title}</h3>
+      <h3 className="text-xl font-extrabold tracking-tight mb-2 text-foreground">{title}</h3>
       <p className="text-base text-muted-foreground leading-relaxed">{body}</p>
     </div>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import { useDomainStore } from '@/components/DomainStoreProvider';
+import { branding } from '@/lib/branding';
 import { formatMoney } from '@/lib/types/payments';
 
 /**
@@ -16,7 +17,10 @@ export function DashboardOverviewHero() {
     ownedDomains,
     marketplaceDomains,
   } = useDomainStore();
-  const listedCount = ownedDomains.filter((d) => d.listingPriceCents !== undefined).length;
+
+  // Count holdings (owned domains represent crypto holdings in this context)
+  const holdingsCount = ownedDomains.length;
+  const availableCount = marketplaceDomains.length;
 
   const balanceLabel =
     !walletEnabled && !isWalletLoading
@@ -27,23 +31,22 @@ export function DashboardOverviewHero() {
 
   return (
     <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-      <div className="flex flex-col justify-between rounded-2xl border-2 bg-foreground text-background px-5 py-4 sm:min-w-72">
-        <span className="text-[11px] font-bold uppercase tracking-widest text-background/60">
-          GAG wallet
+      <div className="flex flex-col justify-between rounded-2xl bg-primary text-primary-foreground px-5 py-4 sm:min-w-72">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-primary-foreground/70">
+          {branding.walletName}
         </span>
         <div className="flex items-end gap-3 mt-1">
           <span className="text-3xl md:text-4xl font-extrabold font-mono tabular-nums">
             {isWalletLoading ? '…' : balanceLabel}
           </span>
-          <span className="rounded-full bg-primary text-primary-foreground px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest mb-1">
+          <span className="rounded-full bg-primary-foreground/20 text-primary-foreground px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest mb-1">
             Live
           </span>
         </div>
       </div>
-      <div className="flex flex-1 flex-wrap items-center gap-2 rounded-2xl border-2 bg-card px-5 py-4">
-        <Pill label="Owned" value={String(ownedDomains.length)} />
-        <Pill label="Listed" value={String(listedCount)} />
-        <Pill label="In marketplace" value={String(marketplaceDomains.length)} />
+      <div className="flex flex-1 flex-wrap items-center gap-2 rounded-2xl border border-border bg-card px-5 py-4">
+        <Pill label="Holdings" value={String(holdingsCount)} />
+        <Pill label="Available" value={String(availableCount)} />
       </div>
     </div>
   );
