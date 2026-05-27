@@ -165,10 +165,19 @@ export function CryptoWalletProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// Default state for SSR/prerendering when context is not available
+const defaultContextValue: CryptoWalletContextValue = {
+  cashBalance: 10000.00,
+  holdings: { BTC: 0, ETH: 0, SOL: 0, USDC: 0 },
+  transactions: [],
+  buyCrypto: () => ({ ok: false, reason: 'Context not available' }),
+  sellCrypto: () => ({ ok: false, reason: 'Context not available' }),
+  getHoldingValue: () => 0,
+  getTotalPortfolioValue: () => 0,
+};
+
 export function useCryptoWallet() {
   const context = useContext(CryptoWalletContext);
-  if (!context) {
-    throw new Error('useCryptoWallet must be used within a CryptoWalletProvider');
-  }
-  return context;
+  // Return default state during SSR/prerendering instead of throwing
+  return context ?? defaultContextValue;
 }
