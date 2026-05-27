@@ -13,28 +13,32 @@
  */
 export const branding = {
   /** Top-level product name shown in nav, footer, browser title. */
-  productName: "GoDaddy",
+  productName: "Chime",
   /** One-line tagline used on landing + auth panels. */
-  tagline: "Buy domains. Sell domains. Cash out instantly.",
+  tagline: "Your money. Your way. No hidden fees.",
   /** Payer entity (the user who logs in, funds the wallet, and trades domains). */
-  payerSingular: "Account",
-  payerPlural: "Accounts",
-  /** Used in possessive contexts: e.g. "your account's bank". */
-  payerPossessive: "account's",
+  payerSingular: "Member",
+  payerPlural: "Members",
+  /** Used in possessive contexts: e.g. "your member's bank". */
+  payerPossessive: "member's",
   /** Payee entity (the destination where the user moves funds out of their wallet). */
-  payeeSingular: "Payout destination",
-  payeePlural: "Payout destinations",
-  /** Payout terminology — moving funds OUT of the GAG wallet. */
-  payoutVerb: "Cash out",
-  payoutNoun: "Cash-out",
-  payoutNounPlural: "Cash-outs",
+  payeeSingular: "Cash-out destination",
+  payeePlural: "Cash-out destinations",
+  /** Payout terminology — moving funds OUT of the wallet. */
+  payoutVerb: "Transfer",
+  payoutNoun: "Transfer",
+  payoutNounPlural: "Transfers",
   /** Funding source label on the wallet settings screen. */
   funderLabel: "Linked bank account",
   funderShortLabel: "Bank account",
+  /** Wallet name displayed throughout the UI. */
+  walletName: "Chime Spending Account",
+  /** Savings account name. */
+  savingsName: "Chime Savings Account",
   /** Console heading displayed on the dashboard home. */
-  consoleHeading: "Welcome back. Your domain console awaits.",
+  consoleHeading: "Welcome back to Chime.",
   consoleSubheading:
-    "Manage your Good as Gold wallet, list domains for sale, and explore the marketplace from one console.",
+    "Manage your Chime Spending Account, move money to savings, and cash out to your linked bank whenever you need.",
 } as const;
 
 export type Branding = typeof branding;

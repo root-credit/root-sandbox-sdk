@@ -8,8 +8,16 @@ import { branding } from '@/lib/branding';
 import { getPayer } from '@/lib/redis';
 import { getSubaccountLedgerSnapshot } from '@/lib/root-api';
 import { formatMoney } from '@/lib/types/payments';
-import { getMyOwnedDomains } from '@/lib/godaddy-actions';
-import { Globe2, Tag, Wallet, ArrowDownToLine, ArrowUpFromLine, Activity } from 'lucide-react';
+import { 
+  Wallet, 
+  PiggyBank, 
+  ArrowRightLeft, 
+  ArrowDownToLine, 
+  ArrowUpFromLine, 
+  Activity,
+  Settings,
+  TrendingUp
+} from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,19 +29,20 @@ export default async function DashboardPage() {
   }
 
   const payer = await getPayer(session.payerId);
-  let gagWalletLabel = 'Not Activated';
+  let spendingBalance = 'Not Activated';
   if (payer?.subaccountId) {
     try {
       const snap = await getSubaccountLedgerSnapshot(payer.subaccountId);
-      gagWalletLabel = formatMoney(snap.balanceCents);
+      spendingBalance = formatMoney(snap.balanceCents);
     } catch {
-      gagWalletLabel = '—';
+      spendingBalance = '—';
     }
   }
 
-  const ownedDomains = await getMyOwnedDomains();
-  const ownedDomainsCount = ownedDomains.length;
-  const listedForSaleCount = ownedDomains.filter((d) => d.listingPriceCents !== undefined).length;
+  // Mocked savings balance and APY
+  const savingsBalance = '$5,200.00';
+  const savingsApy = '2.00%';
+  const estimatedMonthlyInterest = '$8.67';
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -41,13 +50,9 @@ export default async function DashboardPage() {
 
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
         {/* Hero */}
-        <section className="rounded-3xl border-2 bg-card p-8 md:p-10 mb-8 relative overflow-hidden">
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
-            <div className="absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
-          </div>
+        <section className="rounded-2xl border bg-card p-8 md:p-10 mb-8">
           <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground mb-5">
-            {branding.productName} console
+            {branding.productName}
           </span>
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05] max-w-3xl">
             {branding.consoleHeading}
@@ -59,6 +64,61 @@ export default async function DashboardPage() {
           <DashboardOverviewHero />
         </section>
 
+        {/* Account cards */}
+        <section className="mb-8">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
+            Your accounts
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Spending Account - Result card style */}
+            <div className="rounded-2xl bg-primary p-6 text-primary-foreground">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary-foreground/80 mb-2">
+                <Wallet className="h-4 w-4" />
+                {branding.walletName}
+              </div>
+              <div className="text-4xl md:text-5xl font-extrabold font-mono tabular-nums">
+                {spendingBalance}
+              </div>
+              <p className="text-sm text-primary-foreground/80 mt-3">
+                Your everyday spending account with no fees.
+              </p>
+              <Link
+                href="/dashboard/spending"
+                className="mt-4 inline-flex items-center gap-2 rounded-full bg-background text-foreground px-4 py-2 text-sm font-bold hover:bg-background/90 transition-colors"
+              >
+                View account
+              </Link>
+            </div>
+
+            {/* Savings Account */}
+            <div className="rounded-2xl border bg-card p-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  <PiggyBank className="h-4 w-4" />
+                  {branding.savingsName}
+                </div>
+                <div className="flex items-center gap-1 text-primary">
+                  <TrendingUp className="h-3.5 w-3.5" />
+                  <span className="text-xs font-bold">{savingsApy} APY</span>
+                </div>
+              </div>
+              <div className="text-4xl md:text-5xl font-extrabold font-mono tabular-nums">
+                {savingsBalance}
+              </div>
+              <div className="mt-3 rounded-xl bg-card border p-3 flex items-center justify-between">
+                <span className="text-xs text-muted-foreground font-medium">Est. monthly interest</span>
+                <span className="text-sm font-bold text-primary">{estimatedMonthlyInterest}</span>
+              </div>
+              <Link
+                href="/dashboard/savings"
+                className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-foreground px-4 py-2 text-sm font-bold hover:bg-foreground hover:text-background transition-colors"
+              >
+                View savings
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* Quick actions */}
         <section className="mb-8">
           <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
@@ -66,42 +126,42 @@ export default async function DashboardPage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <ActionTile
-              href="/dashboard/marketplace"
-              title="Browse marketplace"
-              desc="Find a domain and buy with your wallet."
-              icon={<Globe2 className="h-5 w-5" />}
+              href="/dashboard/spending"
+              title="Move money"
+              desc="Transfer between Spending and Savings."
+              icon={<ArrowRightLeft className="h-5 w-5" />}
               primary
             />
             <ActionTile
-              href="/dashboard/domains"
-              title="List a domain"
-              desc="Set an asking price and put it up for sale."
-              icon={<Tag className="h-5 w-5" />}
-            />
-            <ActionTile
               href="/dashboard/payer"
-              title="Top up wallet"
-              desc={`Pull funds via ACH from your ${branding.funderShortLabel.toLowerCase()}.`}
+              title="Add money"
+              desc={`Deposit from your ${branding.funderShortLabel.toLowerCase()}.`}
               icon={<ArrowDownToLine className="h-5 w-5" />}
             />
             <ActionTile
-              href="/dashboard/payouts"
+              href="/dashboard/transfers"
               title={branding.payoutVerb}
-              desc={`Move funds out to a ${branding.payeeSingular.toLowerCase()}.`}
+              desc={`Send to a ${branding.payeeSingular.toLowerCase()}.`}
               icon={<ArrowUpFromLine className="h-5 w-5" />}
+            />
+            <ActionTile
+              href="/dashboard/payer"
+              title="Settings"
+              desc="Auto-Save, notifications, and more."
+              icon={<Settings className="h-5 w-5" />}
             />
           </div>
         </section>
 
-        {/* Stats — GAG wallet from Root; domain counts match /dashboard/domains (Redis via getMyOwnedDomains) */}
+        {/* Stats */}
         <section className="mb-8">
           <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
             At a glance
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="GAG wallet" value={gagWalletLabel} icon={<Wallet className="h-4 w-4" />} />
-            <StatCard label="Owned domains" value={String(ownedDomainsCount)} icon={<Globe2 className="h-4 w-4" />} />
-            <StatCard label="Listed for sale" value={String(listedForSaleCount)} icon={<Tag className="h-4 w-4" />} />
+            <StatCard label={branding.walletName} value={spendingBalance} icon={<Wallet className="h-4 w-4" />} />
+            <StatCard label={branding.savingsName} value={savingsBalance} icon={<PiggyBank className="h-4 w-4" />} />
+            <StatCard label="APY earned" value={savingsApy} icon={<TrendingUp className="h-4 w-4" />} />
             <StatCard
               label={branding.payoutNounPlural}
               value="$0.00"
@@ -111,28 +171,28 @@ export default async function DashboardPage() {
         </section>
 
         {/* Module tiles */}
-        <section className="rounded-2xl border-2 bg-card overflow-hidden">
-          <div className="border-b-2 px-6 py-5">
-            <h2 className="text-xl font-extrabold tracking-tight">Modules</h2>
+        <section className="rounded-2xl border bg-card overflow-hidden">
+          <div className="border-b px-6 py-5">
+            <h2 className="text-xl font-extrabold tracking-tight">Features</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Everything you need to run your domain business.
+              Everything you need to manage your money.
             </p>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <ModuleTile
-              href="/dashboard/marketplace"
-              title="Marketplace"
-              desc="Browse every domain listed for sale by other accounts."
+              href="/dashboard/spending"
+              title={branding.walletName}
+              desc="Your everyday account for spending and payments."
             />
             <ModuleTile
-              href="/dashboard/domains"
-              title="My domains"
-              desc="See what you own. List or unlist any domain."
+              href="/dashboard/savings"
+              title={branding.savingsName}
+              desc="Earn 2.00% APY and grow your savings automatically."
             />
             <ModuleTile
-              href="/dashboard/payouts"
+              href="/dashboard/transfers"
               title={branding.payoutNounPlural}
-              desc={`Move wallet funds to a ${branding.payeeSingular.toLowerCase()}.`}
+              desc={`Move money to a ${branding.payeeSingular.toLowerCase()}.`}
             />
             <ModuleTile
               href="/dashboard/payees"
@@ -142,12 +202,12 @@ export default async function DashboardPage() {
             <ModuleTile
               href="/dashboard/transactions"
               title="Activity"
-              desc="Audit every wallet move with full receipts."
+              desc="See all your transactions and transfers."
             />
             <ModuleTile
               href="/dashboard/payer"
-              title={branding.payerSingular}
-              desc={`Profile, ${branding.funderShortLabel.toLowerCase()}, and GAG wallet settings.`}
+              title="Settings"
+              desc={`Profile, ${branding.funderShortLabel.toLowerCase()}, and Auto-Save settings.`}
             />
           </div>
         </section>
@@ -158,7 +218,7 @@ export default async function DashboardPage() {
 
 function StatCard({ label, value, icon }: { label: string; value: string; icon?: ReactNode }) {
   return (
-    <div className="rounded-2xl border-2 bg-card p-5 flex flex-col gap-2">
+    <div className="rounded-2xl border bg-card p-5 flex flex-col gap-2">
       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
         {icon}
         {label}
@@ -184,15 +244,15 @@ function ActionTile({
   return (
     <Link
       href={href}
-      className={`group flex flex-col gap-3 rounded-2xl border-2 p-5 transition-all ${
+      className={`group flex flex-col gap-3 rounded-2xl border p-5 transition-all ${
         primary
-          ? 'bg-foreground text-background border-foreground hover:bg-foreground/90'
+          ? 'bg-primary text-primary-foreground border-primary hover:bg-primary/90'
           : 'bg-card hover:border-foreground hover:shadow-md'
       }`}
     >
       <div
         className={`flex h-10 w-10 items-center justify-center rounded-full ${
-          primary ? 'bg-primary text-primary-foreground' : 'bg-primary/15 text-primary'
+          primary ? 'bg-background text-foreground' : 'bg-primary/15 text-primary'
         }`}
       >
         {icon}
@@ -201,7 +261,7 @@ function ActionTile({
         <div className="text-base font-extrabold tracking-tight mb-0.5">{title}</div>
         <p
           className={`text-sm leading-snug ${
-            primary ? 'text-background/75' : 'text-muted-foreground'
+            primary ? 'text-primary-foreground/80' : 'text-muted-foreground'
           }`}
         >
           {desc}
@@ -209,7 +269,7 @@ function ActionTile({
       </div>
       <div
         className={`mt-auto text-xs font-bold uppercase tracking-widest ${
-          primary ? 'text-background/75' : 'text-foreground'
+          primary ? 'text-primary-foreground/80' : 'text-foreground'
         }`}
       >
         Open →
@@ -222,7 +282,7 @@ function ModuleTile({ href, title, desc }: { href: string; title: string; desc: 
   return (
     <Link
       href={href}
-      className="group block rounded-xl border-2 p-5 transition-all bg-card hover:border-foreground hover:shadow-md"
+      className="group block rounded-xl border p-5 transition-all bg-background hover:border-foreground hover:shadow-md"
     >
       <h3 className="font-extrabold tracking-tight mb-1.5">{title}</h3>
       <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>

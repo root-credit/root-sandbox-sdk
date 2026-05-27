@@ -58,7 +58,7 @@ export default function PayeesPage() {
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
         <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
           <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
-            Console
+            Dashboard
           </Link>
           <span>/</span>
           <span className="text-foreground font-bold">{branding.payeePlural}</span>
@@ -68,14 +68,13 @@ export default function PayeesPage() {
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight">{branding.payeePlural}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              The banks and debit cards you {branding.payoutVerb.toLowerCase()} to from your Good as Gold
-              wallet.
+              The banks and debit cards you {branding.payoutVerb.toLowerCase()} to from your {branding.walletName}.
             </p>
           </div>
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90 h-11 px-5">
+              <Button className="rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-5">
                 <Plus className="h-4 w-4" />
                 Add {branding.payeeSingular.toLowerCase()}
               </Button>
@@ -98,13 +97,13 @@ export default function PayeesPage() {
         </div>
 
         {loadError && (
-          <div className="rounded-xl border-2 border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
+          <div className="rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
             {loadError}
           </div>
         )}
 
-        <div className="rounded-2xl border-2 bg-card overflow-hidden">
-          <div className="flex items-center justify-between gap-3 border-b-2 px-6 py-4">
+        <div className="rounded-2xl border bg-card overflow-hidden">
+          <div className="flex items-center justify-between gap-3 border-b px-6 py-4">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
               <h2 className="font-extrabold tracking-tight">{branding.payeePlural}</h2>
@@ -122,7 +121,7 @@ export default function PayeesPage() {
             </div>
           ) : payees.length === 0 ? (
             <div className="p-16 flex flex-col items-center gap-3 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-card border">
                 <Users className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
@@ -136,7 +135,7 @@ export default function PayeesPage() {
               </div>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="mt-1 rounded-full font-bold bg-foreground text-background hover:bg-foreground/90">
+                  <Button className="mt-1 rounded-full font-bold bg-primary text-primary-foreground hover:bg-primary/90">
                     <Plus className="h-4 w-4" />
                     Add your first {branding.payeeSingular.toLowerCase()}
                   </Button>
@@ -171,7 +170,7 @@ export default function PayeesPage() {
                     Phone
                   </TableHead>
                   <TableHead className="font-bold uppercase tracking-widest text-[10px]">
-                    Rail
+                    Type
                   </TableHead>
                   <TableHead className="text-right font-bold uppercase tracking-widest text-[10px]">
                     Actions

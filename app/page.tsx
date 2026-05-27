@@ -5,24 +5,23 @@ import { Button } from '@/components/ui/button';
 export default function LandingPage() {
   return (
     <main className="min-h-screen flex flex-col bg-background">
-      {/* Top promo bar — GoDaddy-style narrow utility band */}
+      {/* Top promo bar */}
       <div className="bg-foreground text-background">
         <div className="mx-auto max-w-7xl px-6 py-2 text-center text-xs sm:text-sm font-medium">
-          Got a domain to sell? Open an {branding.productName} account in seconds.{' '}
+          Banking made easy. No hidden fees, no minimum balance.{' '}
           <Link href="/signup" className="underline underline-offset-4 hover:text-primary">
-            Get started
+            Get started free
           </Link>
         </div>
       </div>
 
       {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-30">
+      <header className="border-b bg-background sticky top-0 z-30">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground text-base font-extrabold">
-              {branding.productName.charAt(0)}
-            </div>
-            <span className="text-lg font-extrabold tracking-tight">{branding.productName}</span>
+            <span style={{ fontWeight: 800, fontSize: '20px', letterSpacing: '-0.03em', color: '#1A1A1A' }}>
+              {branding.productName}
+            </span>
           </Link>
           <nav className="hidden md:flex items-center gap-7 text-sm font-semibold text-foreground">
             <a href="#how-it-works" className="hover:text-primary transition-colors">
@@ -31,8 +30,8 @@ export default function LandingPage() {
             <a href="#features" className="hover:text-primary transition-colors">
               Features
             </a>
-            <a href="#wallet" className="hover:text-primary transition-colors">
-              GAG wallet
+            <a href="#savings" className="hover:text-primary transition-colors">
+              Savings
             </a>
           </nav>
           <div className="flex items-center gap-2">
@@ -41,7 +40,7 @@ export default function LandingPage() {
             </Button>
             <Button
               size="sm"
-              className="bg-foreground text-background hover:bg-foreground/90 font-bold rounded-full px-5"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-full px-5"
               asChild
             >
               <Link href="/signup">Get started</Link>
@@ -51,51 +50,44 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-x-0 top-0 h-[70%] bg-primary/15" />
-          <div className="absolute -top-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-primary/30 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 h-[20rem] w-[20rem] rounded-full bg-accent/40 blur-3xl" />
-        </div>
-
+      <section className="relative overflow-hidden bg-background">
         <div className="mx-auto w-full max-w-7xl px-6 py-20 md:py-28 grid gap-12 md:grid-cols-2 items-center">
           <div className="flex flex-col gap-6">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-primary-foreground">
-              Domain Marketplace
+              Online Banking
             </span>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-balance leading-[1.02] text-foreground">
-              Buy domains. Sell domains.{' '}
+              Your money.{' '}
               <span className="relative inline-block">
-                <span className="relative z-10">Cash out instantly.</span>
-                <span className="absolute inset-x-0 bottom-1 h-3 bg-primary -z-0" aria-hidden />
+                <span className="relative z-10">Your way.</span>
+                <span className="absolute inset-x-0 bottom-1 h-3 bg-primary/30 -z-0" aria-hidden />
               </span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              {branding.productName} pairs a Good as Gold wallet with a creator-friendly marketplace
-              — list domains for sale, buy from other accounts, and cash out to your bank or debit
-              card whenever you&apos;re ready.
+              {branding.productName} is the banking app that has your back. No hidden fees, 
+              no minimum balance, and get paid up to 2 days early with direct deposit.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
               <li className="flex items-center gap-3">
                 <Check />
-                Fund your GAG wallet with one ACH pull
+                No monthly fees or minimum balance
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                Sell any domain you own — set the price, we route the buyers
+                Get paid up to 2 days early
               </li>
               <li className="flex items-center gap-3">
                 <Check />
-                {branding.payoutVerb} to a {branding.funderShortLabel.toLowerCase()} or debit card
+                Earn 2.00% APY on savings
               </li>
             </ul>
             <div className="flex flex-wrap gap-3 pt-2">
               <Button
                 size="lg"
-                className="bg-foreground text-background hover:bg-foreground/90 font-bold rounded-full px-7 h-12 text-base"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-full px-7 h-12 text-base"
                 asChild
               >
-                <Link href="/signup">Open an {branding.payerSingular.toLowerCase()}</Link>
+                <Link href="/signup">Open a {branding.productName} account</Link>
               </Button>
               <Button
                 size="lg"
@@ -108,33 +100,52 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Hero showcase card — mock domain marketplace tile */}
+          {/* Hero showcase card — Chime account preview */}
           <div className="relative">
-            <div className="absolute -top-6 -left-6 h-24 w-24 rounded-2xl bg-accent rotate-6 -z-10" aria-hidden />
-            <div className="rounded-2xl border-2 bg-card shadow-xl p-6">
+            <div className="rounded-2xl border bg-card shadow-xl p-6">
               <div className="flex items-center justify-between mb-5">
-                <span className="inline-flex items-center justify-center rounded-full bg-primary/15 text-primary px-3 py-1 text-[11px] font-bold uppercase tracking-widest">
-                  Trending now
+                <span className="inline-flex items-center justify-center rounded-full bg-primary/15 text-foreground px-3 py-1 text-[11px] font-bold uppercase tracking-widest">
+                  Your accounts
                 </span>
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Marketplace
+                  Dashboard
                 </span>
               </div>
-              <div className="grid grid-cols-1 gap-3">
-                <DomainTile name="cloudwave.io" price="$1,990" badge="Tech" />
-                <DomainTile name="midnightcredit.com" price="$5,450" badge="Finance" featured />
-                <DomainTile name="evergreen.shop" price="$3,200" badge="Business" />
-              </div>
-              <div className="mt-5 flex items-center justify-between rounded-xl bg-foreground text-background px-4 py-3">
-                <div>
-                  <div className="text-[11px] font-bold uppercase tracking-widest text-background/60">
-                    GAG wallet
-                  </div>
-                  <div className="text-2xl font-extrabold font-mono tabular-nums">$1,250.00</div>
+              
+              {/* Spending Account Card */}
+              <div className="rounded-xl bg-primary p-4 mb-3">
+                <div className="text-[11px] font-bold uppercase tracking-widest text-primary-foreground/80">
+                  {branding.walletName}
                 </div>
-                <span className="rounded-full bg-primary text-primary-foreground px-3 py-1.5 text-xs font-bold uppercase tracking-widest">
-                  Live
-                </span>
+                <div className="text-3xl font-extrabold font-mono tabular-nums text-primary-foreground mt-1">
+                  $2,450.00
+                </div>
+              </div>
+              
+              {/* Savings Account */}
+              <div className="rounded-xl border bg-background p-4 mb-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      {branding.savingsName}
+                    </div>
+                    <div className="text-2xl font-extrabold font-mono tabular-nums mt-1">
+                      $5,200.00
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      APY
+                    </div>
+                    <div className="text-lg font-extrabold text-primary">2.00%</div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Quick action */}
+              <div className="flex items-center justify-between rounded-xl bg-card border p-3">
+                <span className="text-sm font-semibold">Move money</span>
+                <span className="text-xs font-bold text-primary">Spending → Savings</span>
               </div>
             </div>
           </div>
@@ -142,110 +153,110 @@ export default function LandingPage() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="border-t bg-secondary py-20 md:py-24">
+      <section id="how-it-works" className="border-t bg-card py-20 md:py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-12 max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">
               How it works
             </p>
             <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05]">
-              Three steps. Zero spreadsheets.
+              Banking that works for you.
             </h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-lg">
-              Spin up an {branding.payerSingular.toLowerCase()}, fund your Good as Gold wallet, and start trading.
+              Open a {branding.productName} account in minutes and start managing your money smarter.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Step
               n="01"
-              title="Fund your GAG wallet"
-              body={`Link a ${branding.funderShortLabel.toLowerCase()} and pull funds via ACH into your Good as Gold wallet — your in-platform balance.`}
+              title="Open your account"
+              body="Sign up in under 2 minutes. No credit check, no minimum deposit required to get started."
             />
             <Step
               n="02"
-              title="List or buy a domain"
-              body="Mark any domain you own for sale at your asking price, or browse the marketplace and buy with one click using your wallet balance."
+              title="Set up direct deposit"
+              body="Get paid up to 2 days early when you set up direct deposit. Your money, faster."
             />
             <Step
               n="03"
-              title={`${branding.payoutVerb} when you're ready`}
-              body={`Move funds out of your wallet to a ${branding.funderShortLabel.toLowerCase()} or debit card. ${branding.payoutNoun} settles fast.`}
+              title="Save automatically"
+              body="Turn on Auto-Save and watch your savings grow with every paycheck. Earn 2.00% APY."
             />
           </div>
         </div>
       </section>
 
       {/* Features grid */}
-      <section id="features" className="py-20 md:py-24">
+      <section id="features" className="py-20 md:py-24 bg-background">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-12 max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">Features</p>
             <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05]">
-              Built for domain investors who hate friction.
+              Everything you need. Nothing you don&apos;t.
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FeatureCard
-              code="GAG"
-              title="Good as Gold wallet"
+              code="SPD"
+              title={branding.walletName}
               features={[
-                'Single in-app balance for buying and selling',
-                'Funded via ACH pulls from your linked bank',
-                'Real-time updates as offers settle',
-                'No idle reconciliation — moves are instant',
+                'No monthly fees or minimums',
+                'Get paid up to 2 days early',
+                'Fee-free overdraft up to $200',
+                '60,000+ fee-free ATMs',
               ]}
             />
             <FeatureCard
-              code="MKT"
-              title="Open marketplace"
+              code="SAV"
+              title={branding.savingsName}
               features={[
-                'Browse every domain listed by other accounts',
-                'Filter by category, price, or traffic score',
-                'Buy with wallet balance — no card needed',
-                'Self-listings appear in seconds',
+                'Earn 2.00% APY on your balance',
+                'Automatic savings with round-ups',
+                'No minimum balance required',
+                'Move money instantly',
               ]}
             />
             <FeatureCard
               code="OUT"
-              title={branding.payoutNoun}
+              title="Cash Out"
               features={[
-                `Send funds to a ${branding.funderShortLabel.toLowerCase()} or debit card`,
-                `Manage every ${branding.payeeSingular.toLowerCase()} from one screen`,
-                'Bank-grade security on every transfer',
-                'Full activity ledger with receipts',
+                `${branding.payoutVerb} to any linked bank account`,
+                'Instant transfers to debit card',
+                'Bank-grade security',
+                'Full transaction history',
               ]}
             />
           </div>
         </div>
       </section>
 
-      {/* Wallet / CTA */}
-      <section id="wallet" className="bg-foreground text-background py-20 md:py-28">
+      {/* Savings / CTA */}
+      <section id="savings" className="bg-primary py-20 md:py-28">
         <div className="mx-auto max-w-3xl px-6 text-center">
-          <p className="text-xs font-bold uppercase tracking-widest text-primary mb-4">
-            Good as Gold
+          <p className="text-xs font-bold uppercase tracking-widest text-primary-foreground/80 mb-4">
+            {branding.savingsName}
           </p>
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-balance mb-5 leading-[1.05]">
-            One wallet. Every move. Always settled.
+          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-balance mb-5 leading-[1.05] text-primary-foreground">
+            Make your money work harder.
           </h2>
-          <p className="text-lg text-background/80 leading-relaxed max-w-xl mx-auto mb-8">
-            The GAG wallet is the heart of {branding.productName}. Buy domains from it, receive
-            sales into it, cash out from it — all on one ledger, all sandbox-safe.
+          <p className="text-lg text-primary-foreground/90 leading-relaxed max-w-xl mx-auto mb-8">
+            Earn 2.00% APY on your savings with no minimum balance. Set up Auto-Save and watch 
+            your money grow automatically with every paycheck.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button
               size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-full px-7 h-12 text-base"
+              className="bg-background text-foreground hover:bg-background/90 font-bold rounded-full px-7 h-12 text-base"
               asChild
             >
-              <Link href="/signup">Open your console</Link>
+              <Link href="/signup">Start saving today</Link>
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="rounded-full px-7 h-12 text-base font-bold border-2 border-background bg-transparent text-background hover:bg-background hover:text-foreground"
+              className="rounded-full px-7 h-12 text-base font-bold border-2 border-primary-foreground bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary"
               asChild
             >
               <Link href="/login">Sign in</Link>
@@ -255,18 +266,16 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-card">
+      <footer className="border-t bg-background">
         <div className="mx-auto max-w-7xl px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded bg-primary text-primary-foreground text-xs font-extrabold">
-              {branding.productName.charAt(0)}
-            </div>
-            <span className="text-sm font-bold">{branding.productName}</span>
+            <span style={{ fontWeight: 800, fontSize: '16px', letterSpacing: '-0.03em', color: '#1A1A1A' }}>
+              {branding.productName}
+            </span>
           </div>
           <p className="text-xs text-muted-foreground text-center">
             {'© '}
-            {new Date().getFullYear()} {branding.productName} · Powered by Root · Sandbox
-            environment.
+            {new Date().getFullYear()} {branding.productName} · Sandbox environment · Banking services provided by Bancorp Bank.
           </p>
         </div>
       </footer>
@@ -293,34 +302,6 @@ function Check() {
   );
 }
 
-function DomainTile({
-  name,
-  price,
-  badge,
-  featured,
-}: {
-  name: string;
-  price: string;
-  badge: string;
-  featured?: boolean;
-}) {
-  return (
-    <div
-      className={`flex items-center justify-between rounded-xl border-2 px-4 py-3 transition-colors ${
-        featured ? 'border-primary bg-primary/5' : 'border-border bg-card hover:border-foreground/30'
-      }`}
-    >
-      <div className="flex items-center gap-3 min-w-0">
-        <span className="inline-flex items-center justify-center rounded-md bg-primary/15 text-primary text-[10px] font-bold uppercase tracking-widest px-2 py-1">
-          {badge}
-        </span>
-        <span className="font-mono font-bold truncate">{name}</span>
-      </div>
-      <span className="font-mono font-extrabold tabular-nums text-sm">{price}</span>
-    </div>
-  );
-}
-
 function FeatureCard({
   code,
   title,
@@ -331,13 +312,13 @@ function FeatureCard({
   features: string[];
 }) {
   return (
-    <div className="group rounded-2xl border-2 bg-card p-7 transition-all hover:border-foreground hover:shadow-xl">
+    <div className="group rounded-2xl border bg-card p-7 transition-all hover:border-foreground hover:shadow-xl">
       <div className="flex items-center justify-between mb-5">
         <span className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-extrabold tracking-tight text-primary-foreground">
           {code}
         </span>
         <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-          Module
+          Feature
         </span>
       </div>
       <h3 className="text-2xl font-extrabold tracking-tight mb-4">{title}</h3>
@@ -349,17 +330,13 @@ function FeatureCard({
           </li>
         ))}
       </ul>
-      <div className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-foreground">
-        <span className="h-2 w-2 rounded-full bg-primary" />
-        Active · Live
-      </div>
     </div>
   );
 }
 
 function Step({ n, title, body }: { n: string; title: string; body: string }) {
   return (
-    <div className="rounded-2xl border-2 p-7 bg-card hover:border-foreground transition-colors">
+    <div className="rounded-2xl border p-7 bg-background hover:border-foreground transition-colors">
       <div className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground h-12 w-12 text-lg font-extrabold mb-4">
         {n}
       </div>
