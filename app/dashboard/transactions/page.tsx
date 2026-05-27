@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Activity as ActivityIcon } from 'lucide-react';
 import { DashboardHeader } from '@/components/DashboardHeader';
-import { branding } from '@/lib/branding';
 import { useSession } from '@/lib/hooks/useSession';
-import { useTransactions } from '@/lib/hooks/useTransactions';
-import { centsToDollars, formatMoney } from '@/lib/types/payments';
+import {
+  useCryptoWallet,
+  CRYPTO_INFO,
+  type CryptoTransaction,
+} from '@/components/CryptoWalletProvider';
 import { Badge } from '@/components/ui/badge';
 import {
   Table,
@@ -24,15 +26,35 @@ export default function ActivityPage() {
   const { session } = useSession();
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
 
-  const payerId = session?.payerId ?? null;
-  const { transactions, isLoading, error } = useTransactions(payerId);
+  const { transactions } = useCryptoWallet();
 
   if (!session) return null;
 
-  const totalPaidCents = transactions.reduce((sum, t) => sum + (t.amountCents ?? 0), 0);
-  const successfulTransactions = transactions.filter((t) =>
-    isSuccessfulPayoutStatus(t.status),
-  ).length;
+  function formatUSD(value: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  }
+
+  function formatCrypto(value: number): string {
+    return value.toFixed(8);
+  }
+
+  // Sort transactions by date, newest first
+  const sortedTransactions = [...transactions].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  const totalBought = transactions
+    .filter((t) => t.type === 'buy')
+    .reduce((sum, t) => sum + t.usdAmount, 0);
+
+  const totalSold = transactions
+    .filter((t) => t.type === 'sell')
+    .reduce((sum, t) => sum + t.usdAmount, 0);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -50,50 +72,33 @@ export default function ActivityPage() {
         <div className="mb-8">
           <h1 className="text-4xl font-extrabold tracking-tight text-foreground">Activity</h1>
           <p className="text-base text-muted-foreground mt-2 max-w-xl">
-            Every {branding.payoutNoun.toLowerCase()}, every status, every receipt — written to
-            your ledger.
+            Every buy, every sell, every transaction — written to your ledger.
           </p>
         </div>
 
-        {error && (
-          <div className="rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm font-semibold text-destructive mb-6">
-            {error}
-          </div>
-        )}
-
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <StatCard
-            label={`Total ${branding.payoutVerb.toLowerCase()}`}
-            value={formatMoney(totalPaidCents)}
-          />
-          <StatCard
-            label={`Successful ${branding.payoutNounPlural.toLowerCase()}`}
-            value={String(successfulTransactions)}
-          />
-          <StatCard label="Total events" value={String(transactions.length)} />
+          <StatCard label="Total bought" value={formatUSD(totalBought)} />
+          <StatCard label="Total sold" value={formatUSD(totalSold)} />
+          <StatCard label="Total transactions" value={String(transactions.length)} />
         </div>
 
         <div className="rounded-2xl border border-border bg-card overflow-hidden">
-          {isLoading ? (
-            <div className="p-12 text-center text-sm text-muted-foreground font-semibold">
-              Loading activity…
-            </div>
-          ) : transactions.length === 0 ? (
+          {transactions.length === 0 ? (
             <div className="p-16 flex flex-col items-center gap-3 text-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-muted">
                 <ActivityIcon className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-lg font-extrabold text-foreground">No activity yet</p>
+                <p className="text-lg font-extrabold text-foreground">No transactions yet</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Run your first {branding.payoutNoun.toLowerCase()} to populate the ledger.
+                  Buy or sell some crypto to populate the ledger.
                 </p>
               </div>
               <Link
-                href="/dashboard/payouts"
+                href="/dashboard/marketplace"
                 className="mt-1 inline-flex items-center gap-1.5 rounded-xl bg-primary text-primary-foreground px-5 h-11 text-sm font-bold hover:bg-primary/90 transition-colors"
               >
-                Run your first {branding.payoutNoun.toLowerCase()} →
+                Buy crypto →
               </Link>
             </div>
           ) : (
@@ -101,45 +106,36 @@ export default function ActivityPage() {
               <TableHeader>
                 <TableRow className="border-border">
                   <TableHead className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
-                    {branding.payeeSingular}
+                    Date
                   </TableHead>
                   <TableHead className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
-                    Email
+                    Type
+                  </TableHead>
+                  <TableHead className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
+                    Asset
                   </TableHead>
                   <TableHead className="text-right font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
                     Amount
                   </TableHead>
-                  <TableHead className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
-                    Status
+                  <TableHead className="text-right font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
+                    USD Value
+                  </TableHead>
+                  <TableHead className="text-right font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
+                    Price
                   </TableHead>
                   <TableHead className="font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
-                    Date
+                    Status
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {transactions.map((transaction) => (
-                  <TableRow key={transaction.id} className="border-border">
-                    <TableCell className="font-bold text-foreground">{transaction.payeeName}</TableCell>
-                    <TableCell className="text-muted-foreground font-mono text-xs">
-                      {transaction.payeeEmail}
-                    </TableCell>
-                    <TableCell className="text-right font-mono tabular-nums font-extrabold text-foreground">
-                      ${centsToDollars(transaction.amountCents ?? 0).toFixed(2)}
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge status={transaction.status} />
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-xs font-semibold">
-                      {new Date(transaction.createdAt).toLocaleDateString(undefined, {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </TableCell>
-                  </TableRow>
+                {sortedTransactions.map((transaction) => (
+                  <TransactionRow
+                    key={transaction.id}
+                    transaction={transaction}
+                    formatUSD={formatUSD}
+                    formatCrypto={formatCrypto}
+                  />
                 ))}
               </TableBody>
             </Table>
@@ -161,37 +157,54 @@ function StatCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function isSuccessfulPayoutStatus(status: string): boolean {
-  const s = status.toLowerCase();
-  return s === 'settled' || s === 'completed' || s === 'success';
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const key = status.toLowerCase();
-  const map: Record<
-    string,
-    { label: string; variant: 'success' | 'warning' | 'destructive' | 'secondary' }
-  > = {
-    settled: { label: 'Settled', variant: 'success' },
-    completed: { label: 'Settled', variant: 'success' },
-    success: { label: 'Settled', variant: 'success' },
-    initiated: { label: 'Initiated', variant: 'warning' },
-    processing: { label: 'Processing', variant: 'warning' },
-    approved: { label: 'Approved', variant: 'warning' },
-    created: { label: 'Created', variant: 'warning' },
-    debited: { label: 'Debited', variant: 'warning' },
-    pending: { label: 'Pending', variant: 'warning' },
-    needs_review: { label: 'Needs review', variant: 'warning' },
-    failed: { label: 'Failed', variant: 'destructive' },
-    canceled: { label: 'Canceled', variant: 'secondary' },
-  };
-  const { label, variant } = map[key] ?? {
-    label: status.replace(/_/g, ' '),
-    variant: 'secondary' as const,
-  };
+function TransactionRow({
+  transaction,
+  formatUSD,
+  formatCrypto,
+}: {
+  transaction: CryptoTransaction;
+  formatUSD: (v: number) => string;
+  formatCrypto: (v: number) => string;
+}) {
+  const isBuy = transaction.type === 'buy';
   return (
-    <Badge variant={variant} className="font-bold">
-      {label}
-    </Badge>
+    <TableRow className="border-border">
+      <TableCell className="text-muted-foreground text-xs font-semibold">
+        {new Date(transaction.date).toLocaleDateString(undefined, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        })}
+      </TableCell>
+      <TableCell>
+        <Badge variant={isBuy ? 'default' : 'secondary'} className="font-bold">
+          {isBuy ? 'Buy' : 'Sell'}
+        </Badge>
+      </TableCell>
+      <TableCell className="font-bold text-foreground">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center justify-center rounded-lg bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest px-2 py-1 w-12">
+            {transaction.ticker}
+          </span>
+          <span>{CRYPTO_INFO[transaction.ticker].name}</span>
+        </div>
+      </TableCell>
+      <TableCell className="text-right font-mono tabular-nums font-bold text-foreground">
+        {formatCrypto(transaction.cryptoAmount)} {transaction.ticker}
+      </TableCell>
+      <TableCell className="text-right font-mono tabular-nums font-extrabold text-foreground">
+        {formatUSD(transaction.usdAmount)}
+      </TableCell>
+      <TableCell className="text-right font-mono tabular-nums text-muted-foreground text-xs">
+        {formatUSD(transaction.price)}
+      </TableCell>
+      <TableCell>
+        <Badge variant="success" className="font-bold">
+          {transaction.status}
+        </Badge>
+      </TableCell>
+    </TableRow>
   );
 }
