@@ -13,8 +13,6 @@ import { formatMoney } from '@/lib/types/payments';
 import { getMyOwnedDomains } from '@/lib/godaddy-actions';
 import { TrendingUp, TrendingDown, Wallet, ArrowDownToLine, ArrowUpFromLine, Activity } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-
 export default async function DashboardPage() {
   const session = await getCurrentSession();
 
