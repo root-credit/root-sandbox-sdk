@@ -55,7 +55,7 @@ const META_KEY = (name: string) => `godaddy:domain:${name}`;
 const OWNED_KEY = (payerId: string) => `godaddy:owned:${payerId}`;
 const MARKETPLACE_KEY = 'godaddy:marketplace';
 
-const DOMAIN_REGEX = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/;
+const DOMAIN_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
 
 function parseStoredJson<T>(data: unknown): T | null {
   if (data == null) return null;
@@ -134,7 +134,7 @@ export async function transferInDomain(
 
   const name = rawName.trim().toLowerCase();
   if (!name || !DOMAIN_REGEX.test(name)) {
-    return { ok: false, reason: 'Enter a valid domain like example.com.' };
+    return { ok: false, reason: 'Enter a valid asset identifier (e.g. BTC, ETH-001).' };
   }
 
   const existing = await readMeta(name);
