@@ -12,7 +12,7 @@ import { usePayees } from '@/lib/hooks/usePayees';
 import { useDomainStore } from '@/components/DomainStoreProvider';
 import { formatMoney } from '@/lib/types/payments';
 
-export default function CashOutPage() {
+export default function PayoutsPage() {
   const router = useRouter();
   const { session } = useSession();
   useEffect(() => { if (session === undefined) router.push('/login'); }, [session, router]);
@@ -30,7 +30,7 @@ export default function CashOutPage() {
       <main className="flex-1 mx-auto max-w-5xl w-full px-6 lg:px-10 py-8">
         <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
           <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
-            Console
+            Dashboard
           </Link>
           <span>/</span>
           <span className="text-foreground font-bold">{branding.payoutNounPlural}</span>
@@ -40,33 +40,33 @@ export default function CashOutPage() {
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight">{branding.payoutNounPlural}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              Move funds out of your Good as Gold wallet to a {branding.payeeSingular.toLowerCase()} —
-              bank or debit card.
+              Run payroll from your {branding.walletName} to your {branding.payeePlural.toLowerCase()} —
+              bank account or debit card.
             </p>
           </div>
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 text-primary px-4 py-2 text-xs font-bold uppercase tracking-widest">
+          <span className="inline-flex items-center gap-2 rounded-lg bg-primary/15 text-primary px-4 py-2 text-xs font-bold uppercase tracking-widest">
             <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
             Rail live
           </span>
         </div>
 
         {/* Wallet summary */}
-        <section className="rounded-2xl border-2 bg-foreground text-background p-6 mb-6 flex flex-wrap items-end justify-between gap-4">
+        <section className="rounded-2xl border-2 bg-primary text-primary-foreground p-6 mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-background/60 mb-2">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary-foreground/70 mb-2">
               <ArrowUpFromLine className="h-3.5 w-3.5" />
-              Available to {branding.payoutVerb.toLowerCase()}
+              Available for payroll
             </div>
             <div className="text-4xl md:text-5xl font-extrabold font-mono tabular-nums">
               {walletBalanceCents == null ? '—' : formatMoney(walletBalanceCents)}
             </div>
-            <p className="text-sm text-background/70 mt-2 max-w-md">
-              Your GAG wallet balance. {branding.payoutNoun} requests pull from this balance.
+            <p className="text-sm text-primary-foreground/70 mt-2 max-w-md">
+              Your {branding.walletName} balance. {branding.payoutNoun} requests pull from this balance.
             </p>
           </div>
           <Link
             href="/dashboard/payees"
-            className="rounded-full bg-primary text-primary-foreground px-5 h-11 text-sm font-bold inline-flex items-center hover:bg-primary/90 transition-colors"
+            className="rounded-lg bg-primary-foreground text-primary px-5 h-11 text-sm font-bold inline-flex items-center hover:bg-primary-foreground/90 transition-colors"
           >
             Manage {branding.payeePlural.toLowerCase()}
           </Link>
@@ -91,9 +91,9 @@ export default function CashOutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InfoCard
             label="How it works"
-            title={`From wallet to ${branding.funderShortLabel.toLowerCase()}`}
+            title={`From wallet to ${branding.payeeSingular.toLowerCase()}`}
             items={[
-              `Pick the ${branding.payeeSingular.toLowerCase()} you're sending to`,
+              `Pick the ${branding.payeeSingular.toLowerCase()} you're paying`,
               `Enter the amount to ${branding.payoutVerb.toLowerCase()}`,
               `Press process — ${branding.productName} routes the transfer`,
               'Receipts and ledger entries write automatically',
@@ -105,8 +105,8 @@ export default function CashOutPage() {
             title={`Run a clean ${branding.payoutNoun.toLowerCase()}`}
             items={[
               `Settles in roughly 5 seconds per ${branding.payeeSingular.toLowerCase()}`,
-              `${branding.payeeSingular} payment methods must be linked first`,
-              'Funds pull from your GAG wallet balance',
+              `${branding.payeeSingular} payout methods must be set up first`,
+              `Funds pull from your ${branding.walletName} balance`,
               'Audit everything in Activity',
             ]}
           />

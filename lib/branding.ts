@@ -13,28 +13,30 @@
  */
 export const branding = {
   /** Top-level product name shown in nav, footer, browser title. */
-  productName: "GoDaddy",
+  productName: "Gusto",
   /** One-line tagline used on landing + auth panels. */
-  tagline: "Buy domains. Sell domains. Cash out instantly.",
-  /** Payer entity (the user who logs in, funds the wallet, and trades domains). */
-  payerSingular: "Account",
-  payerPlural: "Accounts",
-  /** Used in possessive contexts: e.g. "your account's bank". */
-  payerPossessive: "account's",
-  /** Payee entity (the destination where the user moves funds out of their wallet). */
-  payeeSingular: "Payout destination",
-  payeePlural: "Payout destinations",
-  /** Payout terminology — moving funds OUT of the GAG wallet. */
-  payoutVerb: "Cash out",
-  payoutNoun: "Cash-out",
-  payoutNounPlural: "Cash-outs",
+  tagline: "Run payroll in minutes, not hours.",
+  /** Payer entity (the employer who logs in, funds the wallet, and pays employees). */
+  payerSingular: "Employer",
+  payerPlural: "Employers",
+  /** Used in possessive contexts: e.g. "your employer's bank". */
+  payerPossessive: "employer's",
+  /** Payee entity (employees who receive payroll). */
+  payeeSingular: "Employee",
+  payeePlural: "Employees",
+  /** Payout terminology — moving funds OUT of the Gusto Payroll Wallet. */
+  payoutVerb: "Pay out",
+  payoutNoun: "Payout",
+  payoutNounPlural: "Payouts",
   /** Funding source label on the wallet settings screen. */
   funderLabel: "Linked bank account",
   funderShortLabel: "Bank account",
+  /** Wallet name */
+  walletName: "Gusto Payroll Wallet",
   /** Console heading displayed on the dashboard home. */
-  consoleHeading: "Welcome back. Your domain console awaits.",
+  consoleHeading: "Welcome back. Your payroll dashboard awaits.",
   consoleSubheading:
-    "Manage your Good as Gold wallet, list domains for sale, and explore the marketplace from one console.",
+    "Manage your Gusto Payroll Wallet, add employees, and run payroll from one dashboard.",
 } as const;
 
 export type Branding = typeof branding;

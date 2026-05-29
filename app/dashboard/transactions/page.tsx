@@ -41,7 +41,7 @@ export default function ActivityPage() {
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
         <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
           <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
-            Console
+            Dashboard
           </Link>
           <span>/</span>
           <span className="text-foreground font-bold">Activity</span>
@@ -86,14 +86,14 @@ export default function ActivityPage() {
               <div>
                 <p className="text-lg font-extrabold">No activity yet</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Run your first {branding.payoutNoun.toLowerCase()} to populate the ledger.
+                  Run your first payroll to populate the ledger.
                 </p>
               </div>
               <Link
                 href="/dashboard/payouts"
-                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-foreground text-background px-5 h-11 text-sm font-bold hover:bg-foreground/90 transition-colors"
+                className="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-5 h-11 text-sm font-bold hover:bg-primary/90 transition-colors"
               >
-                Run your first {branding.payoutNoun.toLowerCase()} →
+                Run your first payroll →
               </Link>
             </div>
           ) : (

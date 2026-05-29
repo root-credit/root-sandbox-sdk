@@ -58,7 +58,7 @@ export default function PayeesPage() {
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
         <nav className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
           <Link href="/dashboard" className="hover:text-foreground transition-colors font-semibold">
-            Console
+            Dashboard
           </Link>
           <span>/</span>
           <span className="text-foreground font-bold">{branding.payeePlural}</span>
@@ -68,14 +68,13 @@ export default function PayeesPage() {
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight">{branding.payeePlural}</h1>
             <p className="text-base text-muted-foreground mt-2 max-w-xl">
-              The banks and debit cards you {branding.payoutVerb.toLowerCase()} to from your Good as Gold
-              wallet.
+              Your team members who receive payroll. Each {branding.payeeSingular.toLowerCase()} chooses their payout method — bank account or debit card.
             </p>
           </div>
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="rounded-full font-bold bg-foreground text-background hover:bg-foreground/90 h-11 px-5">
+              <Button className="rounded-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-5">
                 <Plus className="h-4 w-4" />
                 Add {branding.payeeSingular.toLowerCase()}
               </Button>
@@ -130,13 +129,12 @@ export default function PayeesPage() {
                   No {branding.payeePlural.toLowerCase()} yet
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Add your first {branding.payeeSingular.toLowerCase()} to start{' '}
-                  {branding.payoutVerb.toLowerCase()}-ing.
+                  Add your first {branding.payeeSingular.toLowerCase()} to start running payroll.
                 </p>
               </div>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="mt-1 rounded-full font-bold bg-foreground text-background hover:bg-foreground/90">
+                  <Button className="mt-1 rounded-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90">
                     <Plus className="h-4 w-4" />
                     Add your first {branding.payeeSingular.toLowerCase()}
                   </Button>
@@ -171,7 +169,7 @@ export default function PayeesPage() {
                     Phone
                   </TableHead>
                   <TableHead className="font-bold uppercase tracking-widest text-[10px]">
-                    Rail
+                    Payout method
                   </TableHead>
                   <TableHead className="text-right font-bold uppercase tracking-widest text-[10px]">
                     Actions
