@@ -44,7 +44,7 @@ export default async function PayerSettingsPage() {
         </div>
 
         {/* Profile */}
-        <section className="rounded-3xl border bg-card mb-6">
+        <section className="rounded-lg border bg-background mb-6">
           <div className="border-b px-6 py-5">
             <h2 className="text-xl font-bold tracking-tight">
               {branding.payerSingular} information
@@ -62,7 +62,7 @@ export default async function PayerSettingsPage() {
         </section>
 
         {/* Bank account */}
-        <section className="rounded-3xl border bg-card mb-6">
+        <section className="rounded-lg border bg-background mb-6">
           <div className="border-b px-6 py-5">
             <h2 className="text-xl font-bold tracking-tight">{branding.funderLabel}</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
@@ -72,7 +72,7 @@ export default async function PayerSettingsPage() {
           <div className="p-6 flex flex-col gap-6">
             <BankAccountForm payerId={session.payerId} />
 
-            <div className="rounded-2xl bg-secondary p-5">
+            <div className="rounded-lg border bg-muted p-5">
               <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">
                 Why link a {branding.funderShortLabel.toLowerCase()}?
               </p>

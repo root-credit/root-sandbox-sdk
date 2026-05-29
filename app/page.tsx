@@ -16,17 +16,12 @@ export default function LandingPage() {
       </div>
 
       {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-30">
+      <header className="border-b bg-background sticky top-0 z-30">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2">
-            <img
-              src="https://logo.clearbit.com/airbnb.com"
-              alt={branding.productName}
-              height={28}
-              width={28}
-              className="h-7 w-auto"
-            />
-            <span className="text-lg font-bold tracking-tight text-foreground">{branding.productName}</span>
+          <Link href="/" className="flex items-center">
+            <span style={{ fontWeight: 800, fontSize: '20px', letterSpacing: '-0.03em', color: '#484848' }}>
+              {branding.productName}
+            </span>
           </Link>
           <nav className="hidden md:flex items-center gap-7 text-sm font-semibold text-foreground">
             <a href="#how-it-works" className="hover:text-primary transition-colors">
@@ -55,13 +50,7 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-x-0 top-0 h-[70%] bg-primary/10" />
-          <div className="absolute -top-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-primary/20 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 h-[20rem] w-[20rem] rounded-full bg-accent/30 blur-3xl" />
-        </div>
-
+      <section className="relative overflow-hidden bg-background">
         <div className="mx-auto w-full max-w-7xl px-6 py-20 md:py-28 grid gap-12 md:grid-cols-2 items-center">
           <div className="flex flex-col gap-6">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-primary-foreground">
@@ -104,7 +93,7 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="rounded-full px-7 h-12 text-base font-bold border-2 border-foreground hover:bg-foreground hover:text-background"
+                className="rounded-full px-7 h-12 text-base font-bold border border-border hover:bg-muted"
                 asChild
               >
                 <Link href="/login">Sign in</Link>
@@ -114,10 +103,9 @@ export default function LandingPage() {
 
           {/* Hero showcase card — property listing tile */}
           <div className="relative">
-            <div className="absolute -top-6 -left-6 h-24 w-24 rounded-2xl bg-accent rotate-6 -z-10" aria-hidden />
-            <div className="rounded-3xl border-2 bg-card shadow-xl p-6">
+            <div className="rounded-lg border bg-background shadow-lg p-6">
               <div className="flex items-center justify-between mb-5">
-                <span className="inline-flex items-center justify-center rounded-full bg-primary/15 text-primary px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest">
+                <span className="inline-flex items-center justify-center rounded-full bg-primary/10 text-primary px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest">
                   Featured stays
                 </span>
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
@@ -129,14 +117,16 @@ export default function LandingPage() {
                 <PropertyTile name="Beachfront Villa" price="$450" badge="Malibu" featured />
                 <PropertyTile name="Cozy Mountain Cabin" price="$125" badge="Aspen" />
               </div>
-              <div className="mt-5 flex items-center justify-between rounded-2xl bg-primary text-primary-foreground px-4 py-3">
+              {/* Wallet card - uses primary bg per color philosophy */}
+              <div className="mt-5 flex items-center justify-between rounded-lg bg-primary text-primary-foreground px-4 py-3">
                 <div>
                   <div className="text-[11px] font-bold uppercase tracking-widest text-primary-foreground/70">
                     {branding.walletName}
                   </div>
                   <div className="text-2xl font-extrabold font-mono tabular-nums">$1,250.00</div>
                 </div>
-                <span className="rounded-full bg-primary-foreground text-primary px-3 py-1.5 text-xs font-bold uppercase tracking-widest">
+                {/* LIVE badge - teal is ONLY used here */}
+                <span className="rounded-full bg-secondary text-secondary-foreground px-3 py-1.5 text-xs font-bold uppercase tracking-widest">
                   Live
                 </span>
               </div>
@@ -181,11 +171,11 @@ export default function LandingPage() {
       </section>
 
       {/* Features grid */}
-      <section id="features" className="py-20 md:py-24">
+      <section id="features" className="py-20 md:py-24 bg-background">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-12 max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">Features</p>
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05]">
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05] text-foreground">
               Built for hosts who value simplicity.
             </h2>
           </div>
@@ -259,17 +249,12 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-card">
+      <footer className="border-t bg-background">
         <div className="mx-auto max-w-7xl px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <img
-              src="https://logo.clearbit.com/airbnb.com"
-              alt={branding.productName}
-              height={28}
-              width={28}
-              className="h-7 w-auto"
-            />
-            <span className="text-sm font-bold text-foreground">{branding.productName}</span>
+          <div className="flex items-center">
+            <span style={{ fontWeight: 800, fontSize: '20px', letterSpacing: '-0.03em', color: '#484848' }}>
+              {branding.productName}
+            </span>
           </div>
           <p className="text-xs text-muted-foreground text-center">
             {'© '}
@@ -314,12 +299,12 @@ function PropertyTile({
 }) {
   return (
     <div
-      className={`flex items-center justify-between rounded-2xl border-2 px-4 py-3 transition-colors ${
-        featured ? 'border-primary bg-primary/5' : 'border-border bg-card hover:border-foreground/30'
+      className={`flex items-center justify-between rounded-lg border px-4 py-3 transition-colors ${
+        featured ? 'border-primary bg-primary/5' : 'border-border bg-background hover:border-foreground/30'
       }`}
     >
       <div className="flex items-center gap-3 min-w-0">
-        <span className="inline-flex items-center justify-center rounded-full bg-primary/15 text-primary text-[10px] font-bold uppercase tracking-widest px-2.5 py-1">
+        <span className="inline-flex items-center justify-center rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest px-2.5 py-1">
           {badge}
         </span>
         <span className="font-semibold truncate">{name}</span>
@@ -342,7 +327,7 @@ function FeatureCard({
   features: string[];
 }) {
   return (
-    <div className="group rounded-3xl border-2 bg-card p-7 transition-all hover:border-primary hover:shadow-xl">
+    <div className="group rounded-lg border bg-background p-7 transition-all hover:border-primary hover:shadow-lg">
       <div className="flex items-center justify-between mb-5">
         <span className="inline-flex items-center justify-center rounded-full bg-primary px-3 py-1.5 text-sm font-extrabold tracking-tight text-primary-foreground">
           {code}
@@ -351,7 +336,7 @@ function FeatureCard({
           Feature
         </span>
       </div>
-      <h3 className="text-2xl font-extrabold tracking-tight mb-4">{title}</h3>
+      <h3 className="text-2xl font-extrabold tracking-tight mb-4 text-foreground">{title}</h3>
       <ul className="space-y-2.5">
         {features.map((f) => (
           <li key={f} className="flex items-start gap-2.5 text-sm text-foreground">
@@ -360,21 +345,17 @@ function FeatureCard({
           </li>
         ))}
       </ul>
-      <div className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-foreground">
-        <span className="h-2 w-2 rounded-full bg-primary" />
-        Active · Live
-      </div>
     </div>
   );
 }
 
 function Step({ n, title, body }: { n: string; title: string; body: string }) {
   return (
-    <div className="rounded-3xl border-2 p-7 bg-card hover:border-primary transition-colors">
+    <div className="rounded-lg border p-7 bg-background hover:border-primary transition-colors">
       <div className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground h-12 w-12 text-lg font-extrabold mb-4">
         {n}
       </div>
-      <h3 className="text-xl font-extrabold tracking-tight mb-2">{title}</h3>
+      <h3 className="text-xl font-extrabold tracking-tight mb-2 text-foreground">{title}</h3>
       <p className="text-base text-muted-foreground leading-relaxed">{body}</p>
     </div>
   );

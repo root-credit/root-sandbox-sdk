@@ -102,7 +102,7 @@ export default function PayeesPage() {
           </div>
         )}
 
-        <div className="rounded-3xl border bg-card overflow-hidden">
+        <div className="rounded-lg border bg-background overflow-hidden">
           <div className="flex items-center justify-between gap-3 border-b px-6 py-4">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -121,7 +121,7 @@ export default function PayeesPage() {
             </div>
           ) : payees.length === 0 ? (
             <div className="p-16 flex flex-col items-center gap-3 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
                 <Users className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>

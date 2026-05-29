@@ -32,18 +32,13 @@ export function DashboardHeader({ email }: { email: string }) {
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b bg-card">
+    <header className="sticky top-0 z-30 border-b bg-background">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="h-16 flex items-center justify-between gap-6">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <img
-              src="https://logo.clearbit.com/airbnb.com"
-              alt={branding.productName}
-              height={28}
-              width={28}
-              className="h-7 w-auto"
-            />
-            <span className="text-lg font-bold tracking-tight text-foreground">{branding.productName}</span>
+          <Link href="/dashboard" className="flex items-center">
+            <span style={{ fontWeight: 800, fontSize: '20px', letterSpacing: '-0.03em', color: '#484848' }}>
+              {branding.productName}
+            </span>
           </Link>
 
           <div className="flex items-center gap-2">

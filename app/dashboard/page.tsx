@@ -41,15 +41,11 @@ export default async function DashboardPage() {
 
       <main className="flex-1 mx-auto max-w-7xl w-full px-6 lg:px-10 py-8">
         {/* Hero */}
-        <section className="rounded-3xl border-2 bg-card p-8 md:p-10 mb-8 relative overflow-hidden">
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
-            <div className="absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
-          </div>
+        <section className="rounded-lg border bg-background p-8 md:p-10 mb-8">
           <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground mb-5">
             {branding.productName} Dashboard
           </span>
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05] max-w-3xl">
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-balance leading-[1.05] max-w-3xl text-foreground">
             {branding.consoleHeading}
           </h1>
           <p className="text-base md:text-lg text-muted-foreground mt-4 max-w-2xl leading-relaxed">
@@ -65,6 +61,7 @@ export default async function DashboardPage() {
             Quick actions
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* First Quick Action uses primary bg per color philosophy */}
             <ActionTile
               href="/dashboard/marketplace"
               title="Explore stays"
@@ -99,7 +96,8 @@ export default async function DashboardPage() {
             At a glance
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label={branding.walletName} value={walletLabel} icon={<Wallet className="h-4 w-4" />} />
+            {/* Wallet card uses primary bg per color philosophy */}
+            <WalletStatCard label={branding.walletName} value={walletLabel} icon={<Wallet className="h-4 w-4" />} />
             <StatCard label="My properties" value={String(ownedPropertiesCount)} icon={<Home className="h-4 w-4" />} />
             <StatCard label="Listed for rent" value={String(listedForRentCount)} icon={<Tag className="h-4 w-4" />} />
             <StatCard
@@ -111,9 +109,9 @@ export default async function DashboardPage() {
         </section>
 
         {/* Module tiles */}
-        <section className="rounded-2xl border-2 bg-card overflow-hidden">
-          <div className="border-b-2 px-6 py-5">
-            <h2 className="text-xl font-extrabold tracking-tight">Features</h2>
+        <section className="rounded-lg border bg-background overflow-hidden">
+          <div className="border-b px-6 py-5">
+            <h2 className="text-xl font-extrabold tracking-tight text-foreground">Features</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
               Everything you need to host and travel.
             </p>
@@ -156,14 +154,28 @@ export default async function DashboardPage() {
   );
 }
 
-function StatCard({ label, value, icon }: { label: string; value: string; icon?: ReactNode }) {
+/** Wallet stat card - uses primary bg per color philosophy */
+function WalletStatCard({ label, value, icon }: { label: string; value: string; icon?: ReactNode }) {
   return (
-    <div className="rounded-2xl border-2 bg-card p-5 flex flex-col gap-2">
-      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+    <div className="rounded-lg bg-primary text-primary-foreground p-5 flex flex-col gap-2">
+      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary-foreground/70">
         {icon}
         {label}
       </div>
       <div className="text-3xl font-extrabold font-mono tabular-nums">{value}</div>
+    </div>
+  );
+}
+
+/** Regular stat card - white bg with border */
+function StatCard({ label, value, icon }: { label: string; value: string; icon?: ReactNode }) {
+  return (
+    <div className="rounded-lg border bg-background p-5 flex flex-col gap-2">
+      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        {icon}
+        {label}
+      </div>
+      <div className="text-3xl font-extrabold font-mono tabular-nums text-foreground">{value}</div>
     </div>
   );
 }
@@ -184,15 +196,15 @@ function ActionTile({
   return (
     <Link
       href={href}
-      className={`group flex flex-col gap-3 rounded-2xl border-2 p-5 transition-all ${
+      className={`group flex flex-col gap-3 rounded-lg border p-5 transition-all ${
         primary
           ? 'bg-primary text-primary-foreground border-primary hover:bg-primary/90'
-          : 'bg-card hover:border-primary hover:shadow-md'
+          : 'bg-background hover:border-primary hover:shadow-md'
       }`}
     >
       <div
         className={`flex h-10 w-10 items-center justify-center rounded-full ${
-          primary ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-primary/15 text-primary'
+          primary ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-primary/10 text-primary'
         }`}
       >
         {icon}
@@ -222,9 +234,9 @@ function ModuleTile({ href, title, desc }: { href: string; title: string; desc: 
   return (
     <Link
       href={href}
-      className="group block rounded-xl border-2 p-5 transition-all bg-card hover:border-primary hover:shadow-md"
+      className="group block rounded-lg border p-5 transition-all bg-background hover:border-primary hover:shadow-md"
     >
-      <h3 className="font-extrabold tracking-tight mb-1.5">{title}</h3>
+      <h3 className="font-extrabold tracking-tight mb-1.5 text-foreground">{title}</h3>
       <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
       <div className="mt-4 text-xs font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
         Open →

@@ -97,7 +97,7 @@ export default function MarketplacePage() {
               placeholder="Search by name or host..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="pl-9 h-11 rounded-full bg-card font-medium"
+              className="pl-9 h-11 rounded-full bg-background border font-medium"
             />
           </div>
         </div>
@@ -177,8 +177,8 @@ function WalletPill({
 
 function ListingShell({ title, body }: { title: string; body: string }) {
   return (
-    <div className="rounded-2xl border bg-card p-16 flex flex-col items-center gap-4 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
+    <div className="rounded-lg border bg-background p-16 flex flex-col items-center gap-4 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
         <Building2 className="h-6 w-6 text-muted-foreground" />
       </div>
       <div>
@@ -201,9 +201,9 @@ function PropertyCard({
   onBook: () => void;
 }) {
   return (
-    <article className="group flex flex-col rounded-3xl border bg-card overflow-hidden hover:border-primary/30 hover:shadow-lg transition-all">
+    <article className="group flex flex-col rounded-lg border bg-background overflow-hidden hover:border-primary/30 hover:shadow-lg transition-all">
       {/* Property image placeholder */}
-      <div className="aspect-[4/3] bg-secondary flex items-center justify-center">
+      <div className="aspect-[4/3] bg-muted flex items-center justify-center">
         <Home className="h-12 w-12 text-muted-foreground/30" />
       </div>
       
@@ -224,7 +224,7 @@ function PropertyCard({
         </p>
       </div>
       
-      <div className="border-t px-5 py-4 flex items-center justify-between gap-3 bg-secondary/50">
+      <div className="border-t px-5 py-4 flex items-center justify-between gap-3 bg-muted">
         <div>
           <div className="text-xl font-bold font-mono tabular-nums">
             {formatMoney(property.priceCents)}

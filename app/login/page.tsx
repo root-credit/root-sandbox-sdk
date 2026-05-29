@@ -5,27 +5,17 @@ import { branding } from '@/lib/branding';
 export default function LoginPage() {
   return (
     <main className="min-h-screen flex flex-col bg-background">
-      <header className="border-b bg-card">
+      <header className="border-b bg-background">
         <div className="mx-auto max-w-7xl px-6 py-4 flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2">
-            <img
-              src="https://logo.clearbit.com/airbnb.com"
-              alt={branding.productName}
-              height={28}
-              width={28}
-              className="h-7 w-auto"
-            />
-            <span className="text-lg font-bold tracking-tight text-foreground">{branding.productName}</span>
+          <Link href="/" className="flex items-center">
+            <span style={{ fontWeight: 800, fontSize: '20px', letterSpacing: '-0.03em', color: '#484848' }}>
+              {branding.productName}
+            </span>
           </Link>
         </div>
       </header>
 
-      <section className="flex-1 flex items-center relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute -top-24 -right-24 h-[24rem] w-[24rem] rounded-full bg-primary/20 blur-3xl" />
-          <div className="absolute -bottom-32 -left-24 h-[20rem] w-[20rem] rounded-full bg-accent/30 blur-3xl" />
-        </div>
-
+      <section className="flex-1 flex items-center relative overflow-hidden bg-background">
         <div className="mx-auto w-full max-w-7xl px-6 py-16 grid gap-12 md:grid-cols-2 items-center">
           <div className="flex flex-col gap-6">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-primary-foreground">
@@ -58,7 +48,7 @@ export default function LoginPage() {
             </ul>
           </div>
 
-          <div className="rounded-3xl border-2 bg-card p-7 shadow-xl">
+          <div className="rounded-lg border bg-background p-7 shadow-lg">
             <div className="mb-6">
               <h2 className="text-2xl font-extrabold tracking-tight">Sign in</h2>
               <p className="text-base text-muted-foreground mt-1">
@@ -71,7 +61,7 @@ export default function LoginPage() {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground font-bold tracking-widest">
+                <span className="bg-background px-2 text-muted-foreground font-bold tracking-widest">
                   New here?
                 </span>
               </div>
@@ -86,7 +76,7 @@ export default function LoginPage() {
         </div>
       </section>
 
-      <footer className="border-t bg-card">
+      <footer className="border-t bg-background">
         <div className="mx-auto max-w-7xl px-6 py-6 text-xs text-muted-foreground">
           Sandbox environment — no real money is moved.
         </div>

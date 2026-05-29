@@ -72,7 +72,7 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
 
   if (payees.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-xl border-2 bg-secondary p-10 text-center">
+      <div className="flex flex-col items-center gap-3 rounded-lg border bg-muted p-10 text-center">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" strokeLinecap="round" />
@@ -104,7 +104,7 @@ export function PayoutForm({ payerId, payees, onSuccess }: PayoutFormProps) {
           Set an amount for each {branding.payeeSingular.toLowerCase()}. Leave blank to skip.
         </p>
 
-        <div className="mt-4 rounded-xl border-2 overflow-hidden bg-card">
+        <div className="mt-4 rounded-lg border overflow-hidden bg-background">
           {payees.map((payee, idx) => (
             <div
               key={payee.id}

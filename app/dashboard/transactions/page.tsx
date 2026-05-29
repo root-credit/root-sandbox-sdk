@@ -72,14 +72,14 @@ export default function ActivityPage() {
           <StatCard label="Total events" value={String(transactions.length)} />
         </div>
 
-        <div className="rounded-3xl border bg-card overflow-hidden">
+        <div className="rounded-lg border bg-background overflow-hidden">
           {isLoading ? (
             <div className="p-12 text-center text-sm text-muted-foreground font-medium">
               Loading activity...
             </div>
           ) : transactions.length === 0 ? (
             <div className="p-16 flex flex-col items-center gap-3 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
                 <ActivityIcon className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
@@ -151,7 +151,7 @@ export default function ActivityPage() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border bg-card p-5 flex flex-col gap-2">
+    <div className="rounded-lg border bg-background p-5 flex flex-col gap-2">
       <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
         {label}
       </div>

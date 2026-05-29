@@ -28,7 +28,7 @@ export function DashboardOverviewHero() {
 
   return (
     <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-      <div className="flex flex-col justify-between rounded-2xl bg-primary text-primary-foreground px-5 py-4 sm:min-w-72">
+      <div className="flex flex-col justify-between rounded-lg bg-primary text-primary-foreground px-5 py-4 sm:min-w-72">
         <span className="text-[11px] font-bold uppercase tracking-widest text-primary-foreground/70">
           {branding.walletName}
         </span>
@@ -41,7 +41,7 @@ export function DashboardOverviewHero() {
           </span>
         </div>
       </div>
-      <div className="flex flex-1 flex-wrap items-center gap-2 rounded-2xl border-2 bg-card px-5 py-4">
+      <div className="flex flex-1 flex-wrap items-center gap-2 rounded-lg border bg-background px-5 py-4">
         <Pill label="Properties" value={String(ownedDomains.length)} />
         <Pill label="Listed" value={String(listedCount)} />
         <Pill label="Available" value={String(marketplaceDomains.length)} />
@@ -52,7 +52,7 @@ export function DashboardOverviewHero() {
 
 function Pill({ label, value }: { label: string; value: string }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-xs font-bold">
+    <span className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1.5 text-xs font-bold">
       <span className="font-mono tabular-nums text-foreground">{value}</span>
       <span className="text-muted-foreground uppercase tracking-widest text-[10px]">{label}</span>
     </span>

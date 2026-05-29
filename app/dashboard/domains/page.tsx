@@ -320,7 +320,7 @@ function Section({
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border bg-card p-5 flex flex-col gap-2">
+    <div className="rounded-lg border bg-background p-5 flex flex-col gap-2">
       <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
         {label}
       </div>
@@ -340,7 +340,7 @@ function PropertyRow({
 }) {
   const isListed = property.listingPriceCents !== undefined;
   return (
-    <div className="rounded-2xl border bg-card p-5 flex flex-col gap-3 hover:border-primary/30 transition-colors">
+    <div className="rounded-lg border bg-background p-5 flex flex-col gap-3 hover:border-primary/30 transition-colors">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-1">
@@ -408,8 +408,8 @@ function PropertyRow({
 
 function LoadingState() {
   return (
-    <div className="rounded-2xl border bg-card p-16 flex flex-col items-center gap-4 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
+    <div className="rounded-lg border bg-background p-16 flex flex-col items-center gap-4 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
         <Building2 className="h-6 w-6 text-muted-foreground" />
       </div>
       <p className="text-sm text-muted-foreground">Loading your properties...</p>
@@ -419,8 +419,8 @@ function LoadingState() {
 
 function EmptyState({ onCreate }: { onCreate: () => void }) {
   return (
-    <div className="rounded-2xl border bg-card p-16 flex flex-col items-center gap-4 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
+    <div className="rounded-lg border bg-background p-16 flex flex-col items-center gap-4 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
         <Building2 className="h-6 w-6 text-muted-foreground" />
       </div>
       <div>

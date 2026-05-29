@@ -49,8 +49,8 @@ export default function PayoutsPage() {
           </span>
         </div>
 
-        {/* Wallet summary */}
-        <section className="rounded-3xl bg-primary text-primary-foreground p-6 mb-6 flex flex-wrap items-end justify-between gap-4">
+        {/* Wallet summary - uses primary bg per color philosophy */}
+        <section className="rounded-lg bg-primary text-primary-foreground p-6 mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary-foreground/70 mb-2">
               <Wallet className="h-4 w-4" />
@@ -77,7 +77,7 @@ export default function PayoutsPage() {
           </div>
         )}
 
-        <section className="rounded-3xl border bg-card p-6 mb-6">
+        <section className="rounded-lg border bg-background p-6 mb-6">
           {isLoading ? (
             <div className="text-center text-sm text-muted-foreground py-10 font-medium">
               Loading {branding.payeePlural.toLowerCase()}...
@@ -127,7 +127,7 @@ function InfoCard({
   ordered?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border bg-card p-6">
+    <div className="rounded-lg border bg-background p-6">
       <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">{label}</p>
       <h3 className="font-bold tracking-tight text-lg mb-4">{title}</h3>
       {ordered ? (

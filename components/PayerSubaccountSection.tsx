@@ -106,7 +106,7 @@ export function PayerSubaccountSection({
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
-        <div className="flex flex-col gap-4 rounded-2xl border bg-secondary p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 rounded-lg border bg-muted p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <p className="text-sm font-semibold">Enable {branding.walletName}</p>
             <p className="text-xs text-muted-foreground">
@@ -121,7 +121,7 @@ export function PayerSubaccountSection({
         </div>
 
         {subaccountEnabled && subaccountId ? (
-          <div className="rounded-2xl border bg-background px-4 py-3">
+          <div className="rounded-lg border bg-background px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Wallet (subaccount) ID
             </p>
@@ -130,7 +130,7 @@ export function PayerSubaccountSection({
         ) : null}
 
         {subaccountEnabled ? (
-          <div className="flex flex-col gap-4 rounded-2xl border bg-secondary p-4">
+          <div className="flex flex-col gap-4 rounded-lg border bg-muted p-4">
             <div>
               <p className="text-sm font-semibold">Fund {branding.walletName} (ACH pull)</p>
               <p className="text-xs text-muted-foreground mt-1">
