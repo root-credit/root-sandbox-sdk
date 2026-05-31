@@ -7,13 +7,13 @@ import { useLogout } from '@/lib/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 
 const NAV: { href: string; label: string }[] = [
-  { href: '/dashboard', label: 'Overview' },
-  { href: '/dashboard/marketplace', label: 'Marketplace' },
-  { href: '/dashboard/domains', label: 'My domains' },
+  { href: '/dashboard', label: 'Portfolio' },
+  { href: '/dashboard/buy', label: 'Buy' },
+  { href: '/dashboard/sell', label: 'Sell' },
   { href: '/dashboard/payouts', label: branding.payoutNounPlural },
   { href: '/dashboard/payees', label: branding.payeePlural },
   { href: '/dashboard/transactions', label: 'Activity' },
-  { href: '/dashboard/payer', label: branding.payerSingular },
+  { href: '/dashboard/payer', label: branding.walletName },
 ];
 
 export function DashboardHeader({ email }: { email: string }) {
@@ -32,19 +32,21 @@ export function DashboardHeader({ email }: { email: string }) {
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b bg-card">
+    <header className="sticky top-0 z-30 border-b border-border bg-card/90 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="h-16 flex items-center justify-between gap-6">
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground text-base font-extrabold">
-              {branding.productName.charAt(0)}
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+                <path d="M12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4ZM12 16.5C9.51 16.5 7.5 14.49 7.5 12C7.5 9.51 9.51 7.5 12 7.5C14.49 7.5 16.5 9.51 16.5 12C16.5 14.49 14.49 16.5 12 16.5Z" fill="white" />
+              </svg>
             </div>
             <span className="text-lg font-extrabold tracking-tight">{branding.productName}</span>
           </Link>
 
           <div className="flex items-center gap-2">
-            <span className="hidden sm:flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-xs font-semibold text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span className="hidden sm:flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
               {email}
             </span>
             <Button
@@ -52,7 +54,7 @@ export function DashboardHeader({ email }: { email: string }) {
               size="sm"
               onClick={handleLogout}
               disabled={isSubmitting}
-              className="font-semibold rounded-full"
+              className="font-semibold rounded-full text-muted-foreground hover:text-foreground"
             >
               {isSubmitting ? 'Signing out…' : 'Sign out'}
             </Button>

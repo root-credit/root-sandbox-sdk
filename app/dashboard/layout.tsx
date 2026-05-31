@@ -1,5 +1,5 @@
-import { DomainStoreProvider } from '@/components/DomainStoreProvider';
+import { CryptoStoreProvider } from '@/components/CryptoStoreProvider';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return <DomainStoreProvider>{children}</DomainStoreProvider>;
+  return <CryptoStoreProvider>{children}</CryptoStoreProvider>;
 }
