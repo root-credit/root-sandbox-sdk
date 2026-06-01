@@ -26,7 +26,7 @@ export default function SignupPage() {
               <span className="text-primary">dashboard.</span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed text-pretty max-w-lg">
-              Create an {branding.payerSingular.toLowerCase()} account in under two minutes. We&apos;ll spin up
+              Create an {' '}{branding.payerSingular.toLowerCase()} account in under two minutes. We&apos;ll spin up
               your {branding.walletName}, ready to fund and run payroll.
             </p>
             <ul className="flex flex-col gap-3 text-base text-foreground font-medium">
@@ -47,7 +47,7 @@ export default function SignupPage() {
 
           <div className="rounded-2xl border-2 bg-card p-7 shadow-xl">
             <div className="mb-6">
-              <h2 className="text-2xl font-extrabold tracking-tight">Create your {branding.payerSingular.toLowerCase()} account</h2>
+              <h2 className="text-2xl font-extrabold tracking-tight">Create your {' '}{branding.payerSingular.toLowerCase()} account</h2>
               <p className="text-base text-muted-foreground mt-1">
                 Tell us a bit about your business.
               </p>
